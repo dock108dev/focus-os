@@ -18,6 +18,8 @@ This file tracks high-level work only. Keep it current when scope changes or a t
 - Updated fallback topic briefings so they do not appear as Today’s Attention.
 - Standardized user-facing product casing as `FocusOS`.
 - Moved morning briefing job out of the synchronous request path.
+- Added first-pass engineering docs for architecture, config, testing, operations, data models, and limitations.
+- Synced Docker and sample environment config with documented runtime flags.
 - Added Yahoo Finance market price refresh.
 - Added CoinGecko Bitcoin price refresh.
 - Added Open-Meteo golf weather recommendation.
@@ -32,7 +34,7 @@ This file tracks high-level work only. Keep it current when scope changes or a t
 - Added product-voice guardrails that remove patronizing generated phrasing and redesigned the appendix around sources, supporting facts, and collapsed details.
 - Removed homepage right rail sections so the homepage renders only the Morning Briefing output.
 - Cleared generic backend action text so `Review whether...` copy does not leak into future surfaces.
-- Made `/api/briefing.attention` the homepage SSOT and removed frontend reconstruction from portfolio intelligence fields.
+- Made the `attention` field from `GET /api/briefing` the homepage SSOT and removed frontend reconstruction from portfolio intelligence fields.
 - Cleaned repo entry docs, split frontend API/types from `App.tsx`, moved seed-data setup out of `main.py`, and added Docker build-context ignores.
 
 ## In Progress

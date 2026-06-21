@@ -10,10 +10,13 @@ The product should not add 40 sources before proving that Mike opens the homepag
 
 Purpose: portfolio, cash, allocation, market movement, and opportunities.
 
-Initial approach:
+Implemented:
 
 - Manual CSV import for Fidelity, SoFi, and Tastytrade.
 - Yahoo Finance for market prices.
+
+Planned alternatives:
+
 - Alpha Vantage if Yahoo becomes unreliable.
 - Polygon later if precision and paid reliability matter.
 
@@ -21,7 +24,7 @@ Initial approach:
 
 Purpose: Bitcoin movement and catalysts.
 
-Initial approach:
+Implemented:
 
 - CoinGecko.
 
@@ -52,7 +55,7 @@ Weather should probably arrive before sports because it creates direct personal 
 
 Purpose: only Mike-relevant sports attention.
 
-Initial approach:
+Planned:
 
 - ESPN APIs.
 
@@ -63,6 +66,17 @@ Initial scope:
 - Major events.
 
 SportsDataIO is a later paid option if ESPN is not enough.
+
+## Current Structured Refresh Behavior
+
+The morning job refreshes:
+
+- Yahoo Finance market prices for non-cash, non-Bitcoin holdings.
+- CoinGecko Bitcoin price and 24-hour movement.
+- Open-Meteo seven-day weather for the golf recommendation.
+- AI or fallback briefings for active unstructured topics.
+
+The app records source health for refreshes and provider failures. Failed source refreshes do not stop every other source from refreshing, but database commit failures are allowed to fail the job.
 
 ## Implemented Source Status
 

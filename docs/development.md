@@ -1,6 +1,6 @@
 # Development Guide
 
-This guide reflects the current FocusOS implementation.
+This guide covers the commands a local engineer needs most often. See [Environment And Config](env-and-config.md), [Architecture](architecture.md), and [Operations](operations.md) for deeper reference.
 
 ## Local Stack
 
@@ -11,12 +11,12 @@ cp .env.example .env
 docker compose up --build
 ```
 
-Services:
+Docker services:
 
 - Web: `http://localhost:5173`
 - API: `http://localhost:8000`
 - PostgreSQL: `localhost:5432`
-- Scheduler: triggers the morning briefing job daily.
+- Scheduler: triggers the morning briefing job daily by POSTing to the API.
 
 The API creates tables on startup and seeds sample holdings, portfolio snapshots, topics, and fallback topic briefings when the database is empty.
 
@@ -29,7 +29,7 @@ python -m pip install -r backend/requirements.txt
 uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000 --reload
 ```
 
-Without `DATABASE_URL`, the backend uses local SQLite at `focusos-dev.db`.
+Without `DATABASE_URL`, the backend uses local SQLite at `focusos-dev.db`. The API still creates tables and seeds default data on startup.
 
 ## Frontend Without Docker
 
@@ -39,7 +39,7 @@ npm ci
 npm run dev
 ```
 
-The Vite dev server proxies `/api` to `http://localhost:8000`.
+The Vite dev server proxies `/api` to `http://localhost:8000` unless `VITE_API_TARGET` is set.
 
 ## Validation
 
@@ -63,30 +63,6 @@ docker compose up --build
 curl http://localhost:8000/api/health
 curl http://localhost:8000/api/briefing
 ```
-
-## Environment
-
-Copy `.env.example` to `.env` for local overrides.
-
-Core variables:
-
-- `DATABASE_URL`: optional SQLAlchemy database URL. Defaults to local SQLite.
-- `OPENAI_API_KEY`: enables OpenAI topic generation when `AI_PROVIDER=openai`.
-- `OPENAI_MODEL`: model for OpenAI topic generation.
-- `OPENAI_REQUEST_TIMEOUT`: per-topic provider timeout in seconds.
-- `AI_PROVIDER`: `fallback`, `openai`, or `codex_cli`.
-- `FOCUSOS_CORS_ORIGINS`: comma-separated browser origins allowed to make state-changing requests.
-- `FOCUSOS_INTERNAL_API_KEY`: optional shared secret for internal operational routes.
-- `FOCUSOS_MAX_IMPORT_BYTES`: CSV upload limit, default `1048576`.
-- `FOCUSOS_ENABLE_HSTS`: enable only behind HTTPS.
-- `MORNING_JOB_TIME`: scheduler trigger time, default `06:00`.
-- `GOLF_LATITUDE`, `GOLF_LONGITUDE`, `GOLF_LOCATION`, `WEATHER_TIMEZONE`: Open-Meteo golf recommendation inputs.
-
-Codex CLI local provider:
-
-- `CODEX_CLI_PATH`: executable path, default `codex`.
-- `CODEX_CLI_TIMEOUT`: per-topic timeout, default `90`.
-- `CODEX_CLI_WORKDIR`: workspace passed to Codex CLI. Defaults to the repository root.
 
 ## CSV Import
 
@@ -134,3 +110,9 @@ curl http://localhost:8000/api/internal/source-status
 ```
 
 This endpoint is internal-only. Source diagnostics should not appear on the homepage.
+
+## More Detail
+
+- Configuration reference: [env-and-config.md](env-and-config.md)
+- Test matrix: [testing.md](testing.md)
+- Scheduler and source operations: [operations.md](operations.md)

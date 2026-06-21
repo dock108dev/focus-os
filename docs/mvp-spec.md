@@ -120,7 +120,7 @@ Portfolio layers:
 - Portfolio Intelligence: concentration, threshold crossings, allocation drift, and potential opportunities. This is analysis.
 - Attention Feed: conclusions and events that genuinely deserve morning attention.
 
-Implementation rule: `/api/briefing.attention` is the single supported homepage feed. Finance, structured sources, and topic briefings may contribute inputs, but the frontend must not reconstruct the feed from alternate portfolio or topic payloads.
+Implementation rule: the `attention` field returned by `GET /api/briefing` is the single supported homepage feed. Finance, structured sources, and topic briefings may contribute inputs, but the frontend must not reconstruct the feed from alternate portfolio or topic payloads.
 
 ## Morning Workflow
 

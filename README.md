@@ -1,10 +1,10 @@
 # FocusOS
 
-FocusOS is a local-first personal morning briefing app. The MVP answers one question in under 60 seconds:
+FocusOS is a local-first personal morning briefing app. It combines portfolio imports, structured source refreshes, and topic briefings into one edited feed that answers one question in under 60 seconds:
 
 > What deserves my attention today?
 
-The current app has a FastAPI backend, a Vite React frontend, PostgreSQL in Docker, and an APScheduler service that triggers the morning briefing job. The homepage consumes `/api/briefing.attention` as the single supported Morning Briefing feed.
+The current app has a FastAPI backend, a Vite React frontend, PostgreSQL in Docker, and an APScheduler service that triggers the morning briefing job. The homepage consumes `attention` from `GET /api/briefing` as the single supported Morning Briefing feed.
 
 ## Run Locally
 
@@ -19,7 +19,7 @@ Then open:
 - API health: http://localhost:8000/api/health
 - Briefing payload: http://localhost:8000/api/briefing
 
-The API seeds sample holdings and default topics when the database is empty, so the app has a useful shape before the first import.
+The API creates tables on startup and seeds sample holdings, default topics, portfolio snapshots, and fallback topic briefings when the database is empty.
 
 ## Common Workflows
 
@@ -30,16 +30,33 @@ The API seeds sample holdings and default topics when the database is empty, so 
 
 Operational routes require `X-FocusOS-Key` when `FOCUSOS_INTERNAL_API_KEY` is set.
 
+## Test And Build
+
+```bash
+python -m pytest -q
+cd frontend
+npm ci
+npm run build
+```
+
+## Documentation
+
+- [Development Guide](docs/development.md): local setup, run commands, and common API workflows.
+- [Architecture](docs/architecture.md): services, request flow, source refresh flow, and route map.
+- [Environment And Config](docs/env-and-config.md): supported environment variables and defaults.
+- [Testing](docs/testing.md): validation commands and what each one covers.
+- [Operations](docs/operations.md): scheduler behavior, job status, source health, and Docker smoke checks.
+- [Data Models](docs/data-models.md): current SQLAlchemy tables and relationships.
+- [Data Sources](docs/data-sources.md): implemented source integrations and planned source tiers.
+- [Known Limitations](docs/known-limitations.md): intentionally unsupported or unverified behavior.
+- [MVP Specification](docs/mvp-spec.md): product scope and homepage rules.
+
 ## Project Map
 
 - `backend/app`: FastAPI routes, models, attention rules, source refreshers, topic generation, and seeding.
 - `backend/tests`: backend behavior tests.
 - `frontend/src`: React briefing UI.
-- `docs/development.md`: setup, environment, testing, and operational commands.
-- `docs/mvp-spec.md`: current product scope and homepage rules.
-- `docs/data-sources.md`: implemented and planned source integrations.
-- `docs/security-hardening.md`: security posture and deferred hardening decisions.
-- `docs/adr`: architecture decision records.
+- `docs/adr`: architecture decision records and product decisions.
 
 ## MVP Rule
 
