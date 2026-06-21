@@ -1,0 +1,1779 @@
+[
+  {
+    "day": 1,
+    "scenario": "normal tuesday",
+    "notes": "Low-signal day where a forced hero would overstate importance.",
+    "recommended_layout": "quiet",
+    "layout_reason": "The day is mostly background context.",
+    "average_importance": 51,
+    "max_importance": 76,
+    "story_count": 4,
+    "focusos_story_count": 2,
+    "external_story_count": 2,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Life",
+        "title": "Wednesday is likely your best golf window this week",
+        "summary": "Forecast conditions are materially better than the rest of the week.",
+        "posture": "Consider",
+        "story_type": "focusos",
+        "importance_score": 76
+      },
+      {
+        "section": "Around You",
+        "domain": "Technology",
+        "title": "AI policy discussion stayed mostly procedural",
+        "summary": "Useful context, but not a shift that should dominate the morning.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 48
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees won 5-0",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 45
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 2,
+    "scenario": "boring market day",
+    "notes": "Portfolio is stable; external context should not inflate the page.",
+    "recommended_layout": "flat",
+    "layout_reason": "No item is strong enough to force a hero; use a flat briefing.",
+    "average_importance": 37.3,
+    "max_importance": 42,
+    "story_count": 3,
+    "focusos_story_count": 2,
+    "external_story_count": 1,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Around You",
+        "domain": "Life",
+        "title": "Golf forecast remains playable but ordinary",
+        "summary": "No day is materially better than the rest of the week.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 42
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees had a scheduled off day",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 35
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 3,
+    "scenario": "market crash day",
+    "notes": "Major portfolio day where a dominant hero is justified.",
+    "recommended_layout": "major_event",
+    "layout_reason": "One signal is strong enough to dominate the whole page.",
+    "average_importance": 66,
+    "max_importance": 96,
+    "story_count": 2,
+    "focusos_story_count": 1,
+    "external_story_count": 1,
+    "static_hero_risk": false,
+    "scan_violations": [
+      "Homepage story count must be 3-7; got 2."
+    ],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Portfolio",
+        "title": "Review portfolio positioning",
+        "summary": "4 portfolio signals crossed review thresholds. Technology concentration is above target. 2 are opportunities, not separate homepage stories.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 96
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees won 4-2",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 36
+      }
+    ]
+  },
+  {
+    "day": 4,
+    "scenario": "crypto crash day",
+    "notes": "Crypto should matter only when it changes the user's portfolio posture.",
+    "recommended_layout": "single_hero",
+    "layout_reason": "A single high-signal item deserves a hero treatment.",
+    "average_importance": 62,
+    "max_importance": 86,
+    "story_count": 2,
+    "focusos_story_count": 1,
+    "external_story_count": 1,
+    "static_hero_risk": false,
+    "scan_violations": [
+      "Homepage story count must be 3-7; got 2."
+    ],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Portfolio",
+        "title": "Portfolio opportunity window is open",
+        "summary": "3 portfolio signals crossed review thresholds.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 86
+      },
+      {
+        "section": "Around You",
+        "domain": "Technology",
+        "title": "AI product launches were routine",
+        "summary": "No material change to the AI landscape.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 38
+      }
+    ]
+  },
+  {
+    "day": 5,
+    "scenario": "no news day",
+    "notes": "Tests whether the layout can avoid inventing a hero.",
+    "recommended_layout": "flat",
+    "layout_reason": "No item is strong enough to force a hero; use a flat briefing.",
+    "average_importance": 35,
+    "max_importance": 36,
+    "story_count": 3,
+    "focusos_story_count": 2,
+    "external_story_count": 1,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Around You",
+        "domain": "Life",
+        "title": "Golf forecast is ordinary this week",
+        "summary": "No day stands out enough to plan around.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 36
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees schedule is quiet",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 34
+      }
+    ]
+  },
+  {
+    "day": 6,
+    "scenario": "golf weather week",
+    "notes": "A Type B life-planning item should lead if portfolio is quiet.",
+    "recommended_layout": "quiet",
+    "layout_reason": "The day is mostly background context.",
+    "average_importance": 52.3,
+    "max_importance": 82,
+    "story_count": 3,
+    "focusos_story_count": 2,
+    "external_story_count": 1,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Life",
+        "title": "Thursday is likely your best golf window this month",
+        "summary": "Forecast conditions are materially better than the rest of the ten-day window.",
+        "posture": "Consider",
+        "story_type": "focusos",
+        "importance_score": 82
+      },
+      {
+        "section": "Around You",
+        "domain": "Technology",
+        "title": "AI funding news stayed incremental",
+        "summary": "No major capability or access shift.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 40
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 7,
+    "scenario": "yankees playoff clinch",
+    "notes": "Sports can matter when it changes context, but should not feel like a task.",
+    "recommended_layout": "quiet",
+    "layout_reason": "The day is mostly background context.",
+    "average_importance": 49.7,
+    "max_importance": 72,
+    "story_count": 3,
+    "focusos_story_count": 2,
+    "external_story_count": 1,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees clinched a playoff spot",
+        "summary": "This changes the season context and upcoming stakes.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 72
+      },
+      {
+        "section": "Around You",
+        "domain": "Life",
+        "title": "Weekend golf weather is playable",
+        "summary": "Conditions are fine but not meaningfully better than alternatives.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 42
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 8,
+    "scenario": "yankees routine win",
+    "notes": "Routine sports reporting should recede or be omitted.",
+    "recommended_layout": "quiet",
+    "layout_reason": "The day is mostly background context.",
+    "average_importance": 48.2,
+    "max_importance": 76,
+    "story_count": 4,
+    "focusos_story_count": 2,
+    "external_story_count": 2,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Life",
+        "title": "Wednesday is likely your best golf window this week",
+        "summary": "Forecast conditions are better than the rest of the week.",
+        "posture": "Consider",
+        "story_type": "focusos",
+        "importance_score": 76
+      },
+      {
+        "section": "Around You",
+        "domain": "Technology",
+        "title": "AI regulation discussion stayed unresolved",
+        "summary": "Worth tracking, but no new decision context.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 46
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees won 6-3",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 36
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 9,
+    "scenario": "rutgers game week",
+    "notes": "A personal calendar-adjacent item should outrank generic news.",
+    "recommended_layout": "quiet",
+    "layout_reason": "The day is mostly background context.",
+    "average_importance": 51.7,
+    "max_importance": 84,
+    "story_count": 3,
+    "focusos_story_count": 2,
+    "external_story_count": 1,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Rutgers",
+        "title": "Rutgers game week needs a plan",
+        "summary": "Kickoff, travel, and ticket timing make this a real planning item.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 84
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees won 5-4",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 36
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 10,
+    "scenario": "rutgers tickets renew friday",
+    "notes": "Deadline-like personal item should be Today, but not corporate.",
+    "recommended_layout": "single_hero",
+    "layout_reason": "A single high-signal item deserves a hero treatment.",
+    "average_importance": 49.2,
+    "max_importance": 88,
+    "story_count": 4,
+    "focusos_story_count": 3,
+    "external_story_count": 1,
+    "static_hero_risk": false,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Rutgers",
+        "title": "Rutgers tickets renew Friday",
+        "summary": "The window closes soon, so this belongs on your radar today.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 88
+      },
+      {
+        "section": "Around You",
+        "domain": "Technology",
+        "title": "AI model news was incremental",
+        "summary": "No major access or capability shift.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 40
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      },
+      {
+        "section": "Around You",
+        "domain": "Life",
+        "title": "Golf weather is ordinary",
+        "summary": "No day is clearly better than the rest.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 34
+      }
+    ]
+  },
+  {
+    "day": 11,
+    "scenario": "vacation week",
+    "notes": "Travel planning should lead when dates create risk.",
+    "recommended_layout": "single_hero",
+    "layout_reason": "A single high-signal item deserves a hero treatment.",
+    "average_importance": 52.3,
+    "max_importance": 86,
+    "story_count": 3,
+    "focusos_story_count": 2,
+    "external_story_count": 1,
+    "static_hero_risk": false,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Travel",
+        "title": "Vacation departure needs a travel check",
+        "summary": "Weather and airport timing could affect departure planning.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 86
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees start a normal series",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 36
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 12,
+    "scenario": "busy work week",
+    "notes": "Work context should dominate only if inactivity or deadline signals exist.",
+    "recommended_layout": "two_lead",
+    "layout_reason": "Two meaningful items should share the top of the page.",
+    "average_importance": 57.2,
+    "max_importance": 84,
+    "story_count": 4,
+    "focusos_story_count": 3,
+    "external_story_count": 1,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Work",
+        "title": "Two projects have been inactive for 10 days",
+        "summary": "This may create hidden drag if it is not reviewed.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 84
+      },
+      {
+        "section": "Today",
+        "domain": "Life",
+        "title": "Wednesday is a good golf window",
+        "summary": "Good weather exists, but work context may constrain timing.",
+        "posture": "Consider",
+        "story_type": "focusos",
+        "importance_score": 68
+      },
+      {
+        "section": "Around You",
+        "domain": "Technology",
+        "title": "AI policy news remains background",
+        "summary": "Worth knowing, not a near-term decision.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 42
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 13,
+    "scenario": "ai breakthrough day",
+    "notes": "External news can lead if the signal is genuinely high.",
+    "recommended_layout": "single_hero",
+    "layout_reason": "A single high-signal item deserves a hero treatment.",
+    "average_importance": 52.3,
+    "max_importance": 88,
+    "story_count": 3,
+    "focusos_story_count": 2,
+    "external_story_count": 1,
+    "static_hero_risk": false,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Around You",
+        "domain": "Technology",
+        "title": "AI capability jump changes tool landscape",
+        "summary": "A major model release may affect which tools are worth using this week.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 88
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      },
+      {
+        "section": "Around You",
+        "domain": "Life",
+        "title": "Golf forecast is ordinary",
+        "summary": "No strong planning window emerged.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 34
+      }
+    ]
+  },
+  {
+    "day": 14,
+    "scenario": "iran escalation day",
+    "notes": "World news should be Background unless it changes practical posture.",
+    "recommended_layout": "quiet",
+    "layout_reason": "The day is mostly background context.",
+    "average_importance": 49,
+    "max_importance": 76,
+    "story_count": 3,
+    "focusos_story_count": 1,
+    "external_story_count": 2,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Background",
+        "domain": "World",
+        "title": "Iran escalation raises oil and travel risk",
+        "summary": "The situation may affect markets and travel planning, but no personal action is implied yet.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 76
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees won 2-1",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 36
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 15,
+    "scenario": "major event day",
+    "notes": "Single external event may justify one dominant story.",
+    "recommended_layout": "major_event",
+    "layout_reason": "One signal is strong enough to dominate the whole page.",
+    "average_importance": 73.3,
+    "max_importance": 98,
+    "story_count": 3,
+    "focusos_story_count": 2,
+    "external_story_count": 1,
+    "static_hero_risk": false,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Portfolio",
+        "title": "Review portfolio positioning",
+        "summary": "1 portfolio signals crossed review thresholds.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 98
+      },
+      {
+        "section": "Today",
+        "domain": "Travel",
+        "title": "Travel advisory issued for vacation route",
+        "summary": "The advisory could affect departure timing.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 86
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees game postponed",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 36
+      }
+    ]
+  },
+  {
+    "day": 16,
+    "scenario": "normal tuesday",
+    "notes": "Low-signal day where a forced hero would overstate importance.",
+    "recommended_layout": "quiet",
+    "layout_reason": "The day is mostly background context.",
+    "average_importance": 51,
+    "max_importance": 76,
+    "story_count": 4,
+    "focusos_story_count": 2,
+    "external_story_count": 2,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Life",
+        "title": "Wednesday is likely your best golf window this week",
+        "summary": "Forecast conditions are materially better than the rest of the week.",
+        "posture": "Consider",
+        "story_type": "focusos",
+        "importance_score": 76
+      },
+      {
+        "section": "Around You",
+        "domain": "Technology",
+        "title": "AI policy discussion stayed mostly procedural",
+        "summary": "Useful context, but not a shift that should dominate the morning.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 48
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees won 5-0",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 45
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 17,
+    "scenario": "boring market day",
+    "notes": "Portfolio is stable; external context should not inflate the page.",
+    "recommended_layout": "flat",
+    "layout_reason": "No item is strong enough to force a hero; use a flat briefing.",
+    "average_importance": 37.3,
+    "max_importance": 42,
+    "story_count": 3,
+    "focusos_story_count": 2,
+    "external_story_count": 1,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Around You",
+        "domain": "Life",
+        "title": "Golf forecast remains playable but ordinary",
+        "summary": "No day is materially better than the rest of the week.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 42
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees had a scheduled off day",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 35
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 18,
+    "scenario": "market crash day",
+    "notes": "Major portfolio day where a dominant hero is justified.",
+    "recommended_layout": "major_event",
+    "layout_reason": "One signal is strong enough to dominate the whole page.",
+    "average_importance": 66,
+    "max_importance": 96,
+    "story_count": 2,
+    "focusos_story_count": 1,
+    "external_story_count": 1,
+    "static_hero_risk": false,
+    "scan_violations": [
+      "Homepage story count must be 3-7; got 2."
+    ],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Portfolio",
+        "title": "Review portfolio positioning",
+        "summary": "4 portfolio signals crossed review thresholds. Technology concentration is above target. 2 are opportunities, not separate homepage stories.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 96
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees won 4-2",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 36
+      }
+    ]
+  },
+  {
+    "day": 19,
+    "scenario": "crypto crash day",
+    "notes": "Crypto should matter only when it changes the user's portfolio posture.",
+    "recommended_layout": "single_hero",
+    "layout_reason": "A single high-signal item deserves a hero treatment.",
+    "average_importance": 62,
+    "max_importance": 86,
+    "story_count": 2,
+    "focusos_story_count": 1,
+    "external_story_count": 1,
+    "static_hero_risk": false,
+    "scan_violations": [
+      "Homepage story count must be 3-7; got 2."
+    ],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Portfolio",
+        "title": "Portfolio opportunity window is open",
+        "summary": "3 portfolio signals crossed review thresholds.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 86
+      },
+      {
+        "section": "Around You",
+        "domain": "Technology",
+        "title": "AI product launches were routine",
+        "summary": "No material change to the AI landscape.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 38
+      }
+    ]
+  },
+  {
+    "day": 20,
+    "scenario": "no news day",
+    "notes": "Tests whether the layout can avoid inventing a hero.",
+    "recommended_layout": "flat",
+    "layout_reason": "No item is strong enough to force a hero; use a flat briefing.",
+    "average_importance": 35,
+    "max_importance": 36,
+    "story_count": 3,
+    "focusos_story_count": 2,
+    "external_story_count": 1,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Around You",
+        "domain": "Life",
+        "title": "Golf forecast is ordinary this week",
+        "summary": "No day stands out enough to plan around.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 36
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees schedule is quiet",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 34
+      }
+    ]
+  },
+  {
+    "day": 21,
+    "scenario": "golf weather week",
+    "notes": "A Type B life-planning item should lead if portfolio is quiet.",
+    "recommended_layout": "quiet",
+    "layout_reason": "The day is mostly background context.",
+    "average_importance": 52.3,
+    "max_importance": 82,
+    "story_count": 3,
+    "focusos_story_count": 2,
+    "external_story_count": 1,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Life",
+        "title": "Thursday is likely your best golf window this month",
+        "summary": "Forecast conditions are materially better than the rest of the ten-day window.",
+        "posture": "Consider",
+        "story_type": "focusos",
+        "importance_score": 82
+      },
+      {
+        "section": "Around You",
+        "domain": "Technology",
+        "title": "AI funding news stayed incremental",
+        "summary": "No major capability or access shift.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 40
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 22,
+    "scenario": "yankees playoff clinch",
+    "notes": "Sports can matter when it changes context, but should not feel like a task.",
+    "recommended_layout": "quiet",
+    "layout_reason": "The day is mostly background context.",
+    "average_importance": 49.7,
+    "max_importance": 72,
+    "story_count": 3,
+    "focusos_story_count": 2,
+    "external_story_count": 1,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees clinched a playoff spot",
+        "summary": "This changes the season context and upcoming stakes.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 72
+      },
+      {
+        "section": "Around You",
+        "domain": "Life",
+        "title": "Weekend golf weather is playable",
+        "summary": "Conditions are fine but not meaningfully better than alternatives.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 42
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 23,
+    "scenario": "yankees routine win",
+    "notes": "Routine sports reporting should recede or be omitted.",
+    "recommended_layout": "quiet",
+    "layout_reason": "The day is mostly background context.",
+    "average_importance": 48.2,
+    "max_importance": 76,
+    "story_count": 4,
+    "focusos_story_count": 2,
+    "external_story_count": 2,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Life",
+        "title": "Wednesday is likely your best golf window this week",
+        "summary": "Forecast conditions are better than the rest of the week.",
+        "posture": "Consider",
+        "story_type": "focusos",
+        "importance_score": 76
+      },
+      {
+        "section": "Around You",
+        "domain": "Technology",
+        "title": "AI regulation discussion stayed unresolved",
+        "summary": "Worth tracking, but no new decision context.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 46
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees won 6-3",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 36
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 24,
+    "scenario": "rutgers game week",
+    "notes": "A personal calendar-adjacent item should outrank generic news.",
+    "recommended_layout": "quiet",
+    "layout_reason": "The day is mostly background context.",
+    "average_importance": 51.7,
+    "max_importance": 84,
+    "story_count": 3,
+    "focusos_story_count": 2,
+    "external_story_count": 1,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Rutgers",
+        "title": "Rutgers game week needs a plan",
+        "summary": "Kickoff, travel, and ticket timing make this a real planning item.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 84
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees won 5-4",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 36
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 25,
+    "scenario": "rutgers tickets renew friday",
+    "notes": "Deadline-like personal item should be Today, but not corporate.",
+    "recommended_layout": "single_hero",
+    "layout_reason": "A single high-signal item deserves a hero treatment.",
+    "average_importance": 49.2,
+    "max_importance": 88,
+    "story_count": 4,
+    "focusos_story_count": 3,
+    "external_story_count": 1,
+    "static_hero_risk": false,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Rutgers",
+        "title": "Rutgers tickets renew Friday",
+        "summary": "The window closes soon, so this belongs on your radar today.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 88
+      },
+      {
+        "section": "Around You",
+        "domain": "Technology",
+        "title": "AI model news was incremental",
+        "summary": "No major access or capability shift.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 40
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      },
+      {
+        "section": "Around You",
+        "domain": "Life",
+        "title": "Golf weather is ordinary",
+        "summary": "No day is clearly better than the rest.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 34
+      }
+    ]
+  },
+  {
+    "day": 26,
+    "scenario": "vacation week",
+    "notes": "Travel planning should lead when dates create risk.",
+    "recommended_layout": "single_hero",
+    "layout_reason": "A single high-signal item deserves a hero treatment.",
+    "average_importance": 52.3,
+    "max_importance": 86,
+    "story_count": 3,
+    "focusos_story_count": 2,
+    "external_story_count": 1,
+    "static_hero_risk": false,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Travel",
+        "title": "Vacation departure needs a travel check",
+        "summary": "Weather and airport timing could affect departure planning.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 86
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees start a normal series",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 36
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 27,
+    "scenario": "busy work week",
+    "notes": "Work context should dominate only if inactivity or deadline signals exist.",
+    "recommended_layout": "two_lead",
+    "layout_reason": "Two meaningful items should share the top of the page.",
+    "average_importance": 57.2,
+    "max_importance": 84,
+    "story_count": 4,
+    "focusos_story_count": 3,
+    "external_story_count": 1,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Work",
+        "title": "Two projects have been inactive for 10 days",
+        "summary": "This may create hidden drag if it is not reviewed.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 84
+      },
+      {
+        "section": "Today",
+        "domain": "Life",
+        "title": "Wednesday is a good golf window",
+        "summary": "Good weather exists, but work context may constrain timing.",
+        "posture": "Consider",
+        "story_type": "focusos",
+        "importance_score": 68
+      },
+      {
+        "section": "Around You",
+        "domain": "Technology",
+        "title": "AI policy news remains background",
+        "summary": "Worth knowing, not a near-term decision.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 42
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 28,
+    "scenario": "ai breakthrough day",
+    "notes": "External news can lead if the signal is genuinely high.",
+    "recommended_layout": "single_hero",
+    "layout_reason": "A single high-signal item deserves a hero treatment.",
+    "average_importance": 52.3,
+    "max_importance": 88,
+    "story_count": 3,
+    "focusos_story_count": 2,
+    "external_story_count": 1,
+    "static_hero_risk": false,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Around You",
+        "domain": "Technology",
+        "title": "AI capability jump changes tool landscape",
+        "summary": "A major model release may affect which tools are worth using this week.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 88
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      },
+      {
+        "section": "Around You",
+        "domain": "Life",
+        "title": "Golf forecast is ordinary",
+        "summary": "No strong planning window emerged.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 34
+      }
+    ]
+  },
+  {
+    "day": 29,
+    "scenario": "iran escalation day",
+    "notes": "World news should be Background unless it changes practical posture.",
+    "recommended_layout": "quiet",
+    "layout_reason": "The day is mostly background context.",
+    "average_importance": 49,
+    "max_importance": 76,
+    "story_count": 3,
+    "focusos_story_count": 1,
+    "external_story_count": 2,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Background",
+        "domain": "World",
+        "title": "Iran escalation raises oil and travel risk",
+        "summary": "The situation may affect markets and travel planning, but no personal action is implied yet.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 76
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees won 2-1",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 36
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 30,
+    "scenario": "major event day",
+    "notes": "Single external event may justify one dominant story.",
+    "recommended_layout": "major_event",
+    "layout_reason": "One signal is strong enough to dominate the whole page.",
+    "average_importance": 73.3,
+    "max_importance": 98,
+    "story_count": 3,
+    "focusos_story_count": 2,
+    "external_story_count": 1,
+    "static_hero_risk": false,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Portfolio",
+        "title": "Review portfolio positioning",
+        "summary": "1 portfolio signals crossed review thresholds.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 98
+      },
+      {
+        "section": "Today",
+        "domain": "Travel",
+        "title": "Travel advisory issued for vacation route",
+        "summary": "The advisory could affect departure timing.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 86
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees game postponed",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 36
+      }
+    ]
+  },
+  {
+    "day": 31,
+    "scenario": "normal tuesday",
+    "notes": "Low-signal day where a forced hero would overstate importance.",
+    "recommended_layout": "quiet",
+    "layout_reason": "The day is mostly background context.",
+    "average_importance": 51,
+    "max_importance": 76,
+    "story_count": 4,
+    "focusos_story_count": 2,
+    "external_story_count": 2,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Life",
+        "title": "Wednesday is likely your best golf window this week",
+        "summary": "Forecast conditions are materially better than the rest of the week.",
+        "posture": "Consider",
+        "story_type": "focusos",
+        "importance_score": 76
+      },
+      {
+        "section": "Around You",
+        "domain": "Technology",
+        "title": "AI policy discussion stayed mostly procedural",
+        "summary": "Useful context, but not a shift that should dominate the morning.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 48
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees won 5-0",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 45
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 32,
+    "scenario": "boring market day",
+    "notes": "Portfolio is stable; external context should not inflate the page.",
+    "recommended_layout": "flat",
+    "layout_reason": "No item is strong enough to force a hero; use a flat briefing.",
+    "average_importance": 37.3,
+    "max_importance": 42,
+    "story_count": 3,
+    "focusos_story_count": 2,
+    "external_story_count": 1,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Around You",
+        "domain": "Life",
+        "title": "Golf forecast remains playable but ordinary",
+        "summary": "No day is materially better than the rest of the week.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 42
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees had a scheduled off day",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 35
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 33,
+    "scenario": "market crash day",
+    "notes": "Major portfolio day where a dominant hero is justified.",
+    "recommended_layout": "major_event",
+    "layout_reason": "One signal is strong enough to dominate the whole page.",
+    "average_importance": 66,
+    "max_importance": 96,
+    "story_count": 2,
+    "focusos_story_count": 1,
+    "external_story_count": 1,
+    "static_hero_risk": false,
+    "scan_violations": [
+      "Homepage story count must be 3-7; got 2."
+    ],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Portfolio",
+        "title": "Review portfolio positioning",
+        "summary": "4 portfolio signals crossed review thresholds. Technology concentration is above target. 2 are opportunities, not separate homepage stories.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 96
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees won 4-2",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 36
+      }
+    ]
+  },
+  {
+    "day": 34,
+    "scenario": "crypto crash day",
+    "notes": "Crypto should matter only when it changes the user's portfolio posture.",
+    "recommended_layout": "single_hero",
+    "layout_reason": "A single high-signal item deserves a hero treatment.",
+    "average_importance": 62,
+    "max_importance": 86,
+    "story_count": 2,
+    "focusos_story_count": 1,
+    "external_story_count": 1,
+    "static_hero_risk": false,
+    "scan_violations": [
+      "Homepage story count must be 3-7; got 2."
+    ],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Portfolio",
+        "title": "Portfolio opportunity window is open",
+        "summary": "3 portfolio signals crossed review thresholds.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 86
+      },
+      {
+        "section": "Around You",
+        "domain": "Technology",
+        "title": "AI product launches were routine",
+        "summary": "No material change to the AI landscape.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 38
+      }
+    ]
+  },
+  {
+    "day": 35,
+    "scenario": "no news day",
+    "notes": "Tests whether the layout can avoid inventing a hero.",
+    "recommended_layout": "flat",
+    "layout_reason": "No item is strong enough to force a hero; use a flat briefing.",
+    "average_importance": 35,
+    "max_importance": 36,
+    "story_count": 3,
+    "focusos_story_count": 2,
+    "external_story_count": 1,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Around You",
+        "domain": "Life",
+        "title": "Golf forecast is ordinary this week",
+        "summary": "No day stands out enough to plan around.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 36
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees schedule is quiet",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 34
+      }
+    ]
+  },
+  {
+    "day": 36,
+    "scenario": "golf weather week",
+    "notes": "A Type B life-planning item should lead if portfolio is quiet.",
+    "recommended_layout": "quiet",
+    "layout_reason": "The day is mostly background context.",
+    "average_importance": 52.3,
+    "max_importance": 82,
+    "story_count": 3,
+    "focusos_story_count": 2,
+    "external_story_count": 1,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Life",
+        "title": "Thursday is likely your best golf window this month",
+        "summary": "Forecast conditions are materially better than the rest of the ten-day window.",
+        "posture": "Consider",
+        "story_type": "focusos",
+        "importance_score": 82
+      },
+      {
+        "section": "Around You",
+        "domain": "Technology",
+        "title": "AI funding news stayed incremental",
+        "summary": "No major capability or access shift.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 40
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 37,
+    "scenario": "yankees playoff clinch",
+    "notes": "Sports can matter when it changes context, but should not feel like a task.",
+    "recommended_layout": "quiet",
+    "layout_reason": "The day is mostly background context.",
+    "average_importance": 49.7,
+    "max_importance": 72,
+    "story_count": 3,
+    "focusos_story_count": 2,
+    "external_story_count": 1,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees clinched a playoff spot",
+        "summary": "This changes the season context and upcoming stakes.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 72
+      },
+      {
+        "section": "Around You",
+        "domain": "Life",
+        "title": "Weekend golf weather is playable",
+        "summary": "Conditions are fine but not meaningfully better than alternatives.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 42
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 38,
+    "scenario": "yankees routine win",
+    "notes": "Routine sports reporting should recede or be omitted.",
+    "recommended_layout": "quiet",
+    "layout_reason": "The day is mostly background context.",
+    "average_importance": 48.2,
+    "max_importance": 76,
+    "story_count": 4,
+    "focusos_story_count": 2,
+    "external_story_count": 2,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Life",
+        "title": "Wednesday is likely your best golf window this week",
+        "summary": "Forecast conditions are better than the rest of the week.",
+        "posture": "Consider",
+        "story_type": "focusos",
+        "importance_score": 76
+      },
+      {
+        "section": "Around You",
+        "domain": "Technology",
+        "title": "AI regulation discussion stayed unresolved",
+        "summary": "Worth tracking, but no new decision context.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 46
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees won 6-3",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 36
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 39,
+    "scenario": "rutgers game week",
+    "notes": "A personal calendar-adjacent item should outrank generic news.",
+    "recommended_layout": "quiet",
+    "layout_reason": "The day is mostly background context.",
+    "average_importance": 51.7,
+    "max_importance": 84,
+    "story_count": 3,
+    "focusos_story_count": 2,
+    "external_story_count": 1,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Rutgers",
+        "title": "Rutgers game week needs a plan",
+        "summary": "Kickoff, travel, and ticket timing make this a real planning item.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 84
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees won 5-4",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 36
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 40,
+    "scenario": "rutgers tickets renew friday",
+    "notes": "Deadline-like personal item should be Today, but not corporate.",
+    "recommended_layout": "single_hero",
+    "layout_reason": "A single high-signal item deserves a hero treatment.",
+    "average_importance": 49.2,
+    "max_importance": 88,
+    "story_count": 4,
+    "focusos_story_count": 3,
+    "external_story_count": 1,
+    "static_hero_risk": false,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Rutgers",
+        "title": "Rutgers tickets renew Friday",
+        "summary": "The window closes soon, so this belongs on your radar today.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 88
+      },
+      {
+        "section": "Around You",
+        "domain": "Technology",
+        "title": "AI model news was incremental",
+        "summary": "No major access or capability shift.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 40
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      },
+      {
+        "section": "Around You",
+        "domain": "Life",
+        "title": "Golf weather is ordinary",
+        "summary": "No day is clearly better than the rest.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 34
+      }
+    ]
+  }
+]

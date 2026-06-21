@@ -423,7 +423,10 @@ def weather_attention_items(rows: Iterable[WeatherRecommendation]) -> list[dict]
     return [
         enrich_attention_item(
             {
-                "title": row.title,
+                "title": row.title.replace(
+                    "is the best golf day this week",
+                    "is likely your best golf window this week",
+                ),
                 "why_now": row.reason,
                 "action": row.action,
                 "priority": 8,

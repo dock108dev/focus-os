@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal
 from typing import Iterable
 
@@ -24,6 +24,18 @@ TECH_SYMBOLS = {
 }
 CASH_SYMBOLS = {"CASH", "SPAXX", "FDRXX", "CORE", "USD"}
 ATTENTION_CATEGORY_ORDER = {"action": 0, "opportunity": 1, "awareness": 2}
+ATTENTION_BUCKETS = {
+    "action": "Today",
+    "opportunity": "Today",
+    "awareness": "Around You",
+}
+POSTURE_BY_CATEGORY = {
+    "action": "Review",
+    "opportunity": "Consider",
+    "awareness": "Watch",
+}
+MAX_HOMEPAGE_TOPICS = 7
+MIN_HOMEPAGE_TOPICS = 3
 CLASSIFICATION_TO_CATEGORY = {
     "action": "action",
     "action_required": "action",
@@ -97,6 +109,11 @@ def enrich_attention_item(
     actionability_score: int | None = None,
     expiration_hours: int | None = None,
     why_user_cares: str | None = None,
+    suggested_posture: str | None = None,
+    attention_section: str | None = None,
+    situation: str | None = None,
+    why_it_matters: str | None = None,
+    what_changed: str | None = None,
 ) -> dict:
     next_item = dict(item)
     resolved_category = normalize_attention_category(
@@ -108,6 +125,7 @@ def enrich_attention_item(
     )
 
     next_item["category"] = resolved_category
+    next_item["attention_bucket"] = ATTENTION_BUCKETS[resolved_category]
     next_item["classification"] = CATEGORY_TO_CLASSIFICATION[resolved_category]
     next_item["importance_score"] = clamp_score(
         next_item.get("importance_score"), default_importance
@@ -134,6 +152,28 @@ def enrich_attention_item(
         or next_item.get("why_now")
         or next_item.get("title", "")
     )
+    next_item["suggested_posture"] = (
+        suggested_posture
+        or next_item.get("suggested_posture")
+        or POSTURE_BY_CATEGORY[resolved_category]
+    )
+    next_item["attention_section"] = (
+        attention_section
+        or next_item.get("attention_section")
+        or ATTENTION_BUCKETS[resolved_category]
+    )
+    next_item["situation"] = (
+        situation or next_item.get("situation") or next_item.get("title", "")
+    )
+    next_item["why_it_matters"] = (
+        why_it_matters or next_item.get("why_it_matters") or next_item["why_user_cares"]
+    )
+    next_item["what_changed"] = (
+        what_changed
+        or next_item.get("what_changed")
+        or "This is appearing because it affects today's attention."
+    )
+    next_item["generation_metadata"] = attention_generation_metadata(next_item)
     return next_item
 
 
@@ -147,6 +187,269 @@ def attention_sort_key(item: dict) -> tuple[int, int, int, int, int]:
         -int(item.get("actionability_score") or 0),
         int(item.get("expiration_hours") or 9999),
         -int(item.get("priority") or 0),
+    )
+
+
+def attention_generation_metadata(item: dict) -> dict:
+    expiration_hours = int(item.get("expiration_hours") or 168)
+    expiration_days = max(1, int((expiration_hours + 23) / 24))
+    existing = item.get("generation_metadata")
+    existing_metadata = existing if isinstance(existing, dict) else {}
+    return {
+        "why_generated": existing_metadata.get("why_generated")
+        or item.get("why_now")
+        or item.get("title", ""),
+        "what_changed": item.get("what_changed")
+        or "This is appearing because it affects today's attention.",
+        "why_user_should_care": item.get("why_user_cares")
+        or item.get("why_it_matters")
+        or item.get("why_now")
+        or item.get("title", ""),
+        "expiration_date": (
+            date.today() + timedelta(days=expiration_days)
+        ).isoformat(),
+    }
+
+
+def vertical_for_item(item: dict) -> str:
+    source = (item.get("source") or "").lower()
+    topic = (item.get("topic") or "").lower()
+    title = (item.get("title") or "").lower()
+    if source == "portfolio" or item.get("detail_id", "").startswith("finance:"):
+        return "Portfolio"
+    if source == "weather" or topic == "golf":
+        return "Life"
+    if source == "work" or topic == "work" or "project" in title:
+        return "Work"
+    if (
+        source == "travel"
+        or topic == "travel"
+        or "flight" in title
+        or "vacation" in title
+    ):
+        return "Travel"
+    if topic == "rutgers" or "rutgers" in title:
+        return "Rutgers"
+    if (
+        topic in {"yankees", "major world sports"}
+        or "yankees" in title
+        or "world cup" in title
+    ):
+        return "Sports"
+    if topic == "iran" or "iran" in title:
+        return "World"
+    if topic == "ai":
+        return "Technology"
+    if source in {"crypto", "market"} or topic == "bitcoin":
+        return "Markets"
+    return "Awareness"
+
+
+def portfolio_signal_label(item: dict) -> str:
+    title = item.get("title", "")
+    if "technology allocation" in title.lower():
+        return "Technology allocation above target"
+    if "cash is available" in title.lower():
+        return "Cash available for deployment"
+    if "from cost basis" in title.lower():
+        return title.replace(" is down ", " drawdown ").replace(" from cost basis", "")
+    if "of the portfolio" in title.lower():
+        symbol = title.split()[0]
+        return f"{symbol} above concentration threshold"
+    return title
+
+
+def portfolio_summary_lines(financial_items: list[dict]) -> list[str]:
+    concentration_symbols = [
+        item["title"].split()[0]
+        for item in financial_items
+        if "of the portfolio" in item.get("title", "").lower()
+    ]
+    pullbacks = [
+        item
+        for item in financial_items
+        if "pullback" in item.get("why_user_cares", "").lower()
+        or "from cost basis" in item.get("title", "").lower()
+        or "five-day high" in item.get("title", "").lower()
+    ]
+    lines: list[str] = []
+    if any(
+        "technology allocation" in item.get("title", "").lower()
+        for item in financial_items
+    ):
+        lines.append("Technology concentration is above target.")
+    if concentration_symbols:
+        symbols = " and ".join(concentration_symbols[:2])
+        overflow = len(concentration_symbols) - 2
+        suffix = f" plus {overflow} more" if overflow > 0 else ""
+        lines.append(f"{symbols}{suffix} exceed position limits.")
+    if any(
+        "cash is available" in item.get("title", "").lower() for item in financial_items
+    ):
+        lines.append("Cash is available for deployment or reserve.")
+    if pullbacks:
+        label = "opportunity" if len(pullbacks) == 1 else "opportunities"
+        lines.append(f"{len(pullbacks)} pullback {label} detected.")
+    return lines
+
+
+def should_include_homepage_item(item: dict) -> bool:
+    vertical = item.get("vertical") or vertical_for_item(item)
+    category = normalize_attention_category(
+        item.get("category") or item.get("classification")
+    )
+    if vertical == "Markets" and category == "awareness":
+        return False
+    return True
+
+
+def apply_attention_engine_fields(item: dict) -> dict:
+    next_item = dict(item)
+    domain = (
+        next_item.get("domain")
+        or next_item.get("vertical")
+        or vertical_for_item(next_item)
+    )
+    category = normalize_attention_category(
+        next_item.get("category") or next_item.get("classification")
+    )
+    title = next_item.get("title", "")
+    topic = (next_item.get("topic") or "").lower()
+    source = (next_item.get("source") or "").lower()
+
+    posture = next_item.get("suggested_posture") or POSTURE_BY_CATEGORY[category]
+    if (
+        category == "awareness"
+        and (topic == "yankees" or "yankees" in title.lower())
+        and not any(
+            token in title.lower() for token in ("playoff", "clinch", "division")
+        )
+    ):
+        posture = "Ignore"
+        next_item["why_now"] = (
+            "Good result, but no meaningful change to your posture today."
+        )
+    elif category == "awareness" and (topic == "yankees" or "yankees" in title.lower()):
+        posture = "Watch"
+    elif category == "awareness" and domain in {"World", "Technology"}:
+        posture = "Watch"
+    if domain == "Life":
+        next_item["title"] = next_item.get("title", "").replace(
+            "is the best golf day this week",
+            "is likely your best golf window this week",
+        )
+
+    story_type = next_item.get("story_type")
+    if not story_type:
+        story_type = "focusos" if domain in {"Portfolio", "Life"} else "external"
+
+    section = next_item.get("attention_section")
+    if not section:
+        if category in {"action", "opportunity"}:
+            section = "Today"
+        elif posture == "Ignore" or domain == "World":
+            section = "Background"
+        else:
+            section = "Around You"
+    elif category == "awareness" and domain == "World":
+        section = "Background"
+
+    why_it_matters = (
+        next_item.get("why_it_matters")
+        or next_item.get("why_user_cares")
+        or next_item.get("why_now", "")
+    )
+    what_changed = next_item.get("what_changed")
+    if not what_changed:
+        if domain == "Life":
+            what_changed = "The forecast created a better planning window than the rest of the week."
+        elif next_item.get("novelty_reason"):
+            what_changed = next_item["novelty_reason"]
+        elif source == "weather":
+            what_changed = "The forecast created a better planning window than the rest of the week."
+        elif posture == "Ignore":
+            what_changed = (
+                "This is relevant context, but it does not change your posture today."
+            )
+        else:
+            what_changed = (
+                "This is appearing because it may shape what stays on your radar today."
+            )
+
+    next_item.update(
+        {
+            "domain": domain,
+            "vertical": domain,
+            "suggested_posture": posture,
+            "story_type": story_type,
+            "attention_section": section,
+            "attention_bucket": section,
+            "situation": next_item.get("situation") or title,
+            "why_it_matters": why_it_matters,
+            "what_changed": what_changed,
+        }
+    )
+    next_item["generation_metadata"] = attention_generation_metadata(next_item)
+    return next_item
+
+
+def build_portfolio_review_item(financial_attention: Iterable[dict]) -> dict:
+    financial_items = sorted(
+        [enrich_attention_item(item) for item in financial_attention],
+        key=attention_sort_key,
+    )
+    if not financial_items:
+        return enrich_attention_item(build_portfolio_status_item([]))
+
+    action_count = sum(1 for item in financial_items if item["category"] == "action")
+    opportunity_count = sum(
+        1 for item in financial_items if item["category"] == "opportunity"
+    )
+    category = "action" if action_count else "opportunity"
+    title = (
+        "Review portfolio positioning"
+        if action_count
+        else "Portfolio opportunity window is open"
+    )
+    lines = portfolio_summary_lines(financial_items)
+    why_now = f"{len(financial_items)} portfolio signals crossed review thresholds."
+    if lines:
+        why_now = f"{why_now} {' '.join(lines[:3])}"
+    if opportunity_count and action_count:
+        why_now += (
+            f" {opportunity_count} are opportunities, not separate homepage stories."
+        )
+
+    return enrich_attention_item(
+        {
+            "title": title,
+            "why_now": why_now,
+            "action": "",
+            "priority": max(int(item.get("priority") or 0) for item in financial_items),
+            "detail_id": "portfolio:review",
+            "source": "portfolio",
+            "vertical": "Portfolio",
+            "domain": "Portfolio",
+            "signal_count": len(financial_items),
+            "signals": financial_items,
+            "change_summary": lines,
+            "situation": "Portfolio positioning needs attention.",
+            "why_it_matters": "Your portfolio has concentration, cash, and pullback signals that can affect near-term allocation decisions.",
+            "what_changed": "Multiple review thresholds are active at the same time, so the portfolio belongs on your radar as one situation.",
+            "suggested_posture": "Review",
+            "attention_section": "Today",
+        },
+        category=category,
+        importance_score=max(
+            int(item.get("importance_score") or 0) for item in financial_items
+        ),
+        actionability_score=max(
+            int(item.get("actionability_score") or 0) for item in financial_items
+        ),
+        expiration_hours=min(
+            int(item.get("expiration_hours") or 168) for item in financial_items
+        ),
+        why_user_cares="Portfolio thresholds are grouped so persistent state does not crowd out the rest of the briefing.",
     )
 
 
@@ -504,29 +807,154 @@ def build_morning_attention_feed(
     attention_groups: Iterable[Iterable[dict]], financial_attention: Iterable[dict]
 ) -> list[dict]:
     financial_items = [enrich_attention_item(item) for item in financial_attention]
+    grouped_items = [
+        enrich_attention_item(item) for group in attention_groups for item in group
+    ]
+    portfolio_related = [
+        item
+        for item in grouped_items
+        if (item.get("source") or "").lower() in {"market", "crypto"}
+        and normalize_attention_category(
+            item.get("category") or item.get("classification")
+        )
+        in {"action", "opportunity"}
+    ]
+    non_portfolio_items = [
+        item for item in grouped_items if item not in portfolio_related
+    ]
+    portfolio_item = build_portfolio_review_item(financial_items + portfolio_related)
     candidates = sorted(
-        [enrich_attention_item(item) for group in attention_groups for item in group]
-        + financial_items,
+        [
+            apply_attention_engine_fields(
+                {**enrich_attention_item(item), "vertical": vertical_for_item(item)}
+            )
+            for item in non_portfolio_items
+            if should_include_homepage_item(
+                {**enrich_attention_item(item), "vertical": vertical_for_item(item)}
+            )
+        ]
+        + [apply_attention_engine_fields(portfolio_item)],
         key=attention_sort_key,
     )
 
     attention_feed = []
     seen_titles: set[str] = set()
+    seen_verticals: set[str] = set()
     for item in candidates:
-        if item["title"] in seen_titles:
+        vertical = item.get("vertical") or vertical_for_item(item)
+        if item["title"] in seen_titles or vertical in seen_verticals:
             continue
         seen_titles.add(item["title"])
+        seen_verticals.add(vertical)
+        item["vertical"] = vertical
+        item["domain"] = vertical
+        item = apply_attention_engine_fields(item)
         attention_feed.append(item)
-        if len(attention_feed) >= 10:
+        if len(attention_feed) >= MAX_HOMEPAGE_TOPICS:
             break
 
-    if financial_items:
-        return attention_feed
-
-    portfolio_status = enrich_attention_item(
-        build_portfolio_status_item(financial_items)
-    )
-    if portfolio_status["title"] not in seen_titles:
-        attention_feed.append(portfolio_status)
-
     return attention_feed
+
+
+def homepage_scan_violations(items: list[dict]) -> list[str]:
+    violations: list[str] = []
+    if len(items) < MIN_HOMEPAGE_TOPICS or len(items) > MAX_HOMEPAGE_TOPICS:
+        violations.append(
+            f"Homepage story count must be {MIN_HOMEPAGE_TOPICS}-{MAX_HOMEPAGE_TOPICS}; got {len(items)}."
+        )
+    domains = [
+        item.get("domain") or item.get("vertical") or vertical_for_item(item)
+        for item in items
+    ]
+    duplicate_domains = sorted(
+        {domain for domain in domains if domains.count(domain) > 1}
+    )
+    if duplicate_domains:
+        violations.append(
+            f"Homepage has more than one story for: {', '.join(duplicate_domains)}."
+        )
+    unclear = [
+        item.get("title", "Untitled")
+        for item in items
+        if not item.get("why_now") or len(str(item.get("why_now"))) < 24
+    ]
+    if unclear:
+        violations.append(
+            f"Homepage stories need self-contained recommendations: {', '.join(unclear)}."
+        )
+    return violations
+
+
+def assistant_item(item: dict) -> dict:
+    return {
+        "title": item.get("title", ""),
+        "summary": item.get("why_now", ""),
+        "detail_id": item.get("detail_id", ""),
+        "domain": item.get("domain") or item.get("vertical") or vertical_for_item(item),
+        "category": normalize_attention_category(
+            item.get("category") or item.get("classification")
+        ),
+        "importance_score": int(item.get("importance_score") or 0),
+        "story_type": item.get("story_type", "external"),
+    }
+
+
+def is_quiet_attention_item(item: dict) -> bool:
+    title = item.get("title", "").lower()
+    if title.startswith("no major portfolio"):
+        return True
+    if item.get("suggested_posture") == "Ignore":
+        return True
+    return int(item.get("importance_score") or 0) < 72
+
+
+def build_assistant_briefing(
+    attention: Iterable[dict], watch_status: Iterable[dict] | None = None
+) -> dict:
+    items = list(attention)
+    meaningful = [item for item in items if not is_quiet_attention_item(item)]
+    primary_source = meaningful[0] if meaningful else None
+    primary_score = (
+        int(primary_source.get("importance_score") or 0) if primary_source else 0
+    )
+    has_primary = primary_source is not None and (
+        primary_score >= 80
+        or normalize_attention_category(
+            primary_source.get("category") or primary_source.get("classification")
+        )
+        == "action"
+    )
+
+    if has_primary:
+        primary_focus = assistant_item(primary_source)
+        mode = "focused"
+        secondary_candidates = [item for item in items if item is not primary_source]
+    else:
+        primary_focus = {
+            "title": "No single focus today",
+            "summary": "Nothing is strong enough to dominate the morning. Skim the notes and keep moving.",
+            "detail_id": "",
+            "domain": "FocusOS",
+            "category": "awareness",
+            "importance_score": 0,
+            "story_type": "focusos",
+        }
+        mode = "quiet"
+        secondary_candidates = items
+
+    secondary_notes = [
+        assistant_item(item)
+        for item in secondary_candidates
+        if not (
+            item.get("title", "").lower().startswith("no major portfolio")
+            and len(secondary_candidates) > 3
+        )
+    ][:3]
+
+    return {
+        "greeting": "Good Morning Mike",
+        "mode": mode,
+        "primary_focus": primary_focus,
+        "secondary_notes": secondary_notes,
+        "watch_status": list(watch_status or []),
+    }

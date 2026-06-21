@@ -11,17 +11,31 @@ export type AttentionItem = {
   priority: number;
   detail_id: string;
   category: AttentionCategory;
+  attention_bucket: AttentionBucket;
   importance_score: number;
   actionability_score: number;
   expiration_hours: number;
   why_user_cares: string;
+  situation: string;
+  why_it_matters: string;
+  what_changed: string;
+  suggested_posture: "Ignore" | "Consider" | "Review" | "Watch" | "Act";
+  story_type?: "focusos" | "external";
+  attention_section: AttentionSection;
+  domain?: string;
+  vertical?: string;
+  novelty_status?: "new" | "changed" | "repeated" | "seen_today";
+  novelty_reason?: string;
   classification?: BriefingClass;
   source?: string;
   topic?: string;
+  generation_metadata?: GenerationMetadata;
 };
 
 export type BriefingClass = "action_required" | "opportunity" | "awareness";
 export type AttentionCategory = "action" | "opportunity" | "awareness";
+export type AttentionBucket = AttentionSection;
+export type AttentionSection = "Today" | "Around You" | "Background";
 
 export type Opportunity = {
   title: string;
@@ -39,10 +53,22 @@ export type RecommendedAction = {
 
 export type Briefing = {
   generated_at: string;
+  briefing_date: string;
+  is_archived: boolean;
+  read_only: boolean;
+  archive_source: "live" | "mock" | string;
+  archive_review?: {
+    scenario: string;
+    notes: string;
+    recommended_layout: string;
+    layout_reason: string;
+    scan_violations: string[];
+  };
   holdings_count: number;
   sources: string[];
   topic_briefings: TopicBriefing[];
   recommended_actions: RecommendedAction[];
+  assistant_briefing: AssistantBriefing;
   summary: {
     current_value: number;
     daily_change: number;
@@ -56,6 +82,82 @@ export type Briefing = {
   };
   attention: AttentionItem[];
   opportunities: Opportunity[];
+};
+
+export type AssistantBriefingItem = {
+  title: string;
+  summary: string;
+  detail_id: string;
+  domain: string;
+  category: AttentionCategory;
+  importance_score: number;
+  story_type: "focusos" | "external";
+};
+
+export type WatchStatus = {
+  id: number;
+  title: string;
+  summary: string;
+  status: string;
+  event_date: string | null;
+  detail_id: string;
+};
+
+export type AssistantBriefing = {
+  greeting: string;
+  mode: "focused" | "quiet";
+  primary_focus: AssistantBriefingItem;
+  secondary_notes: AssistantBriefingItem[];
+  watch_status: WatchStatus[];
+};
+
+export type WatchEvaluation = {
+  id: number;
+  watch_item_id: number;
+  as_of: string;
+  title: string;
+  summary: string;
+  category: AttentionCategory;
+  importance_score: number;
+  actionability_score: number;
+  should_surface: boolean;
+  trigger_reason: string;
+  evidence: Record<string, unknown>;
+  generation_metadata: GenerationMetadata;
+};
+
+export type GenerationMetadata = {
+  why_generated: string;
+  what_changed: string;
+  why_user_should_care: string;
+  expiration_date: string;
+};
+
+export type WatchItem = {
+  id: number;
+  title: string;
+  original_text: string;
+  event_date: string | null;
+  expires_at: string | null;
+  check_frequency: string;
+  watch_for: string[];
+  surface_when: string[];
+  briefing_posture: string;
+  status: "active" | "completed" | "archived";
+  last_evaluated_on: string | null;
+  latest_evaluation: WatchEvaluation | null;
+  why_today: string | null;
+};
+
+export type WatchListResponse = {
+  active_count: number;
+  counts: {
+    active: number;
+    completed: number;
+    archived: number;
+    total: number;
+  };
+  watch_items: WatchItem[];
 };
 
 export type TopicBriefing = {

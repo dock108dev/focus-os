@@ -36,14 +36,17 @@ This file tracks high-level work only. Keep it current when scope changes or a t
 - Cleared generic backend action text so `Review whether...` copy does not leak into future surfaces.
 - Made the `attention` field from `GET /api/briefing` the homepage SSOT and removed frontend reconstruction from portfolio intelligence fields.
 - Cleaned repo entry docs, split frontend API/types from `App.tsx`, moved seed-data setup out of `main.py`, and added Docker build-context ignores.
+- Generated the Mike v1 personal attention corpus with 1500 events, rules, watch model, and a 50-day May-June 2026 simulation dataset.
 
 ## In Progress
 
+- Review the Mike v1 attention corpus and 50-day simulation before making additional UI, category, or integration changes.
 - Keep homepage focused on editorial conclusions instead of generated explanations or implementation details.
 - Keep docs current as product decisions change.
 
 ## Next
 
+- Manually review `docs/simulations/personal-attention-simulation-may-june-2026.md` for fake importance, stale watch behavior, and missing personal context.
 - Run the 30-day habit test: did Mike voluntarily open FocusOS at least 25 days?
 - Use the habit-test result to decide whether to add more source types or reassess the product.
 - Promote Portfolio and Portfolio Intelligence into dedicated pages only if the homepage proves useful first.

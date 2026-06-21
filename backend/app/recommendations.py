@@ -6,6 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from .attention import holding_value, is_cash, is_technology, pct, summarize
+from .attention import build_attention, build_portfolio_review_item
 from .models import (
     CryptoPrice,
     Holding,
@@ -15,11 +16,14 @@ from .models import (
 )
 from .personalization import MIKE_PROFILE
 from .structured_sources import (
+    crypto_attention_items,
     latest_crypto_prices,
     latest_market_prices,
     latest_weather_recommendations,
+    market_attention_items,
 )
 from .voice import clean_action_text, clean_editorial_text
+from .watchlist import latest_watch_evaluation, watch_domain
 
 
 def not_found(detail_id: str) -> dict:
@@ -172,6 +176,51 @@ def finance_detail(db: Session, detail_id: str) -> dict:
         return detail
 
     return not_found(detail_id)
+
+
+def portfolio_review_detail(db: Session, detail_id: str) -> dict:
+    holdings = list(db.scalars(select(Holding)).all())
+    summary = summarize(holdings)
+    signals = (
+        build_attention(holdings, summary)
+        + market_attention_items(latest_market_prices(db))
+        + crypto_attention_items(latest_crypto_prices(db))
+    )
+    if not signals:
+        return base_detail(
+            detail_id,
+            "No major portfolio actions currently identified",
+            "Portfolio thresholds were checked and none require attention.",
+            "",
+        )
+
+    grouped = build_portfolio_review_item(signals)
+    detail = base_detail(
+        detail_id,
+        grouped["title"],
+        "This appeared because multiple portfolio signals belong to one portfolio state, not separate homepage stories.",
+        "",
+    )
+    detail["why_generated"] = [
+        "Why it appeared: portfolio thresholds are active and grouped into one review item.",
+        f"Thresholds checked: cash above {MIKE_PROFILE['cash_attention_pct']}%, technology above {MIKE_PROFILE['technology_concentration_pct']}%, single positions above {MIKE_PROFILE['single_position_concentration_pct']}%, pullbacks above {MIKE_PROFILE['pullback_review_pct']}%.",
+        f"Evidence: {len(signals)} portfolio signals are currently active.",
+        "Novelty rule: persistent portfolio facts are collapsed here so they do not consume the whole briefing every day.",
+        *[f"Signal: {item['title']} - {item['why_now']}" for item in signals],
+    ]
+    detail["raw_data"] = {"signals": signals}
+    detail["source_data"] = {
+        "provider": "Manual portfolio imports",
+        "accounts": sorted({row.source for row in holdings}),
+        "latest_as_of": summary["latest_as_of"],
+    }
+    detail["suppressed_signals"] = [
+        {
+            "reason": "Collapsed into Portfolio to preserve homepage diversity.",
+            "items": signals,
+        }
+    ]
+    return detail
 
 
 def market_detail(db: Session, detail_id: str) -> dict:
@@ -343,7 +392,64 @@ def topic_detail(db: Session, detail_id: str) -> dict:
     return detail
 
 
+def watch_detail(db: Session, detail_id: str) -> dict:
+    try:
+        watch_item_id = int(detail_id.split(":", 1)[1])
+    except (IndexError, ValueError):
+        return not_found(detail_id)
+    row = latest_watch_evaluation(db, watch_item_id)
+    if not row or not row.watch_item:
+        return not_found(detail_id)
+    watch = row.watch_item
+    detail = base_detail(
+        detail_id,
+        row.title,
+        "This appeared because a user-created watch item reached a meaningful update or decision point.",
+        "",
+    )
+    detail["why_generated"] = [
+        f"Why it appeared: {row.trigger_reason}",
+        f"Threshold checked: {', '.join(watch.surface_when or [])}.",
+        f"Monitoring: {', '.join(watch.watch_for or [])}.",
+    ]
+    detail["raw_data"] = {
+        "watch_item": {
+            "id": watch.id,
+            "title": watch.title,
+            "original_text": watch.original_text,
+            "event_date": watch.event_date.isoformat() if watch.event_date else None,
+            "expires_at": watch.expires_at.isoformat() if watch.expires_at else None,
+            "watch_for": watch.watch_for or [],
+            "surface_when": watch.surface_when or [],
+            "status": watch.status,
+        },
+        "evaluation": {
+            "as_of": row.as_of.isoformat(),
+            "category": row.category,
+            "importance_score": row.importance_score,
+            "actionability_score": row.actionability_score,
+            "should_surface": row.should_surface,
+            "summary": row.summary,
+        },
+    }
+    detail["source_data"] = {
+        "provider": "User-created watchlist",
+        "domain": watch_domain(watch.title, watch.watch_for or []),
+        "as_of": row.as_of.isoformat(),
+    }
+    detail["ai_processing"] = {
+        "parsed_title": watch.title,
+        "parsed_event_date": watch.event_date.isoformat() if watch.event_date else None,
+        "parsed_expiration": watch.expires_at.isoformat() if watch.expires_at else None,
+        "parsed_watch_for": watch.watch_for or [],
+        "parsed_surface_when": watch.surface_when or [],
+    }
+    return detail
+
+
 def recommendation_detail(db: Session, detail_id: str) -> dict:
+    if detail_id == "portfolio:review":
+        return portfolio_review_detail(db, detail_id)
     if detail_id.startswith("finance:"):
         return finance_detail(db, detail_id)
     if detail_id.startswith("market:"):
@@ -354,4 +460,6 @@ def recommendation_detail(db: Session, detail_id: str) -> dict:
         return weather_detail(db, detail_id)
     if detail_id.startswith("topic:"):
         return topic_detail(db, detail_id)
+    if detail_id.startswith("watch:"):
+        return watch_detail(db, detail_id)
     return not_found(detail_id)

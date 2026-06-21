@@ -16,6 +16,19 @@ Finance remains the first structured source. The product direction is broader:
 
 > What deserves my attention today?
 
+## Planning Phase Freeze
+
+The current validation priority is the Mike v1 personal attention corpus, not UI expansion.
+
+Do not add new integrations, categories, or homepage layouts until these artifacts have been reviewed:
+
+- [personal-attention-corpus-mike-v1.json](simulations/personal-attention-corpus-mike-v1.json)
+- [personal-attention-corpus-mike-v1.md](simulations/personal-attention-corpus-mike-v1.md)
+- [personal-attention-simulation-may-june-2026.json](simulations/personal-attention-simulation-may-june-2026.json)
+- [personal-attention-simulation-may-june-2026.md](simulations/personal-attention-simulation-may-june-2026.md)
+
+The planning artifacts define event classes, ranking outcomes, promotion rules, suppression rules, watch object semantics, and 50 simulated mornings from May 3, 2026 through June 21, 2026.
+
 The MVP now supports both structured sources and AI-generated topic briefings.
 
 Allowed:

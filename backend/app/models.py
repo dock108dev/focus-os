@@ -1,7 +1,19 @@
 from datetime import date, datetime
 from decimal import Decimal
 
-from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Integer, JSON, Numeric, String, Text, UniqueConstraint, func
+from sqlalchemy import (
+    Boolean,
+    Date,
+    DateTime,
+    ForeignKey,
+    Integer,
+    JSON,
+    Numeric,
+    String,
+    Text,
+    UniqueConstraint,
+    func,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .database import Base
@@ -70,7 +82,9 @@ class TopicBriefing(Base):
 
 class MarketPrice(Base):
     __tablename__ = "market_prices"
-    __table_args__ = (UniqueConstraint("symbol", "as_of", name="uq_market_price_symbol_as_of"),)
+    __table_args__ = (
+        UniqueConstraint("symbol", "as_of", name="uq_market_price_symbol_as_of"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     symbol: Mapped[str] = mapped_column(String(24), index=True)
@@ -85,7 +99,9 @@ class MarketPrice(Base):
 
 class CryptoPrice(Base):
     __tablename__ = "crypto_prices"
-    __table_args__ = (UniqueConstraint("asset_id", "as_of", name="uq_crypto_price_asset_as_of"),)
+    __table_args__ = (
+        UniqueConstraint("asset_id", "as_of", name="uq_crypto_price_asset_as_of"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     asset_id: Mapped[str] = mapped_column(String(80), index=True)
@@ -99,7 +115,11 @@ class CryptoPrice(Base):
 
 class WeatherRecommendation(Base):
     __tablename__ = "weather_recommendations"
-    __table_args__ = (UniqueConstraint("activity", "as_of", name="uq_weather_recommendation_activity_as_of"),)
+    __table_args__ = (
+        UniqueConstraint(
+            "activity", "as_of", name="uq_weather_recommendation_activity_as_of"
+        ),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     activity: Mapped[str] = mapped_column(String(80), index=True)
@@ -124,7 +144,89 @@ class SourceStatus(Base):
     last_run_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     message: Mapped[str] = mapped_column(Text, default="")
     details: Mapped[dict] = mapped_column(JSON, default=dict)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, server_default=func.now(), onupdate=func.now()
+    )
+
+
+class DisplayedStory(Base):
+    __tablename__ = "displayed_stories"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    story_key: Mapped[str] = mapped_column(String(160), unique=True, index=True)
+    domain: Mapped[str] = mapped_column(String(80), index=True)
+    category: Mapped[str] = mapped_column(String(40), index=True)
+    title: Mapped[str] = mapped_column(String(240))
+    fingerprint: Mapped[str] = mapped_column(String(120))
+    first_seen_on: Mapped[date] = mapped_column(Date, default=date.today)
+    last_seen_on: Mapped[date] = mapped_column(Date, default=date.today)
+    seen_count: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, server_default=func.now(), onupdate=func.now()
+    )
+
+
+class WatchItem(Base):
+    __tablename__ = "watch_items"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    title: Mapped[str] = mapped_column(String(240), index=True)
+    original_text: Mapped[str] = mapped_column(Text)
+    event_date: Mapped[date | None] = mapped_column(Date, nullable=True, index=True)
+    expires_at: Mapped[date | None] = mapped_column(Date, nullable=True, index=True)
+    check_frequency: Mapped[str] = mapped_column(String(40), default="daily")
+    watch_for: Mapped[list[str]] = mapped_column(JSON, default=list)
+    surface_when: Mapped[list[str]] = mapped_column(JSON, default=list)
+    briefing_posture: Mapped[str] = mapped_column(String(40), default="watch")
+    status: Mapped[str] = mapped_column(String(40), default="active", index=True)
+    last_evaluated_on: Mapped[date | None] = mapped_column(Date, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, server_default=func.now(), onupdate=func.now()
+    )
+
+    evaluations: Mapped[list["WatchEvaluation"]] = relationship(
+        back_populates="watch_item"
+    )
+
+
+class WatchEvaluation(Base):
+    __tablename__ = "watch_evaluations"
+    __table_args__ = (
+        UniqueConstraint("watch_item_id", "as_of", name="uq_watch_evaluation_item_day"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    watch_item_id: Mapped[int] = mapped_column(ForeignKey("watch_items.id"), index=True)
+    as_of: Mapped[date] = mapped_column(Date, index=True)
+    title: Mapped[str] = mapped_column(String(240))
+    summary: Mapped[str] = mapped_column(Text)
+    category: Mapped[str] = mapped_column(String(40), default="awareness")
+    importance_score: Mapped[int] = mapped_column(Integer, default=0)
+    actionability_score: Mapped[int] = mapped_column(Integer, default=0)
+    should_surface: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+    trigger_reason: Mapped[str] = mapped_column(Text, default="")
+    evidence: Mapped[dict] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+
+    watch_item: Mapped[WatchItem] = relationship(back_populates="evaluations")
+
+
+class ArchivedBriefing(Base):
+    __tablename__ = "archived_briefings"
+    __table_args__ = (
+        UniqueConstraint("briefing_date", name="uq_archived_briefing_date"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    briefing_date: Mapped[date] = mapped_column(Date, index=True)
+    payload: Mapped[dict] = mapped_column(JSON, default=dict)
+    source: Mapped[str] = mapped_column(String(40), default="live")
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, server_default=func.now(), onupdate=func.now()
+    )
 
 
 class JobRun(Base):

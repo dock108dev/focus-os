@@ -39,7 +39,9 @@ def test_internal_routes_require_key_when_configured(monkeypatch):
     client = TestClient(main.app)
 
     missing = client.post("/api/jobs/morning-briefing")
-    wrong = client.post("/api/jobs/morning-briefing", headers={"X-FocusOS-Key": "wrong"})
+    wrong = client.post(
+        "/api/jobs/morning-briefing", headers={"X-FocusOS-Key": "wrong"}
+    )
 
     assert missing.status_code == 401
     assert wrong.status_code == 401
@@ -62,7 +64,9 @@ def test_import_rejects_non_csv_upload():
 
     response = client.post(
         "/api/import/holdings?source=Manual&replace=true",
-        files={"file": ("holdings.txt", b"symbol,name\nMSFT,Microsoft\n", "text/plain")},
+        files={
+            "file": ("holdings.txt", b"symbol,name\nMSFT,Microsoft\n", "text/plain")
+        },
     )
 
     assert response.status_code == 415
@@ -135,4 +139,13 @@ def test_briefing_payload_uses_attention_as_homepage_ssot(monkeypatch):
     assert "attention" in payload
     assert "financial_attention" not in payload
     assert "portfolio_intelligence" not in payload
-    assert payload["attention"][-1]["source"] == "portfolio"
+    assert payload["attention"][0]["domain"] == "Portfolio"
+    assert payload["attention"][0]["attention_bucket"] == "Today"
+    assert payload["attention"][0]["suggested_posture"] == "Review"
+    metadata = payload["attention"][0]["generation_metadata"]
+    assert set(metadata) == {
+        "why_generated",
+        "what_changed",
+        "why_user_should_care",
+        "expiration_date",
+    }
