@@ -13,8 +13,15 @@ from typing import Iterable
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
-from .attention import pct
-from .models import CryptoPrice, Holding, MarketPrice, Topic, TopicBriefing, WeatherRecommendation
+from .attention import enrich_attention_item, pct
+from .models import (
+    CryptoPrice,
+    Holding,
+    MarketPrice,
+    Topic,
+    TopicBriefing,
+    WeatherRecommendation,
+)
 from .personalization import MIKE_PROFILE
 from .source_status import record_source_status
 
@@ -34,7 +41,9 @@ SOURCE_REFRESH_EXCEPTIONS = (
 
 
 def load_json(url: str, headers: dict[str, str] | None = None) -> dict:
-    request = urllib.request.Request(url, headers=headers or {"User-Agent": "FocusOS/0.1"})
+    request = urllib.request.Request(
+        url, headers=headers or {"User-Agent": "FocusOS/0.1"}
+    )
     with urllib.request.urlopen(request, timeout=HTTP_TIMEOUT) as response:
         return json.load(response)
 
@@ -76,7 +85,10 @@ def latest_weather_recommendations(db: Session) -> list[WeatherRecommendation]:
         row = db.scalar(
             select(WeatherRecommendation)
             .where(WeatherRecommendation.activity == activity)
-            .order_by(WeatherRecommendation.as_of.desc(), WeatherRecommendation.created_at.desc())
+            .order_by(
+                WeatherRecommendation.as_of.desc(),
+                WeatherRecommendation.created_at.desc(),
+            )
             .limit(1)
         )
         if row:
@@ -88,7 +100,8 @@ def tracked_market_symbols(db: Session) -> list[str]:
     symbols = {
         row.symbol.upper()
         for row in db.scalars(select(Holding)).all()
-        if row.symbol and row.symbol.upper() not in {"CASH", "SPAXX", "FDRXX", "CORE", "USD", "BTC"}
+        if row.symbol
+        and row.symbol.upper() not in {"CASH", "SPAXX", "FDRXX", "CORE", "USD", "BTC"}
     }
     return sorted(symbols)
 
@@ -105,10 +118,14 @@ def fetch_yahoo_symbol(symbol: str) -> MarketPrice:
         if value is not None
     ]
     price = Decimal(str(meta.get("regularMarketPrice") or closes[-1]))
-    previous_close = Decimal(str(meta.get("previousClose") or (closes[-2] if len(closes) > 1 else price)))
+    previous_close = Decimal(
+        str(meta.get("previousClose") or (closes[-2] if len(closes) > 1 else price))
+    )
     five_day_high = max(closes) if closes else price
     first_close = closes[0] if closes else price
-    five_day_change_pct = ((price - first_close) / first_close * 100) if first_close else Decimal("0")
+    five_day_change_pct = (
+        ((price - first_close) / first_close * 100) if first_close else Decimal("0")
+    )
 
     return MarketPrice(
         symbol=symbol.upper(),
@@ -123,7 +140,9 @@ def fetch_yahoo_symbol(symbol: str) -> MarketPrice:
 def refresh_market_prices(db: Session) -> list[MarketPrice]:
     symbols = tracked_market_symbols(db)
     if not symbols:
-        record_source_status(db, "Yahoo Finance", "skipped", "No tracked market symbols.")
+        record_source_status(
+            db, "Yahoo Finance", "skipped", "No tracked market symbols."
+        )
         return []
 
     rows = []
@@ -132,12 +151,18 @@ def refresh_market_prices(db: Session) -> list[MarketPrice]:
         try:
             rows.append(fetch_yahoo_symbol(symbol))
         except SOURCE_REFRESH_EXCEPTIONS as exc:
-            logger.warning("market_symbol_refresh_failed", exc_info=True, extra={"symbol": symbol})
+            logger.warning(
+                "market_symbol_refresh_failed", exc_info=True, extra={"symbol": symbol}
+            )
             errors.append(f"{symbol}: {type(exc).__name__}: {exc}")
 
     today = date.today()
     for row in rows:
-        db.execute(delete(MarketPrice).where(MarketPrice.symbol == row.symbol, MarketPrice.as_of == today))
+        db.execute(
+            delete(MarketPrice).where(
+                MarketPrice.symbol == row.symbol, MarketPrice.as_of == today
+            )
+        )
     db.add_all(rows)
     try:
         db.commit()
@@ -147,7 +172,9 @@ def refresh_market_prices(db: Session) -> list[MarketPrice]:
 
     status = "ok" if rows and not errors else "partial" if rows else "error"
     message = f"Fetched {len(rows)} of {len(symbols)} market symbols."
-    record_source_status(db, "Yahoo Finance", status, message, {"errors": errors[:5], "symbols": symbols})
+    record_source_status(
+        db, "Yahoo Finance", status, message, {"errors": errors[:5], "symbols": symbols}
+    )
     return rows
 
 
@@ -168,10 +195,20 @@ def refresh_crypto_prices(db: Session) -> list[CryptoPrice]:
         )
     except SOURCE_REFRESH_EXCEPTIONS as exc:
         logger.warning("crypto_price_refresh_failed", exc_info=True)
-        record_source_status(db, "CoinGecko", "error", "Bitcoin price refresh failed.", {"error": str(exc)})
+        record_source_status(
+            db,
+            "CoinGecko",
+            "error",
+            "Bitcoin price refresh failed.",
+            {"error": str(exc)},
+        )
         return []
 
-    db.execute(delete(CryptoPrice).where(CryptoPrice.asset_id == "bitcoin", CryptoPrice.as_of == date.today()))
+    db.execute(
+        delete(CryptoPrice).where(
+            CryptoPrice.asset_id == "bitcoin", CryptoPrice.as_of == date.today()
+        )
+    )
     db.add(row)
     try:
         db.commit()
@@ -188,7 +225,9 @@ def refresh_crypto_prices(db: Session) -> list[CryptoPrice]:
     return [row]
 
 
-def score_golf_day(max_temp: float, precipitation_probability: float, wind_speed: float) -> int:
+def score_golf_day(
+    max_temp: float, precipitation_probability: float, wind_speed: float
+) -> int:
     temp_score = max(0, 40 - abs(max_temp - 72))
     rain_score = max(0, 35 - precipitation_probability)
     wind_score = max(0, 25 - wind_speed)
@@ -232,7 +271,7 @@ def refresh_weather_recommendations(db: Session) -> list[WeatherRecommendation]:
             )
 
         best = max(candidates, key=lambda item: item["score"])
-        title = f"{best['date'].strftime('%A')} is the best golf day this week"
+        title = f"{best['date'].strftime('%A')} is likely your best golf opportunity this week"
         reason = (
             f"Forecast is {round(best['max_temp'])}F with {round(best['precipitation_probability'])}% rain risk "
             f"and {round(best['wind_speed'])} mph wind."
@@ -258,7 +297,13 @@ def refresh_weather_recommendations(db: Session) -> list[WeatherRecommendation]:
         )
     except SOURCE_REFRESH_EXCEPTIONS as exc:
         logger.warning("weather_recommendation_refresh_failed", exc_info=True)
-        record_source_status(db, "Open-Meteo", "error", "Golf weather refresh failed.", {"error": str(exc)})
+        record_source_status(
+            db,
+            "Open-Meteo",
+            "error",
+            "Golf weather refresh failed.",
+            {"error": str(exc)},
+        )
         return []
 
     db.execute(
@@ -273,7 +318,13 @@ def refresh_weather_recommendations(db: Session) -> list[WeatherRecommendation]:
     except Exception:
         db.rollback()
         raise
-    record_source_status(db, "Open-Meteo", "ok", "Fetched golf weather recommendation.", {"location": location})
+    record_source_status(
+        db,
+        "Open-Meteo",
+        "ok",
+        "Fetched golf weather recommendation.",
+        {"location": location},
+    )
     return [row]
 
 
@@ -289,33 +340,51 @@ def market_attention_items(rows: Iterable[MarketPrice]) -> list[dict]:
     items = []
     for row in rows:
         if row.five_day_high and row.price:
-            pullback = (Decimal(row.five_day_high) - Decimal(row.price)) / Decimal(row.five_day_high) * 100
+            pullback = (
+                (Decimal(row.five_day_high) - Decimal(row.price))
+                / Decimal(row.five_day_high)
+                * 100
+            )
             if pullback >= Decimal(str(MIKE_PROFILE["pullback_review_pct"])):
                 items.append(
-                    {
-                        "title": f"{row.symbol} is down {pct(pullback)} from its five-day high",
-                        "why_now": (
-                            "Historically, similar large-cap pullbacks have been worth a closer look."
-                        ),
-                        "action": "",
-                        "priority": 7,
-                        "source": "market",
-                        "detail_id": f"market:{row.symbol}:pullback",
-                        "classification": "opportunity",
-                    }
+                    enrich_attention_item(
+                        {
+                            "title": f"{row.symbol} is down {pct(pullback)} from its five-day high",
+                            "why_now": (
+                                "Historically, similar large-cap pullbacks have been worth a closer look."
+                            ),
+                            "action": "",
+                            "priority": 7,
+                            "source": "market",
+                            "detail_id": f"market:{row.symbol}:pullback",
+                        },
+                        category="opportunity",
+                        importance_score=80,
+                        actionability_score=55,
+                        expiration_hours=72,
+                        why_user_cares="The position crossed the pullback review range.",
+                    )
                 )
-        if abs(Decimal(row.five_day_change_pct or 0)) >= Decimal(str(MIKE_PROFILE["market_move_review_pct"])):
+        if abs(Decimal(row.five_day_change_pct or 0)) >= Decimal(
+            str(MIKE_PROFILE["market_move_review_pct"])
+        ):
             direction = "up" if row.five_day_change_pct > 0 else "down"
             items.append(
-                {
-                    "title": f"{row.symbol} is {direction} {pct(abs(Decimal(row.five_day_change_pct)))} over five trading days",
-                    "why_now": "The move is outside the normal watch range for this position.",
-                    "action": "",
-                    "priority": 6,
-                    "source": "market",
-                    "detail_id": f"market:{row.symbol}:move",
-                    "classification": "awareness",
-                }
+                enrich_attention_item(
+                    {
+                        "title": f"{row.symbol} is {direction} {pct(abs(Decimal(row.five_day_change_pct)))} over five trading days",
+                        "why_now": "The move is outside the normal watch range for this position.",
+                        "action": "",
+                        "priority": 6,
+                        "source": "market",
+                        "detail_id": f"market:{row.symbol}:move",
+                    },
+                    category="awareness",
+                    importance_score=60,
+                    actionability_score=10,
+                    expiration_hours=168,
+                    why_user_cares="The move is notable context but does not require intervention.",
+                )
             )
     return items
 
@@ -327,30 +396,46 @@ def crypto_attention_items(rows: Iterable[CryptoPrice]) -> list[dict]:
         if abs(change) >= Decimal(str(MIKE_PROFILE["market_move_review_pct"])):
             direction = "up" if change > 0 else "down"
             items.append(
-                {
-                    "title": f"Bitcoin is {direction} {pct(abs(change))} over 24 hours",
-                    "why_now": "Bitcoin moved outside its normal daily range.",
-                    "action": "",
-                    "priority": 9,
-                    "source": "crypto",
-                    "detail_id": "crypto:BTC:24h",
-                    "classification": "opportunity" if change < 0 else "awareness",
-                }
+                enrich_attention_item(
+                    {
+                        "title": f"Bitcoin is {direction} {pct(abs(change))} over 24 hours",
+                        "why_now": "Bitcoin moved outside its normal daily range.",
+                        "action": "",
+                        "priority": 9,
+                        "source": "crypto",
+                        "detail_id": "crypto:BTC:24h",
+                    },
+                    category="opportunity" if change < 0 else "awareness",
+                    importance_score=84 if change < 0 else 68,
+                    actionability_score=58 if change < 0 else 12,
+                    expiration_hours=72 if change < 0 else 168,
+                    why_user_cares=(
+                        "The move may create a time-sensitive review window."
+                        if change < 0
+                        else "The move is notable context but does not require a crypto action."
+                    ),
+                )
             )
     return items
 
 
 def weather_attention_items(rows: Iterable[WeatherRecommendation]) -> list[dict]:
     return [
-        {
-            "title": row.title,
-            "why_now": row.reason,
-            "action": row.action,
-            "priority": 8,
-            "source": "weather",
-            "detail_id": f"weather:{row.activity.lower()}",
-            "classification": "opportunity",
-        }
+        enrich_attention_item(
+            {
+                "title": row.title,
+                "why_now": row.reason,
+                "action": row.action,
+                "priority": 8,
+                "source": "weather",
+                "detail_id": f"weather:{row.activity.lower()}",
+            },
+            category="opportunity",
+            importance_score=78,
+            actionability_score=52,
+            expiration_hours=72,
+            why_user_cares="A good weather window disappears if it is not planned around.",
+        )
         for row in rows
         if row.score >= 65
     ]
@@ -364,14 +449,29 @@ def structured_topic_briefings(db: Session) -> list[TopicBriefing]:
     if bitcoin and crypto:
         row = crypto[0]
         change = Decimal(row.change_24h_pct or 0)
+        threshold = Decimal(str(MIKE_PROFILE["market_move_review_pct"]))
         direction = "up" if change > 0 else "down"
+        title = (
+            f"Bitcoin is {direction} {pct(abs(change))} over 24 hours"
+            if abs(change) >= threshold
+            else "No crypto actions required today"
+        )
+        summary = (
+            f"Bitcoin is at ${Decimal(row.price):,.0f}. The 24-hour move crossed the "
+            f"{MIKE_PROFILE['market_move_review_pct']}% watch threshold."
+            if abs(change) >= threshold
+            else f"Bitcoin is at ${Decimal(row.price):,.0f}. The 24-hour move remains within normal volatility."
+        )
         briefings.append(
             TopicBriefing(
                 topic_id=bitcoin.id,
                 as_of=date.today(),
-                title=f"Bitcoin is {direction} {pct(abs(change))} over 24 hours",
-                summary=f"Bitcoin is at ${Decimal(row.price):,.0f}. The 24-hour move remains within normal volatility.",
-                bullets=[f"Price: ${Decimal(row.price):,.0f}", f"24-hour move: {pct(change)}"],
+                title=title,
+                summary=summary,
+                bullets=[
+                    f"Price: ${Decimal(row.price):,.0f}",
+                    f"24-hour move: {pct(change)}",
+                ],
                 action="",
                 source_type="structured",
                 priority=bitcoin.priority,

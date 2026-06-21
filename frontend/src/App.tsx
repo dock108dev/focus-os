@@ -298,7 +298,7 @@ export default function App() {
 
             {detail && (
               <div className="detailBody">
-                <DetailSection title="Summary">
+                <DetailSection title="Reasoning">
                   <p>{detail.summary}</p>
                 </DetailSection>
 
@@ -306,7 +306,7 @@ export default function App() {
                   <SourceList data={detail.source_data} />
                 </DetailSection>
 
-                <DetailSection title="Supporting facts">
+                <DetailSection title="Why it appeared">
                   {supportingFacts(detail).length > 0 ? (
                     <ul>
                       {supportingFacts(detail).map((item) => (

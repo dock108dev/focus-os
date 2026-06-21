@@ -78,18 +78,21 @@ def test_high_priority_topic_briefing_can_join_today_attention():
 
     items = topic_attention_items([briefing])
 
-    assert items == [
-        {
-            "title": "Bitcoin moved enough to review",
-            "why_now": "Bitcoin crossed the configured daily movement threshold.",
-            "action": "",
-            "priority": 9,
-            "source": "topic",
-            "topic": "Bitcoin",
-            "detail_id": "topic:42",
-            "classification": "awareness",
-        }
-    ]
+    assert items[0]["title"] == "Bitcoin moved enough to review"
+    assert (
+        items[0]["why_now"]
+        == "Bitcoin crossed the configured daily movement threshold."
+    )
+    assert items[0]["action"] == ""
+    assert items[0]["source"] == "topic"
+    assert items[0]["topic"] == "Bitcoin"
+    assert items[0]["detail_id"] == "topic:42"
+    assert items[0]["category"] == "awareness"
+    assert items[0]["importance_score"] == 72
+    assert (
+        items[0]["why_user_cares"]
+        == "This is relevant context, but it does not currently require a decision."
+    )
 
 
 def test_fallback_topic_briefing_stays_out_of_today_attention():

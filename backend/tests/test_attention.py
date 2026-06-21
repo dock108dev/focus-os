@@ -48,11 +48,13 @@ def test_attention_requires_actionable_thresholds():
     assert "Technology allocation is 73.7%" in titles
     assert "MSFT is 73.7% of the portfolio" in titles
     assert "MSFT is down 12.5% from cost basis" in titles
-    classes = {item["title"]: item["classification"] for item in attention}
-    assert classes["$2,500 cash is available"] == "action_required"
-    assert classes["Technology allocation is 73.7%"] == "action_required"
-    assert classes["MSFT is 73.7% of the portfolio"] == "action_required"
-    assert classes["MSFT is down 12.5% from cost basis"] == "opportunity"
+    categories = {item["title"]: item["category"] for item in attention}
+    assert categories["$2,500 cash is available"] == "action"
+    assert categories["Technology allocation is 73.7%"] == "action"
+    assert categories["MSFT is 73.7% of the portfolio"] == "action"
+    assert categories["MSFT is down 12.5% from cost basis"] == "opportunity"
+    assert all("importance_score" in item for item in attention)
+    assert all("why_user_cares" in item for item in attention)
     assert opportunities[0]["title"] == "High cash position"
 
     recommended = build_recommended_actions(attention, opportunities, [])
@@ -60,7 +62,7 @@ def test_attention_requires_actionable_thresholds():
     assert recommended[0]["detail_id"] == "finance:cash"
 
 
-def test_morning_attention_feed_appends_portfolio_status_from_backend():
+def test_morning_attention_feed_promotes_portfolio_thresholds_before_awareness():
     financial_attention = [
         {
             "title": "MSFT is down 12.5% from cost basis",
@@ -85,11 +87,11 @@ def test_morning_attention_feed_appends_portfolio_status_from_backend():
     feed = build_morning_attention_feed([topic_attention], financial_attention)
 
     assert [item["title"] for item in feed] == [
+        "MSFT is down 12.5% from cost basis",
         "Yankees won last night",
-        "MSFT is down 12.5% from cost basis.",
     ]
-    assert feed[1]["source"] == "portfolio"
-    assert feed[1]["detail_id"] == "finance:position:MSFT:pullback"
+    assert feed[0]["category"] == "opportunity"
+    assert feed[0]["detail_id"] == "finance:position:MSFT:pullback"
 
 
 def test_portfolio_status_item_has_empty_detail_when_no_portfolio_event():
@@ -101,6 +103,11 @@ def test_portfolio_status_item_has_empty_detail_when_no_portfolio_event():
         "action": "",
         "priority": 0,
         "detail_id": "",
+        "category": "awareness",
+        "importance_score": 35,
+        "actionability_score": 0,
+        "expiration_hours": 168,
+        "why_user_cares": "Portfolio thresholds were checked and none require attention.",
         "classification": "awareness",
         "source": "portfolio",
     }

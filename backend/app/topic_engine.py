@@ -14,6 +14,7 @@ from openai import OpenAI, OpenAIError
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
+from .attention import enrich_attention_item
 from .models import Topic, TopicBriefing
 from .source_status import record_source_status
 from .voice import clean_action_text, clean_editorial_text
@@ -111,37 +112,49 @@ def fallback_payload(topic: Topic) -> dict:
         "Yankees": {
             "title": "Waiting for sports source setup",
             "summary": "Yankees is configured, but no sports source has produced a briefing yet.",
-            "bullets": ["Results, next game, injuries, and storylines will appear here once connected."],
+            "bullets": [
+                "Results, next game, injuries, and storylines will appear here once connected."
+            ],
             "action": "",
         },
         "Bitcoin": {
             "title": "Waiting for market source setup",
             "summary": "Bitcoin is configured, but no market source has produced a briefing yet.",
-            "bullets": ["24-hour movement and major catalysts will appear here once connected."],
+            "bullets": [
+                "24-hour movement and major catalysts will appear here once connected."
+            ],
             "action": "",
         },
         "Iran": {
             "title": "Waiting for AI briefing setup",
             "summary": "Iran is configured, but no AI briefing has been generated yet.",
-            "bullets": ["Military, geopolitical, economic, and global implications will appear here once connected."],
+            "bullets": [
+                "Military, geopolitical, economic, and global implications will appear here once connected."
+            ],
             "action": "",
         },
         "Major World Sports": {
             "title": "Waiting for sports calendar setup",
             "summary": "Major World Sports is configured, but no sports calendar has produced a briefing yet.",
-            "bullets": ["Championships, majors, international tournaments, and marquee matchups will appear here once connected."],
+            "bullets": [
+                "Championships, majors, international tournaments, and marquee matchups will appear here once connected."
+            ],
             "action": "",
         },
         "AI": {
             "title": "Waiting for AI briefing setup",
             "summary": "AI is configured, but no industry briefing has been generated yet.",
-            "bullets": ["Major model releases, infrastructure shifts, and company moves will appear here once connected."],
+            "bullets": [
+                "Major model releases, infrastructure shifts, and company moves will appear here once connected."
+            ],
             "action": "",
         },
         "Golf": {
             "title": "Waiting for weather source setup",
             "summary": "Golf is configured, but no weather source has produced a recommendation yet.",
-            "bullets": ["Best day, wind, rain, and tee-time windows will appear here once connected."],
+            "bullets": [
+                "Best day, wind, rain, and tee-time windows will appear here once connected."
+            ],
             "action": "",
         },
     }
@@ -180,9 +193,15 @@ def parse_ai_payload(raw_text: str, topic: Topic) -> dict:
         parsed = {}
 
     return {
-        "title": clean_editorial_text(str(parsed.get("title") or f"{topic.name}: attention check"))[:240],
-        "summary": clean_editorial_text(str(parsed.get("summary") or raw_text.strip()))[:2000],
-        "bullets": [clean_editorial_text(str(item))[:280] for item in parsed.get("bullets", [])][:4],
+        "title": clean_editorial_text(
+            str(parsed.get("title") or f"{topic.name}: attention check")
+        )[:240],
+        "summary": clean_editorial_text(str(parsed.get("summary") or raw_text.strip()))[
+            :2000
+        ],
+        "bullets": [
+            clean_editorial_text(str(item))[:280] for item in parsed.get("bullets", [])
+        ][:4],
         "action": clean_action_text(str(parsed.get("action") or ""))[:240],
         "priority": int(parsed.get("priority") or topic.priority),
         "generated_by": "openai-web-search",
@@ -198,7 +217,8 @@ def briefing_prompt(topic: Topic) -> str:
         "Return strict JSON with keys: title, summary, bullets, action, priority. "
         "Write like an editor, not an assistant. Never use phrases like 'Mike should care', 'why this matters', "
         "'review whether', 'consider whether', or 'decide whether'. "
-        "The title must answer what happened in one sentence. The summary should add concrete context only when useful. "
+        "The title must answer why the update is being shown before what happened. "
+        "The summary should add concrete context only when useful. "
         "Some summaries can be one short sentence. Bullets must contain at most four short supporting facts. "
         "Set action to an empty string unless immediate action is genuinely warranted. "
         "Never expose source setup, API availability, or implementation details to Mike.\n\n"
@@ -213,7 +233,9 @@ def briefing_prompt(topic: Topic) -> str:
 
 def generate_openai_payload(topic: Topic) -> dict | None:
     if not os.getenv("OPENAI_API_KEY"):
-        raise AIProviderConfigurationError("OPENAI_API_KEY is required when AI_PROVIDER=openai.")
+        raise AIProviderConfigurationError(
+            "OPENAI_API_KEY is required when AI_PROVIDER=openai."
+        )
 
     timeout_seconds = float(os.getenv("OPENAI_REQUEST_TIMEOUT", "20"))
     client = OpenAI(timeout=timeout_seconds, max_retries=0)
@@ -263,7 +285,9 @@ def generate_codex_cli_payload(topic: Topic) -> dict | None:
 
 
 def generate_ai_payload(topic: Topic) -> dict | None:
-    provider = os.getenv("AI_PROVIDER", "openai" if os.getenv("OPENAI_API_KEY") else "fallback").lower()
+    provider = os.getenv(
+        "AI_PROVIDER", "openai" if os.getenv("OPENAI_API_KEY") else "fallback"
+    ).lower()
 
     if provider == "codex_cli":
         return generate_codex_cli_payload(topic)
@@ -274,8 +298,12 @@ def generate_ai_payload(topic: Topic) -> dict | None:
     raise AIProviderConfigurationError(f"Unsupported AI_PROVIDER {provider!r}.")
 
 
-def generate_topic_briefing(topic: Topic, errors: list[TopicGenerationError] | None = None) -> TopicBriefing:
-    provider = os.getenv("AI_PROVIDER", "openai" if os.getenv("OPENAI_API_KEY") else "fallback").lower()
+def generate_topic_briefing(
+    topic: Topic, errors: list[TopicGenerationError] | None = None
+) -> TopicBriefing:
+    provider = os.getenv(
+        "AI_PROVIDER", "openai" if os.getenv("OPENAI_API_KEY") else "fallback"
+    ).lower()
     try:
         payload = generate_ai_payload(topic) or fallback_payload(topic)
     except AI_PROVIDER_EXCEPTIONS as exc:
@@ -311,7 +339,9 @@ def run_morning_briefing(db: Session) -> list[TopicBriefing]:
     seed_topics_if_empty(db)
     from .structured_sources import structured_topic_briefings
 
-    provider = os.getenv("AI_PROVIDER", "openai" if os.getenv("OPENAI_API_KEY") else "fallback").lower()
+    provider = os.getenv(
+        "AI_PROVIDER", "openai" if os.getenv("OPENAI_API_KEY") else "fallback"
+    ).lower()
     topics = list(
         db.scalars(
             select(Topic)
@@ -322,7 +352,9 @@ def run_morning_briefing(db: Session) -> list[TopicBriefing]:
     today = date.today()
     db.execute(delete(TopicBriefing).where(TopicBriefing.as_of == today))
     ai_errors: list[TopicGenerationError] = []
-    briefings = structured_topic_briefings(db) + [generate_topic_briefing(topic, ai_errors) for topic in topics]
+    briefings = structured_topic_briefings(db) + [
+        generate_topic_briefing(topic, ai_errors) for topic in topics
+    ]
     db.add_all(briefings)
     db.commit()
 
@@ -359,7 +391,11 @@ def seed_topic_briefings_if_empty(db: Session) -> None:
         return
 
     seed_topics_if_empty(db)
-    topics = list(db.scalars(select(Topic).where(Topic.is_active == True).order_by(Topic.priority.desc())).all())
+    topics = list(
+        db.scalars(
+            select(Topic).where(Topic.is_active == True).order_by(Topic.priority.desc())
+        ).all()
+    )
     db.add_all(
         [
             TopicBriefing(
@@ -395,22 +431,73 @@ def latest_topic_briefings(db: Session) -> list[TopicBriefing]:
     return sorted(rows, key=lambda row: row.priority, reverse=True)
 
 
+def topic_decision_metadata(briefing: TopicBriefing) -> dict:
+    topic_name = (briefing.topic.name if briefing.topic else "").lower()
+    text = f"{briefing.title} {briefing.summary} {' '.join(briefing.bullets or [])}".lower()
+    has_action = bool(clean_action_text(briefing.action))
+
+    if has_action or any(
+        token in text
+        for token in (
+            "deadline",
+            "blocked",
+            "renewal",
+            "threshold crossed",
+            "requires action",
+        )
+    ):
+        return {
+            "category": "action",
+            "importance_score": max(82, briefing.priority * 10),
+            "actionability_score": 82,
+            "expiration_hours": 72,
+            "why_user_cares": "This update could get worse if it is ignored for the next 72 hours.",
+        }
+    if topic_name == "golf" or any(
+        token in text
+        for token in (
+            "best golf",
+            "opportunity",
+            "buy range",
+            "cheap airfare",
+            "ticket release",
+        )
+    ):
+        return {
+            "category": "opportunity",
+            "importance_score": max(74, briefing.priority * 10),
+            "actionability_score": 52,
+            "expiration_hours": 72,
+            "why_user_cares": "This is a time-sensitive upside window.",
+        }
+    return {
+        "category": "awareness",
+        "importance_score": max(42, min(72, briefing.priority * 8)),
+        "actionability_score": 8,
+        "expiration_hours": 168,
+        "why_user_cares": "This is relevant context, but it does not currently require a decision.",
+    }
+
+
 def topic_attention_items(briefings: Iterable[TopicBriefing]) -> list[dict]:
     items = []
     for briefing in briefings:
         if briefing.generated_by == "fallback":
             continue
+        metadata = topic_decision_metadata(briefing)
         items.append(
-            {
-                "title": clean_editorial_text(briefing.title),
-                "why_now": clean_editorial_text(briefing.summary),
-                "action": clean_action_text(briefing.action),
-                "priority": briefing.priority,
-                "source": "topic",
-                "topic": briefing.topic.name if briefing.topic else None,
-                "detail_id": f"topic:{briefing.id}",
-                "classification": "awareness",
-            }
+            enrich_attention_item(
+                {
+                    "title": clean_editorial_text(briefing.title),
+                    "why_now": clean_editorial_text(briefing.summary),
+                    "action": clean_action_text(briefing.action),
+                    "priority": briefing.priority,
+                    "source": "topic",
+                    "topic": briefing.topic.name if briefing.topic else None,
+                    "detail_id": f"topic:{briefing.id}",
+                },
+                **metadata,
+            )
         )
     return items
 

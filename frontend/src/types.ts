@@ -10,12 +10,18 @@ export type AttentionItem = {
   action: string;
   priority: number;
   detail_id: string;
+  category: AttentionCategory;
+  importance_score: number;
+  actionability_score: number;
+  expiration_hours: number;
+  why_user_cares: string;
   classification?: BriefingClass;
   source?: string;
   topic?: string;
 };
 
 export type BriefingClass = "action_required" | "opportunity" | "awareness";
+export type AttentionCategory = "action" | "opportunity" | "awareness";
 
 export type Opportunity = {
   title: string;

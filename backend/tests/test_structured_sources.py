@@ -38,17 +38,12 @@ def test_crypto_attention_flags_large_bitcoin_move():
 
     items = crypto_attention_items(rows)
 
-    assert items == [
-        {
-            "title": "Bitcoin is down 8.2% over 24 hours",
-            "why_now": "Bitcoin moved outside its normal daily range.",
-            "action": "",
-            "priority": 9,
-            "source": "crypto",
-            "detail_id": "crypto:BTC:24h",
-            "classification": "opportunity",
-        }
-    ]
+    assert items[0]["title"] == "Bitcoin is down 8.2% over 24 hours"
+    assert items[0]["source"] == "crypto"
+    assert items[0]["detail_id"] == "crypto:BTC:24h"
+    assert items[0]["category"] == "opportunity"
+    assert items[0]["importance_score"] == 84
+    assert items[0]["expiration_hours"] == 72
 
 
 def test_weather_attention_promotes_good_golf_day():
@@ -86,7 +81,9 @@ def test_crypto_refresh_propagates_database_commit_failures(monkeypatch):
     db = FailingCommitSession()
     monkeypatch.setattr(
         "app.structured_sources.load_json",
-        lambda _url: {"bitcoin": {"usd": 62000, "usd_24h_change": 1.5, "last_updated_at": 1}},
+        lambda _url: {
+            "bitcoin": {"usd": 62000, "usd_24h_change": 1.5, "last_updated_at": 1}
+        },
     )
 
     with pytest.raises(RuntimeError, match="database unavailable"):
