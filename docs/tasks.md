@@ -33,6 +33,7 @@ This file tracks high-level work only. Keep it current when scope changes or a t
 - Removed homepage right rail sections so the homepage renders only the Morning Briefing output.
 - Cleared generic backend action text so `Review whether...` copy does not leak into future surfaces.
 - Made `/api/briefing.attention` the homepage SSOT and removed frontend reconstruction from portfolio intelligence fields.
+- Cleaned repo entry docs, split frontend API/types from `App.tsx`, moved seed-data setup out of `main.py`, and added Docker build-context ignores.
 
 ## In Progress
 

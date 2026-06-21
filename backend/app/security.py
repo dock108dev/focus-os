@@ -43,7 +43,7 @@ def validate_csv_upload(content_type: str | None, filename: str | None, size: in
     if normalized_name and not normalized_name.endswith(".csv"):
         raise HTTPException(status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, detail="Upload filename must end in .csv.")
     if size > max_size:
-        raise HTTPException(status_code=status.HTTP_413_CONTENT_TOO_LARGE, detail="CSV upload is too large.")
+        raise HTTPException(status_code=413, detail="CSV upload is too large.")
 
 
 async def require_internal_api_key(x_focusos_key: str | None = Header(default=None)) -> None:

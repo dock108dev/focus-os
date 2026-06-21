@@ -42,7 +42,7 @@ services:
     command: ["python", "-m", "app.scheduler"]
     environment:
       FOCUSOS_API_URL: http://api:8000
-      MORNING_JOB_TIME: "06:00"
+      MORNING_JOB_TIME: ${MORNING_JOB_TIME:-06:00}
       TZ: America/New_York
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       OPENAI_MODEL: ${OPENAI_MODEL:-gpt-5.5}
