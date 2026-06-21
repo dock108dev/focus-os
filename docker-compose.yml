@@ -1,0 +1,72 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: focusos
+      POSTGRES_USER: focusos
+      POSTGRES_PASSWORD: focusos
+    ports:
+      - "5432:5432"
+    volumes:
+      - focusos_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U focusos -d focusos"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://focusos:focusos@db:5432/focusos
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-5.5}
+      OPENAI_REQUEST_TIMEOUT: ${OPENAI_REQUEST_TIMEOUT:-20}
+      AI_PROVIDER: ${AI_PROVIDER:-openai}
+      FOCUSOS_CORS_ORIGINS: ${FOCUSOS_CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
+      FOCUSOS_INTERNAL_API_KEY: ${FOCUSOS_INTERNAL_API_KEY:-}
+      FOCUSOS_MAX_IMPORT_BYTES: ${FOCUSOS_MAX_IMPORT_BYTES:-1048576}
+      TZ: America/New_York
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend/app:/app/app
+
+  scheduler:
+    build:
+      context: ./backend
+    command: ["python", "-m", "app.scheduler"]
+    environment:
+      FOCUSOS_API_URL: http://api:8000
+      MORNING_JOB_TIME: "06:00"
+      TZ: America/New_York
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-5.5}
+      OPENAI_REQUEST_TIMEOUT: ${OPENAI_REQUEST_TIMEOUT:-20}
+      AI_PROVIDER: ${AI_PROVIDER:-openai}
+      FOCUSOS_INTERNAL_API_KEY: ${FOCUSOS_INTERNAL_API_KEY:-}
+    depends_on:
+      - api
+    volumes:
+      - ./backend/app:/app/app
+
+  web:
+    build:
+      context: ./frontend
+    environment:
+      VITE_API_TARGET: http://api:8000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/index.html:/app/index.html
+      - ./frontend/vite.config.ts:/app/vite.config.ts
+
+volumes:
+  focusos_postgres:
