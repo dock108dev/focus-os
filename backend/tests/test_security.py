@@ -20,6 +20,7 @@ def test_api_responses_include_browser_security_headers():
     assert response.headers["x-content-type-options"] == "nosniff"
     assert response.headers["x-frame-options"] == "DENY"
     assert response.headers["referrer-policy"] == "no-referrer"
+    assert response.headers["x-robots-tag"] == "noindex, nofollow"
     assert response.headers["cache-control"] == "no-store"
 
 
@@ -42,9 +43,17 @@ def test_internal_routes_require_key_when_configured(monkeypatch):
     wrong = client.post(
         "/api/jobs/morning-briefing", headers={"X-FocusOS-Key": "wrong"}
     )
+    status_missing_key = client.get("/api/jobs/morning-briefing/123")
+    status_with_key = client.get(
+        "/api/jobs/morning-briefing/123",
+        headers={"X-FocusOS-Key": "test-secret"},
+    )
 
     assert missing.status_code == 401
     assert wrong.status_code == 401
+    assert status_missing_key.status_code == 401
+    assert status_with_key.status_code == 200
+    assert status_with_key.json()["status"] == "missing"
 
 
 def test_import_rejects_oversized_csv_before_parsing(monkeypatch):
@@ -137,15 +146,9 @@ def test_briefing_payload_uses_attention_as_homepage_ssot(monkeypatch):
     assert response.status_code == 200
     payload = response.json()
     assert "attention" in payload
+    assert "structured_attention" not in payload
     assert "financial_attention" not in payload
     assert "portfolio_intelligence" not in payload
-    assert payload["attention"][0]["domain"] == "Portfolio"
-    assert payload["attention"][0]["attention_bucket"] == "Today"
-    assert payload["attention"][0]["suggested_posture"] == "Review"
-    metadata = payload["attention"][0]["generation_metadata"]
-    assert set(metadata) == {
-        "why_generated",
-        "what_changed",
-        "why_user_should_care",
-        "expiration_date",
-    }
+    assert payload["holdings_count"] == 0
+    assert payload["sources"] == []
+    assert all(item["domain"] != "Portfolio" for item in payload["attention"])

@@ -60,7 +60,11 @@ The backend uses SQLAlchemy models in `backend/app/models.py`. Tables are create
 `watch_items`
 
 - Editable attention configuration authored by the user or seeded defaults.
-- Stores title, original text, event and expiration dates, cadence, watch rules, surface rules, briefing posture, status, and evaluation date.
+- Stores title, original text, event and expiration dates, cadence, watch kind, priority, enabled state, personal state, external state, personal context, source config, evaluation rules, prompt config, briefing posture, status, and evaluation date.
+- `watch_kind` separates Personal Tracker, External Monitor, and Hybrid watches. `priority` separates Primary Allowed, Watch Only, and Quiet By Default watches.
+- `personal_context` stores why Mike cares, personal accounts, interests, owned assets, and ignored accounts. `source_config` stores connected data sources, available sources, missing sources, and manual inputs. This intentionally separates Fidelity/SoFi/Tastytrade/dock108dev-style personal accounts from CoinGecko/GitHub/Open-Meteo-style providers.
+- Finance watches can store `personal_context.manual_facts.tracked_symbols` and `symbol_notes` so one symbol can mean "buy the pullback" while another can mean "track a short thesis."
+- `prompt_config` stores the generated daily evaluation prompt, optional user override, and guardrail state. Prompt overrides do not disable global guardrails.
 
 `watch_evaluations`
 
@@ -72,7 +76,7 @@ The backend uses SQLAlchemy models in `backend/app/models.py`. Tables are create
 `source_statuses`
 
 - Internal status records for source refreshes and AI topic generation.
-- Stores status, last run timestamp, message, and details.
+- Stores status, last run timestamp, message, and details. `/api/internal/source-status` also includes the source registry and missing/unavailable source list for validation.
 
 `job_runs`
 

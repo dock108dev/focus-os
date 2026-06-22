@@ -41,12 +41,12 @@ Implemented fix: CSV uploads are capped by `FOCUSOS_MAX_IMPORT_BYTES`, defaultin
 ### Operational internal routes had no deployable shared-secret guard
 
 - Category: Authentication and operational security
-- Affected area: `POST /api/jobs/morning-briefing`, `GET /api/internal/source-status`
+- Affected area: `POST /api/jobs/morning-briefing`, `GET /api/jobs/morning-briefing/{job_id}`, `GET /api/internal/source-status`
 - Severity: low
 - Confidence: high
 - Status: fixed
 
-FocusOS is local-first, so public read endpoints remain unauthenticated. Internal operational endpoints can now require `X-FocusOS-Key` when `FOCUSOS_INTERNAL_API_KEY` is set. The scheduler passes that key automatically.
+FocusOS is local-first, so public briefing reads remain unauthenticated. Internal operational endpoints can now require `X-FocusOS-Key` when `FOCUSOS_INTERNAL_API_KEY` is set. The scheduler passes that key automatically. Shared-key comparison uses constant-time comparison.
 
 ### Browser hardening headers were missing
 
@@ -58,6 +58,18 @@ FocusOS is local-first, so public read endpoints remain unauthenticated. Interna
 
 Implemented fix: API responses now include `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, and `Cache-Control`. HSTS is opt-in with `FOCUSOS_ENABLE_HSTS=true` for HTTPS deployments.
 
+### Docker development ports were reachable beyond loopback
+
+- Category: Deployment and network exposure
+- Affected area: Docker Compose web, API, and PostgreSQL ports
+- Severity: medium
+- Confidence: high
+- Status: fixed
+
+Before this change, Compose published `5432`, `8000`, and `5173` on all host interfaces. That could expose unauthenticated local-first surfaces and the development database to other machines on the same network.
+
+Implemented fix: Compose now binds those ports to `127.0.0.1` while preserving service-to-service access on the Docker network.
+
 ### Job failure details could expose provider error text
 
 - Category: Data protection and logging
@@ -67,6 +79,28 @@ Implemented fix: API responses now include `X-Content-Type-Options`, `X-Frame-Op
 - Status: fixed
 
 Implemented fix: failed morning jobs now store the exception type instead of raw exception text in job status details. Stack traces remain in server logs.
+
+### Background jobs could continue without durable status tracking
+
+- Category: Reliability and observability
+- Affected area: morning job background worker
+- Severity: medium
+- Confidence: high
+- Status: fixed
+
+Before this change, a missing `job_runs` row caused the status helper to log and return. The background worker could continue refreshing sources without a durable job status record, making an operational failure hard to distinguish from normal execution.
+
+Implemented fix: missing job status rows now raise `JobRunMissingError`, stop the refresh work, and emit `morning_briefing_job_status_missing` if the worker cannot persist the failed state.
+
+### Structured API validation errors were hidden behind generic frontend copy
+
+- Category: Observability and debugging
+- Affected area: frontend API error rendering
+- Severity: low
+- Confidence: high
+- Status: fixed
+
+Implemented fix: frontend API error parsing now extracts concise messages from FastAPI validation arrays instead of showing only the generic fallback label.
 
 ## Deferred Findings
 
@@ -88,14 +122,14 @@ The local `.env` file is ignored by `.gitignore`, but the key was present in the
 
 The MVP is local-first and intentionally unauthenticated. If FocusOS is exposed beyond a trusted local network, add full authentication and authorization before deployment.
 
-### Codex CLI provider depends on a local executable path
+### Codex CLI provider depends on a configured executable path
 
 - Category: Supply chain and local execution
 - Severity: low
 - Confidence: medium
 - Status: accepted
 
-`AI_PROVIDER=codex_cli` runs a configured local `codex` executable with `shell=False`, read-only sandboxing, and a local workspace. This remains acceptable for local development only and is documented that way.
+`AI_PROVIDER=codex_cli` runs a configured `codex` executable with `shell=False`, read-only sandboxing, and a configured workspace. The backend Docker image installs the CLI, so this provider is supported for local and Docker development when credentials are present.
 
 ## Manual Verification Items
 

@@ -11,6 +11,7 @@ from .models import Holding, TopicBriefing
 from .personalization import MIKE_PROFILE
 from .structured_sources import (
     crypto_attention_items,
+    finance_symbol_preferences,
     latest_crypto_prices,
     latest_market_prices,
     latest_weather_recommendations,
@@ -176,10 +177,11 @@ def finance_detail(db: Session, detail_id: str) -> dict:
 def portfolio_review_detail(db: Session, detail_id: str) -> dict:
     holdings = list(db.scalars(select(Holding)).all())
     summary = summarize(holdings)
+    symbol_preferences = finance_symbol_preferences(db)
     signals = (
         build_attention(holdings, summary)
-        + market_attention_items(latest_market_prices(db))
-        + crypto_attention_items(latest_crypto_prices(db))
+        + market_attention_items(latest_market_prices(db), symbol_preferences)
+        + crypto_attention_items(latest_crypto_prices(db), symbol_preferences)
     )
     if not signals:
         return base_detail(
@@ -208,6 +210,14 @@ def portfolio_review_detail(db: Session, detail_id: str) -> dict:
     detail["source_data"] = {
         "provider": "Manual portfolio imports",
         "accounts": sorted({row.source for row in holdings}),
+        "personal_accounts": sorted({row.source for row in holdings}),
+        "connected_data_sources": ["manual_portfolio_csv", "market_price_adapter", "CoinGecko"],
+        "manual_inputs": ["liquid cash balance", "BTC cost basis if unavailable"],
+        "missing_sources": [
+            "direct Fidelity integration",
+            "direct SoFi integration",
+            "direct Tastytrade integration",
+        ],
         "latest_as_of": summary["latest_as_of"],
     }
     detail["suppressed_signals"] = [
@@ -417,6 +427,13 @@ def watch_detail(db: Session, detail_id: str) -> dict:
             "expires_at": watch.expires_at.isoformat() if watch.expires_at else None,
             "watch_for": watch.watch_for or [],
             "surface_when": watch.surface_when or [],
+            "watch_kind": watch.watch_kind,
+            "priority": watch.priority,
+            "enabled": watch.enabled,
+            "personal_context": watch.personal_context or {},
+            "source_config": watch.source_config or {},
+            "evaluation_rules": watch.evaluation_rules or {},
+            "prompt_config": watch.prompt_config or {},
             "status": watch.status,
         },
         "provenance": {
@@ -437,6 +454,11 @@ def watch_detail(db: Session, detail_id: str) -> dict:
     detail["source_data"] = {
         "provider": "User-created watchlist",
         "domain": watch_domain(watch.title, watch.watch_for or []),
+        "personal_accounts": (watch.personal_context or {}).get("accounts", []),
+        "personal_interests": (watch.personal_context or {}).get("interests", []),
+        "connected_data_sources": (watch.source_config or {}).get("connected_sources", []),
+        "manual_inputs": (watch.source_config or {}).get("manual_inputs", []),
+        "missing_sources": (watch.source_config or {}).get("missing_sources", []),
         "as_of": row.as_of.isoformat(),
     }
     detail["ai_processing"] = {

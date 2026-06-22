@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: focusos
       POSTGRES_PASSWORD: focusos
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - focusos_postgres:/var/lib/postgresql/data
     healthcheck:
@@ -28,10 +28,19 @@ services:
       FOCUSOS_INTERNAL_API_KEY: ${FOCUSOS_INTERNAL_API_KEY:-}
       FOCUSOS_MAX_IMPORT_BYTES: ${FOCUSOS_MAX_IMPORT_BYTES:-1048576}
       FOCUSOS_ENABLE_HSTS: ${FOCUSOS_ENABLE_HSTS:-false}
+      GOLF_LATITUDE: ${GOLF_LATITUDE:-40.7062}
+      GOLF_LONGITUDE: ${GOLF_LONGITUDE:--74.5493}
+      GOLF_LOCATION: ${GOLF_LOCATION:-Basking Ridge, NJ}
+      WEATHER_TIMEZONE: ${WEATHER_TIMEZONE:-America/New_York}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      FOCUSOS_GITHUB_OWNER: ${FOCUSOS_GITHUB_OWNER:-dock108dev}
+      CODEX_CLI_PATH: ${CODEX_CLI_PATH:-codex}
+      CODEX_CLI_TIMEOUT: ${CODEX_CLI_TIMEOUT:-90}
+      CODEX_CLI_WORKDIR: ${CODEX_CLI_WORKDIR:-}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       TZ: ${TZ:-America/New_York}
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     depends_on:
       db:
         condition: service_healthy
@@ -63,7 +72,7 @@ services:
     environment:
       VITE_API_TARGET: http://api:8000
     ports:
-      - "5173:5173"
+      - "127.0.0.1:5173:5173"
     depends_on:
       - api
     volumes:

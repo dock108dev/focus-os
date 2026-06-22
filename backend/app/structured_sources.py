@@ -3,10 +3,11 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 import urllib.parse
 import urllib.request
 import urllib.error
-from datetime import date
+from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal, InvalidOperation
 from typing import Iterable
 
@@ -21,13 +22,23 @@ from .models import (
     Topic,
     TopicBriefing,
     WeatherRecommendation,
+    WatchItem,
 )
 from .personalization import MIKE_PROFILE
 from .source_status import record_source_status
+from .watch_provenance import source_watch_id
 
 
 HTTP_TIMEOUT = 15
 logger = logging.getLogger(__name__)
+DEFAULT_TRACKED_MARKET_SYMBOLS = ["UNH", "USO", "SPY", "QQQ", "AAPL", "^GSPC"]
+NON_MARKET_SYMBOLS = {"CASH", "SPAXX", "FDRXX", "CORE", "USD", "BTC"}
+SYMBOL_ALIASES = {
+    "BITCOIN": "BTC",
+    "S&P 500": "^GSPC",
+    "S&P 500 PROXY": "^GSPC",
+    "SP500": "^GSPC",
+}
 SOURCE_REFRESH_EXCEPTIONS = (
     urllib.error.URLError,
     TimeoutError,
@@ -41,16 +52,19 @@ SOURCE_REFRESH_EXCEPTIONS = (
 
 
 def load_json(url: str, headers: dict[str, str] | None = None) -> dict:
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme not in {"http", "https"}:
+        raise ValueError("Source URL must use http or https")
     request = urllib.request.Request(
         url, headers=headers or {"User-Agent": "FocusOS/0.1"}
     )
-    with urllib.request.urlopen(request, timeout=HTTP_TIMEOUT) as response:
+    with urllib.request.urlopen(request, timeout=HTTP_TIMEOUT) as response:  # nosec B310
         return json.load(response)
 
 
 def latest_market_prices(db: Session) -> list[MarketPrice]:
     rows: list[MarketPrice] = []
-    symbols = db.scalars(select(MarketPrice.symbol).distinct()).all()
+    symbols = tracked_market_symbols(db)
     for symbol in symbols:
         row = db.scalar(
             select(MarketPrice)
@@ -96,13 +110,102 @@ def latest_weather_recommendations(db: Session) -> list[WeatherRecommendation]:
     return rows
 
 
+def normalize_symbol(value: str) -> str:
+    text = value.strip().upper().replace("$", "")
+    text = SYMBOL_ALIASES.get(text, text)
+    if text.endswith(" PROXY"):
+        text = text.removesuffix(" PROXY").strip()
+        text = SYMBOL_ALIASES.get(text, text)
+    return text
+
+
+def is_symbol_like(value: str) -> bool:
+    symbol = normalize_symbol(value)
+    return bool(symbol) and bool(re.fullmatch(r"\^?[A-Z0-9.]{1,8}", symbol))
+
+
+def infer_symbol_posture(note: str) -> str:
+    lower = note.lower()
+    if "short" in lower:
+        return "short"
+    if any(token in lower for token in ("accumulate", "buy", "add", "entry")):
+        return "accumulate"
+    if any(token in lower for token in ("trim", "sell", "exit")):
+        return "trim"
+    return "watch"
+
+
+def symbol_note_text(value: object) -> str:
+    if isinstance(value, dict):
+        return str(value.get("note") or value.get("thesis") or "").strip()
+    return str(value or "").strip()
+
+
+def finance_symbol_preferences(db: Session) -> dict[str, dict]:
+    preferences: dict[str, dict] = {}
+    rows = db.scalars(
+        select(WatchItem).where(WatchItem.status == "active", WatchItem.enabled.is_(True))
+    ).all()
+    for row in rows:
+        context = row.personal_context or {}
+        manual_facts = context.get("manual_facts") if isinstance(context, dict) else {}
+        if not isinstance(manual_facts, dict):
+            manual_facts = {}
+
+        source_id = source_watch_id(row.title)
+        tracked = manual_facts.get("tracked_symbols") or []
+        if isinstance(tracked, str):
+            tracked = [tracked]
+        for raw_symbol in list(tracked) + list(context.get("interests") or []):
+            symbol = normalize_symbol(str(raw_symbol))
+            if not is_symbol_like(symbol):
+                continue
+            preferences.setdefault(
+                symbol,
+                {
+                    "symbol": symbol,
+                    "note": "",
+                    "position": "watch",
+                    "source_watch_id": source_id,
+                    "watch_title": row.title,
+                },
+            )
+
+        notes = manual_facts.get("symbol_notes") or {}
+        if isinstance(notes, dict):
+            for raw_symbol, raw_note in notes.items():
+                symbol = normalize_symbol(str(raw_symbol))
+                if not is_symbol_like(symbol):
+                    continue
+                note = symbol_note_text(raw_note)
+                position = (
+                    str(raw_note.get("position")).strip().lower()
+                    if isinstance(raw_note, dict) and raw_note.get("position")
+                    else infer_symbol_posture(note)
+                )
+                preferences[symbol] = {
+                    "symbol": symbol,
+                    "note": note,
+                    "position": position,
+                    "source_watch_id": source_id,
+                    "watch_title": row.title,
+                }
+    return preferences
+
+
 def tracked_market_symbols(db: Session) -> list[str]:
     symbols = {
         row.symbol.upper()
         for row in db.scalars(select(Holding)).all()
         if row.symbol
-        and row.symbol.upper() not in {"CASH", "SPAXX", "FDRXX", "CORE", "USD", "BTC"}
+        and row.symbol.upper() not in NON_MARKET_SYMBOLS
     }
+    symbols.update(
+        symbol
+        for symbol in finance_symbol_preferences(db)
+        if symbol not in NON_MARKET_SYMBOLS
+    )
+    symbols.update(DEFAULT_TRACKED_MARKET_SYMBOLS)
     return sorted(symbols)
 
 
@@ -235,9 +338,9 @@ def score_golf_day(
 
 
 def refresh_weather_recommendations(db: Session) -> list[WeatherRecommendation]:
-    latitude = float(os.getenv("GOLF_LATITUDE", "40.0583"))
-    longitude = float(os.getenv("GOLF_LONGITUDE", "-74.4057"))
-    location = os.getenv("GOLF_LOCATION", "Central New Jersey")
+    latitude = float(os.getenv("GOLF_LATITUDE", "40.7062"))
+    longitude = float(os.getenv("GOLF_LONGITUDE", "-74.5493"))
+    location = os.getenv("GOLF_LOCATION", "Basking Ridge, NJ")
     timezone_name = os.getenv("WEATHER_TIMEZONE", "America/New_York")
     params = urllib.parse.urlencode(
         {
@@ -269,6 +372,17 @@ def refresh_weather_recommendations(db: Session) -> list[WeatherRecommendation]:
                     "score": score_golf_day(max_temp, precipitation, wind),
                 }
             )
+
+        for candidate in candidates:
+            weekday = candidate["date"].weekday()
+            if weekday == 0:
+                candidate["score"] = 0
+                candidate["suppression"] = "Monday because course is closed."
+            elif weekday == 4:
+                candidate["score"] = max(0, candidate["score"] - 12)
+                candidate["suppression"] = "Friday afternoon downranked because it is likely packed."
+            else:
+                candidate["suppression"] = None
 
         best = max(candidates, key=lambda item: item["score"])
         title = f"{best['date'].strftime('%A')} is likely your best golf opportunity this week"
@@ -328,17 +442,246 @@ def refresh_weather_recommendations(db: Session) -> list[WeatherRecommendation]:
     return [row]
 
 
+def github_api(path: str) -> dict | list:
+    token = os.getenv("GITHUB_TOKEN")
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "User-Agent": "FocusOS/0.1",
+        "X-GitHub-Api-Version": "2022-11-28",
+    }
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    return load_json(f"https://api.github.com{path}", headers=headers)
+
+
+def refresh_github_repo_health(db: Session) -> dict:
+    owner = os.getenv("FOCUSOS_GITHUB_OWNER", "dock108dev")
+    now = datetime.now(timezone.utc)
+    errors: list[str] = []
+    facts: list[dict] = []
+    missing_requirements: list[str] = []
+    active_repo_ages: list[dict] = []
+    failed_workflows: list[dict] = []
+    open_prs_found = 0
+    archived_repos_ignored = 0
+    try:
+        repos_payload = github_api(
+            f"/users/{urllib.parse.quote(owner)}/repos?type=owner&sort=updated&per_page=100"
+        )
+        all_repos = [repo for repo in repos_payload if isinstance(repo, dict)]
+        archived_repos_ignored = sum(1 for repo in all_repos if repo.get("archived"))
+        repos = [
+            repo
+            for repo in all_repos
+            if not repo.get("archived")
+        ][:20]
+        for repo in repos:
+            name = repo.get("name", "")
+            pushed_at = repo.get("pushed_at")
+            stale = False
+            days_since_push = None
+            if pushed_at:
+                pushed = datetime.fromisoformat(pushed_at.replace("Z", "+00:00"))
+                days_since_push = (now - pushed).days
+                stale = now - pushed > timedelta(days=14)
+            active_repo_ages.append(
+                {
+                    "repo": name,
+                    "pushed_at": pushed_at,
+                    "days_since_push": days_since_push,
+                    "url": repo.get("html_url"),
+                }
+            )
+            if stale:
+                facts.append(
+                    {
+                        "kind": "stale_repo",
+                        "repo": name,
+                        "summary": "Active public repo has no commits for about 2 weeks.",
+                        "pushed_at": pushed_at,
+                        "url": repo.get("html_url"),
+                    }
+                )
+            try:
+                pulls = github_api(
+                    f"/repos/{urllib.parse.quote(owner)}/{urllib.parse.quote(name)}/pulls?state=open&per_page=10"
+                )
+                for pull in pulls:
+                    open_prs_found += 1
+                    author = ((pull.get("user") or {}).get("login") or "").lower()
+                    automated = any(
+                        token in author
+                        for token in ("dependabot", "renovate", "copilot", "github-actions")
+                    )
+                    facts.append(
+                        {
+                            "kind": "automated_pr" if automated else "open_pr",
+                            "repo": name,
+                            "summary": "Open automated PR." if automated else "Open PR needs review.",
+                            "title": pull.get("title"),
+                            "url": pull.get("html_url"),
+                            "author": author,
+                        }
+                    )
+            except SOURCE_REFRESH_EXCEPTIONS as exc:
+                errors.append(f"{name} pulls: {type(exc).__name__}: {exc}")
+            try:
+                workflow_runs_payload = github_api(
+                    f"/repos/{urllib.parse.quote(owner)}/{urllib.parse.quote(name)}/actions/runs?status=failure&per_page=5"
+                )
+                workflow_runs = workflow_runs_payload.get("workflow_runs", [])
+                for run in workflow_runs:
+                    if not isinstance(run, dict):
+                        continue
+                    failed = {
+                        "repo": name,
+                        "workflow": run.get("name"),
+                        "title": run.get("display_title"),
+                        "conclusion": run.get("conclusion"),
+                        "status": run.get("status"),
+                        "updated_at": run.get("updated_at"),
+                        "url": run.get("html_url"),
+                    }
+                    failed_workflows.append(failed)
+                    facts.append(
+                        {
+                            "kind": "failed_workflow",
+                            "repo": name,
+                            "summary": "Recent GitHub Actions workflow failure.",
+                            "title": run.get("display_title") or run.get("name"),
+                            "url": run.get("html_url"),
+                            "updated_at": run.get("updated_at"),
+                        }
+                    )
+            except SOURCE_REFRESH_EXCEPTIONS as exc:
+                errors.append(f"{name} workflows: {type(exc).__name__}: {exc}")
+        missing_requirements.append(
+            "Security alerts require authenticated API scope and are not checked in the public MVP."
+        )
+    except SOURCE_REFRESH_EXCEPTIONS as exc:
+        logger.warning("github_repo_health_refresh_failed", exc_info=True)
+        record_source_status(
+            db,
+            "GitHub API",
+            "error",
+            "GitHub repo health refresh failed.",
+            {"error": str(exc)},
+        )
+        return {
+            "status": "error",
+            "facts": [],
+            "errors": [str(exc)],
+            "missing_requirements": missing_requirements,
+        }
+
+    status = "ok" if not errors else "partial"
+    result = {
+        "source_id": "GitHub API",
+        "status": status,
+        "checked_at": now.isoformat(),
+        "facts": facts,
+        "errors": errors[:10],
+        "missing_requirements": missing_requirements,
+        "owner": owner,
+        "repos_scanned": len(repos),
+        "archived_repos_ignored": archived_repos_ignored,
+        "open_prs_found": open_prs_found,
+        "failed_workflows_found": len(failed_workflows),
+        "failed_workflows": failed_workflows[:10],
+        "security_alerts": "unavailable_without_authenticated_security_scope",
+        "active_repo_ages": active_repo_ages,
+    }
+    record_source_status(
+        db,
+        "GitHub API",
+        status,
+        f"Checked {len(repos)} public non-archived repos.",
+        result,
+    )
+    return result
+
+
 def refresh_structured_sources(db: Session) -> dict:
+    github = refresh_github_repo_health(db)
     return {
         "market_prices": len(refresh_market_prices(db)),
         "crypto_prices": len(refresh_crypto_prices(db)),
         "weather_recommendations": len(refresh_weather_recommendations(db)),
+        "github_facts": len(github.get("facts", [])),
     }
 
 
-def market_attention_items(rows: Iterable[MarketPrice]) -> list[dict]:
+def symbol_source_watch_ids(preference: dict | None) -> list[str]:
+    if not preference:
+        return []
+    source_id = str(preference.get("source_watch_id") or "")
+    return [source_id] if source_id else []
+
+
+def market_pullback_copy(symbol: str, pullback: Decimal, preference: dict | None) -> dict:
+    note = str((preference or {}).get("note") or "").strip()
+    position = str((preference or {}).get("position") or "").lower()
+    if position == "short":
+        return {
+            "title": f"{symbol} is moving in favor of your short thesis",
+            "why_now": (
+                f"{symbol} is down {pct(pullback)} from its five-day high."
+                + (f" Note: {note}" if note else " You marked this as a short-position watch.")
+            ),
+            "category": "opportunity",
+            "importance_score": 80,
+            "actionability_score": 45,
+            "why_user_cares": note or "You marked this symbol as a short-position watch.",
+            "triggered_surface_rule": "tracked short-position symbol moved lower",
+        }
+    return {
+        "title": f"{symbol} is down {pct(pullback)} from its five-day high",
+        "why_now": (
+            f"{note} The symbol is down {pct(pullback)} from its five-day high."
+            if note
+            else "Historically, similar large-cap pullbacks have been worth a closer look."
+        ),
+        "category": "opportunity",
+        "importance_score": 80,
+        "actionability_score": 55,
+        "why_user_cares": note or "The position crossed the pullback review range.",
+        "triggered_surface_rule": "tracked symbol crossed pullback review range",
+    }
+
+
+def market_move_copy(row: MarketPrice, preference: dict | None) -> dict:
+    change = Decimal(row.five_day_change_pct or 0)
+    direction = "up" if change > 0 else "down"
+    note = str((preference or {}).get("note") or "").strip()
+    position = str((preference or {}).get("position") or "").lower()
+    title = f"{row.symbol} is {direction} {pct(abs(change))} over five trading days"
+    why_now = "The move is outside the normal watch range for this position."
+    why_user_cares = "The move is notable context but does not require intervention."
+    if position == "short" and change > 0:
+        title = f"{row.symbol} moved against your short thesis"
+        why_now = (
+            f"{row.symbol} is up {pct(abs(change))} over five trading days."
+            + (f" Note: {note}" if note else " You marked this as a short-position watch.")
+        )
+        why_user_cares = note or "You marked this symbol as a short-position watch."
+    elif note:
+        why_now = f"{note} The symbol moved {direction} {pct(abs(change))} over five trading days."
+        why_user_cares = note
+    return {
+        "title": title,
+        "why_now": why_now,
+        "why_user_cares": why_user_cares,
+        "triggered_surface_rule": "tracked symbol moved outside review range",
+    }
+
+
+def market_attention_items(
+    rows: Iterable[MarketPrice], symbol_preferences: dict[str, dict] | None = None
+) -> list[dict]:
     items = []
+    preferences = symbol_preferences or {}
     for row in rows:
+        preference = preferences.get(row.symbol.upper())
         if row.five_day_high and row.price:
             pullback = (
                 (Decimal(row.five_day_high) - Decimal(row.price))
@@ -346,74 +689,99 @@ def market_attention_items(rows: Iterable[MarketPrice]) -> list[dict]:
                 * 100
             )
             if pullback >= Decimal(str(MIKE_PROFILE["pullback_review_pct"])):
+                copy = market_pullback_copy(row.symbol, pullback, preference)
                 items.append(
                     enrich_attention_item(
                         {
-                            "title": f"{row.symbol} is down {pct(pullback)} from its five-day high",
-                            "why_now": (
-                                "Historically, similar large-cap pullbacks have been worth a closer look."
-                            ),
+                            "title": copy["title"],
+                            "why_now": copy["why_now"],
                             "action": "",
                             "priority": 7,
                             "source": "market",
                             "detail_id": f"market:{row.symbol}:pullback",
+                            "source_watch_ids": symbol_source_watch_ids(preference),
+                            "triggered_surface_rule": copy["triggered_surface_rule"],
                         },
-                        category="opportunity",
-                        importance_score=80,
-                        actionability_score=55,
+                        category=copy["category"],
+                        importance_score=copy["importance_score"],
+                        actionability_score=copy["actionability_score"],
                         expiration_hours=72,
-                        why_user_cares="The position crossed the pullback review range.",
+                        why_user_cares=copy["why_user_cares"],
                     )
                 )
         if abs(Decimal(row.five_day_change_pct or 0)) >= Decimal(
             str(MIKE_PROFILE["market_move_review_pct"])
         ):
-            direction = "up" if row.five_day_change_pct > 0 else "down"
+            copy = market_move_copy(row, preference)
             items.append(
                 enrich_attention_item(
                     {
-                        "title": f"{row.symbol} is {direction} {pct(abs(Decimal(row.five_day_change_pct)))} over five trading days",
-                        "why_now": "The move is outside the normal watch range for this position.",
+                        "title": copy["title"],
+                        "why_now": copy["why_now"],
                         "action": "",
                         "priority": 6,
                         "source": "market",
                         "detail_id": f"market:{row.symbol}:move",
+                        "source_watch_ids": symbol_source_watch_ids(preference),
+                        "triggered_surface_rule": copy["triggered_surface_rule"],
                     },
                     category="awareness",
                     importance_score=60,
                     actionability_score=10,
                     expiration_hours=168,
-                    why_user_cares="The move is notable context but does not require intervention.",
+                    why_user_cares=copy["why_user_cares"],
                 )
             )
     return items
 
 
-def crypto_attention_items(rows: Iterable[CryptoPrice]) -> list[dict]:
+def crypto_attention_items(
+    rows: Iterable[CryptoPrice], symbol_preferences: dict[str, dict] | None = None
+) -> list[dict]:
     items = []
+    preferences = symbol_preferences or {}
     for row in rows:
         change = Decimal(row.change_24h_pct or 0)
         if abs(change) >= Decimal(str(MIKE_PROFILE["market_move_review_pct"])):
             direction = "up" if change > 0 else "down"
+            symbol = getattr(row, "symbol", "BTC") or "BTC"
+            preference = preferences.get(symbol.upper()) or preferences.get("BTC")
+            note = str((preference or {}).get("note") or "").strip()
+            position = str((preference or {}).get("position") or "").lower()
+            why_now = "Bitcoin moved outside its normal daily range."
+            why_user_cares = (
+                "The move may create a time-sensitive review window."
+                if change < 0
+                else "The move is notable context but does not require a crypto action."
+            )
+            category = "opportunity" if change < 0 else "awareness"
+            importance_score = 84 if change < 0 else 68
+            actionability_score = 58 if change < 0 else 12
+            if note:
+                why_now = f"{note} Bitcoin is {direction} {pct(abs(change))} over 24 hours."
+                why_user_cares = note
+            if position == "short" and change < 0:
+                why_now = (
+                    f"Bitcoin is down {pct(abs(change))} over 24 hours."
+                    + (f" Note: {note}" if note else " You marked this as a short-position watch.")
+                )
             items.append(
                 enrich_attention_item(
                     {
                         "title": f"Bitcoin is {direction} {pct(abs(change))} over 24 hours",
-                        "why_now": "Bitcoin moved outside its normal daily range.",
+                        "why_now": why_now,
                         "action": "",
                         "priority": 9,
                         "source": "crypto",
                         "detail_id": "crypto:BTC:24h",
+                        "source_watch_ids": symbol_source_watch_ids(preference),
+                        "triggered_surface_rule": "tracked BTC move crossed review range",
                     },
-                    category="opportunity" if change < 0 else "awareness",
-                    importance_score=84 if change < 0 else 68,
-                    actionability_score=58 if change < 0 else 12,
+                    category=category,
+                    importance_score=importance_score,
+                    actionability_score=actionability_score,
                     expiration_hours=72 if change < 0 else 168,
-                    why_user_cares=(
-                        "The move may create a time-sensitive review window."
-                        if change < 0
-                        else "The move is notable context but does not require a crypto action."
-                    ),
+                    why_user_cares=why_user_cares,
                 )
             )
     return items
@@ -442,6 +810,53 @@ def weather_attention_items(rows: Iterable[WeatherRecommendation]) -> list[dict]
         for row in rows
         if row.score >= 65
     ]
+
+
+def github_attention_items(db: Session) -> list[dict]:
+    from .models import SourceStatus
+
+    status = db.scalar(select(SourceStatus).where(SourceStatus.name == "GitHub API"))
+    details = status.details if status else {}
+    facts = details.get("facts") if isinstance(details, dict) else []
+    if not isinstance(facts, list):
+        facts = []
+    items = []
+    for fact in facts[:5]:
+        kind = fact.get("kind")
+        if kind not in {"automated_pr", "open_pr", "stale_repo", "failed_workflow"}:
+            continue
+        category = "action" if kind in {"automated_pr", "open_pr", "failed_workflow"} else "awareness"
+        title = (
+            f"{fact.get('repo')} has an automated PR"
+            if kind == "automated_pr"
+            else f"{fact.get('repo')} has an open PR"
+            if kind == "open_pr"
+            else f"{fact.get('repo')} has a failing workflow"
+            if kind == "failed_workflow"
+            else f"{fact.get('repo')} has been quiet for about 2 weeks"
+        )
+        items.append(
+            enrich_attention_item(
+                {
+                    "title": title,
+                    "why_now": fact.get("summary", "GitHub repo health changed."),
+                    "action": "",
+                    "priority": 8 if category == "action" else 5,
+                    "source": "github",
+                    "topic": "github",
+                    "detail_id": f"github:{fact.get('repo')}:{kind}",
+                    "source_watch_ids": ["watch:personal-github-repo-health"],
+                    "triggered_surface_rule": fact.get("summary", "GitHub repo health rule triggered."),
+                    "why_today": fact.get("summary", "GitHub repo health changed."),
+                },
+                category=category,
+                importance_score=82 if category == "action" else 58,
+                actionability_score=72 if category == "action" else 12,
+                expiration_hours=72,
+                why_user_cares="Public repo health can create a quick action queue.",
+            )
+        )
+    return items
 
 
 def structured_topic_briefings(db: Session) -> list[TopicBriefing]:

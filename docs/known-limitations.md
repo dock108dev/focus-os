@@ -20,19 +20,15 @@ Briefing archive snapshots live in the same application database. There is no re
 
 ## External Source Coverage Is Narrow
 
-Implemented structured sources are Yahoo Finance for holdings-derived symbols, CoinGecko for Bitcoin, and Open-Meteo for golf weather. Sports APIs, YouTube, calendar, travel, and broader news connectors are not implemented.
+Implemented structured sources are Yahoo Finance for holdings-derived symbols, CoinGecko for Bitcoin, Open-Meteo for golf weather, and public GitHub repo health. Sports APIs, YouTube, calendar, travel, and broader news connectors are not implemented.
 
 ## Fallback Briefings Are Not Homepage Attention
 
 When AI or structured providers are unavailable, fallback topic briefings are stored for shape and detail, but they are intentionally suppressed from Today's Attention.
 
-## Codex CLI Provider Is Local Only By Default
-
-The stock backend Docker image does not install Codex CLI. `AI_PROVIDER=codex_cli` is intended for a local backend environment unless the image is extended.
-
 ## Frontend Test Coverage
 
-The frontend currently has no browser or component test suite. Validation is TypeScript compilation and Vite build.
+The frontend currently has no browser or component test suite. Validation is ESLint, npm high-severity audit, TypeScript compilation, and Vite build.
 
 ## Security Scope
 

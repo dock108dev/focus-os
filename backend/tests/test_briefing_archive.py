@@ -24,6 +24,9 @@ def test_mock_archive_generates_50_days_ending_today():
     assert rows[-1][0] == today
     assert all(row_date <= today for row_date, _ in rows)
     assert all("assistant_briefing" in payload for _, payload in rows)
+    assert all("structured_attention" not in payload for _, payload in rows)
+    assert all("financial_attention" not in payload for _, payload in rows)
+    assert all("portfolio_intelligence" not in payload for _, payload in rows)
     assert {payload["archive_review"]["scenario"] for _, payload in rows} >= {
         "boring market day",
         "crypto crash day",
@@ -76,6 +79,9 @@ def test_archive_api_serves_past_snapshot_and_rejects_future_dates():
     assert len(past.json()["attention"]) >= 1
     assert past.json()["assistant_briefing"]["primary_focus"]
     assert len(past.json()["assistant_briefing"]["secondary_notes"]) <= 3
+    assert "structured_attention" not in past.json()
+    assert "financial_attention" not in past.json()
+    assert "portfolio_intelligence" not in past.json()
     assert future.status_code == 400
 
 

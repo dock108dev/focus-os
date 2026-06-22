@@ -668,6 +668,141 @@
   },
   {
     "day": 16,
+    "scenario": "liquidity warning day",
+    "notes": "Liquid cash below target should become Needs attention.",
+    "recommended_layout": "single_hero",
+    "layout_reason": "A single high-signal item deserves a hero treatment.",
+    "average_importance": 92,
+    "max_importance": 92,
+    "story_count": 1,
+    "focusos_story_count": 1,
+    "external_story_count": 0,
+    "static_hero_risk": false,
+    "scan_violations": [
+      "Homepage story count must be 3-7; got 1."
+    ],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Portfolio",
+        "title": "Review portfolio positioning",
+        "summary": "1 portfolio signals crossed review thresholds.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 92
+      }
+    ]
+  },
+  {
+    "day": 17,
+    "scenario": "github action queue day",
+    "notes": "Public repo health should create a practical action queue.",
+    "recommended_layout": "quiet",
+    "layout_reason": "The day is mostly background context.",
+    "average_importance": 59.5,
+    "max_importance": 84,
+    "story_count": 2,
+    "focusos_story_count": 2,
+    "external_story_count": 0,
+    "static_hero_risk": true,
+    "scan_violations": [
+      "Homepage story count must be 3-7; got 2."
+    ],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "GitHub",
+        "title": "focus-os has an automated PR",
+        "summary": "An automated PR is open and likely quick to review.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 84
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 18,
+    "scenario": "shopping media quiet day",
+    "notes": "Shopping and media should remain optional unless tied to saved interests.",
+    "recommended_layout": "flat",
+    "layout_reason": "No item is strong enough to force a hero; use a flat briefing.",
+    "average_importance": 46.5,
+    "max_importance": 58,
+    "story_count": 2,
+    "focusos_story_count": 1,
+    "external_story_count": 1,
+    "static_hero_risk": true,
+    "scan_violations": [
+      "Homepage story count must be 3-7; got 2."
+    ],
+    "stories": [
+      {
+        "section": "Around You",
+        "domain": "Awareness",
+        "title": "High-confidence media match is available",
+        "summary": "A short recommendation matches known preferences and current availability.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 58
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 19,
+    "scenario": "life reminder action day",
+    "notes": "User-entered personal admin should surface when the warning window opens.",
+    "recommended_layout": "single_hero",
+    "layout_reason": "A single high-signal item deserves a hero treatment.",
+    "average_importance": 62.5,
+    "max_importance": 90,
+    "story_count": 2,
+    "focusos_story_count": 2,
+    "external_story_count": 0,
+    "static_hero_risk": false,
+    "scan_violations": [
+      "Homepage story count must be 3-7; got 2."
+    ],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Awareness",
+        "title": "Bogey medication refill enters warning window",
+        "summary": "The user-entered refill date is close enough to avoid a scramble.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 90
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 20,
     "scenario": "normal tuesday",
     "notes": "Low-signal day where a forced hero would overstate importance.",
     "recommended_layout": "quiet",
@@ -719,7 +854,7 @@
     ]
   },
   {
-    "day": 17,
+    "day": 21,
     "scenario": "boring market day",
     "notes": "Portfolio is stable; external context should not inflate the page.",
     "recommended_layout": "flat",
@@ -762,7 +897,7 @@
     ]
   },
   {
-    "day": 18,
+    "day": 22,
     "scenario": "market crash day",
     "notes": "Major portfolio day where a dominant hero is justified.",
     "recommended_layout": "major_event",
@@ -798,7 +933,7 @@
     ]
   },
   {
-    "day": 19,
+    "day": 23,
     "scenario": "crypto crash day",
     "notes": "Crypto should matter only when it changes the user's portfolio posture.",
     "recommended_layout": "single_hero",
@@ -834,7 +969,7 @@
     ]
   },
   {
-    "day": 20,
+    "day": 24,
     "scenario": "no news day",
     "notes": "Tests whether the layout can avoid inventing a hero.",
     "recommended_layout": "flat",
@@ -877,7 +1012,7 @@
     ]
   },
   {
-    "day": 21,
+    "day": 25,
     "scenario": "golf weather week",
     "notes": "A Type B life-planning item should lead if portfolio is quiet.",
     "recommended_layout": "quiet",
@@ -920,7 +1055,7 @@
     ]
   },
   {
-    "day": 22,
+    "day": 26,
     "scenario": "yankees playoff clinch",
     "notes": "Sports can matter when it changes context, but should not feel like a task.",
     "recommended_layout": "quiet",
@@ -963,7 +1098,7 @@
     ]
   },
   {
-    "day": 23,
+    "day": 27,
     "scenario": "yankees routine win",
     "notes": "Routine sports reporting should recede or be omitted.",
     "recommended_layout": "quiet",
@@ -1015,7 +1150,7 @@
     ]
   },
   {
-    "day": 24,
+    "day": 28,
     "scenario": "rutgers game week",
     "notes": "A personal calendar-adjacent item should outrank generic news.",
     "recommended_layout": "quiet",
@@ -1058,7 +1193,7 @@
     ]
   },
   {
-    "day": 25,
+    "day": 29,
     "scenario": "rutgers tickets renew friday",
     "notes": "Deadline-like personal item should be Today, but not corporate.",
     "recommended_layout": "single_hero",
@@ -1110,7 +1245,7 @@
     ]
   },
   {
-    "day": 26,
+    "day": 30,
     "scenario": "vacation week",
     "notes": "Travel planning should lead when dates create risk.",
     "recommended_layout": "single_hero",
@@ -1153,7 +1288,7 @@
     ]
   },
   {
-    "day": 27,
+    "day": 31,
     "scenario": "busy work week",
     "notes": "Work context should dominate only if inactivity or deadline signals exist.",
     "recommended_layout": "two_lead",
@@ -1205,7 +1340,7 @@
     ]
   },
   {
-    "day": 28,
+    "day": 32,
     "scenario": "ai breakthrough day",
     "notes": "External news can lead if the signal is genuinely high.",
     "recommended_layout": "single_hero",
@@ -1248,7 +1383,7 @@
     ]
   },
   {
-    "day": 29,
+    "day": 33,
     "scenario": "iran escalation day",
     "notes": "World news should be Background unless it changes practical posture.",
     "recommended_layout": "quiet",
@@ -1291,7 +1426,7 @@
     ]
   },
   {
-    "day": 30,
+    "day": 34,
     "scenario": "major event day",
     "notes": "Single external event may justify one dominant story.",
     "recommended_layout": "major_event",
@@ -1334,7 +1469,142 @@
     ]
   },
   {
-    "day": 31,
+    "day": 35,
+    "scenario": "liquidity warning day",
+    "notes": "Liquid cash below target should become Needs attention.",
+    "recommended_layout": "single_hero",
+    "layout_reason": "A single high-signal item deserves a hero treatment.",
+    "average_importance": 92,
+    "max_importance": 92,
+    "story_count": 1,
+    "focusos_story_count": 1,
+    "external_story_count": 0,
+    "static_hero_risk": false,
+    "scan_violations": [
+      "Homepage story count must be 3-7; got 1."
+    ],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Portfolio",
+        "title": "Review portfolio positioning",
+        "summary": "1 portfolio signals crossed review thresholds.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 92
+      }
+    ]
+  },
+  {
+    "day": 36,
+    "scenario": "github action queue day",
+    "notes": "Public repo health should create a practical action queue.",
+    "recommended_layout": "quiet",
+    "layout_reason": "The day is mostly background context.",
+    "average_importance": 59.5,
+    "max_importance": 84,
+    "story_count": 2,
+    "focusos_story_count": 2,
+    "external_story_count": 0,
+    "static_hero_risk": true,
+    "scan_violations": [
+      "Homepage story count must be 3-7; got 2."
+    ],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "GitHub",
+        "title": "focus-os has an automated PR",
+        "summary": "An automated PR is open and likely quick to review.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 84
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 37,
+    "scenario": "shopping media quiet day",
+    "notes": "Shopping and media should remain optional unless tied to saved interests.",
+    "recommended_layout": "flat",
+    "layout_reason": "No item is strong enough to force a hero; use a flat briefing.",
+    "average_importance": 46.5,
+    "max_importance": 58,
+    "story_count": 2,
+    "focusos_story_count": 1,
+    "external_story_count": 1,
+    "static_hero_risk": true,
+    "scan_violations": [
+      "Homepage story count must be 3-7; got 2."
+    ],
+    "stories": [
+      {
+        "section": "Around You",
+        "domain": "Awareness",
+        "title": "High-confidence media match is available",
+        "summary": "A short recommendation matches known preferences and current availability.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 58
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 38,
+    "scenario": "life reminder action day",
+    "notes": "User-entered personal admin should surface when the warning window opens.",
+    "recommended_layout": "single_hero",
+    "layout_reason": "A single high-signal item deserves a hero treatment.",
+    "average_importance": 62.5,
+    "max_importance": 90,
+    "story_count": 2,
+    "focusos_story_count": 2,
+    "external_story_count": 0,
+    "static_hero_risk": false,
+    "scan_violations": [
+      "Homepage story count must be 3-7; got 2."
+    ],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Awareness",
+        "title": "Bogey medication refill enters warning window",
+        "summary": "The user-entered refill date is close enough to avoid a scramble.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 90
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 39,
     "scenario": "normal tuesday",
     "notes": "Low-signal day where a forced hero would overstate importance.",
     "recommended_layout": "quiet",
@@ -1386,7 +1656,7 @@
     ]
   },
   {
-    "day": 32,
+    "day": 40,
     "scenario": "boring market day",
     "notes": "Portfolio is stable; external context should not inflate the page.",
     "recommended_layout": "flat",
@@ -1429,7 +1699,7 @@
     ]
   },
   {
-    "day": 33,
+    "day": 41,
     "scenario": "market crash day",
     "notes": "Major portfolio day where a dominant hero is justified.",
     "recommended_layout": "major_event",
@@ -1465,7 +1735,7 @@
     ]
   },
   {
-    "day": 34,
+    "day": 42,
     "scenario": "crypto crash day",
     "notes": "Crypto should matter only when it changes the user's portfolio posture.",
     "recommended_layout": "single_hero",
@@ -1501,7 +1771,7 @@
     ]
   },
   {
-    "day": 35,
+    "day": 43,
     "scenario": "no news day",
     "notes": "Tests whether the layout can avoid inventing a hero.",
     "recommended_layout": "flat",
@@ -1544,7 +1814,7 @@
     ]
   },
   {
-    "day": 36,
+    "day": 44,
     "scenario": "golf weather week",
     "notes": "A Type B life-planning item should lead if portfolio is quiet.",
     "recommended_layout": "quiet",
@@ -1587,7 +1857,7 @@
     ]
   },
   {
-    "day": 37,
+    "day": 45,
     "scenario": "yankees playoff clinch",
     "notes": "Sports can matter when it changes context, but should not feel like a task.",
     "recommended_layout": "quiet",
@@ -1630,7 +1900,7 @@
     ]
   },
   {
-    "day": 38,
+    "day": 46,
     "scenario": "yankees routine win",
     "notes": "Routine sports reporting should recede or be omitted.",
     "recommended_layout": "quiet",
@@ -1682,7 +1952,7 @@
     ]
   },
   {
-    "day": 39,
+    "day": 47,
     "scenario": "rutgers game week",
     "notes": "A personal calendar-adjacent item should outrank generic news.",
     "recommended_layout": "quiet",
@@ -1725,7 +1995,7 @@
     ]
   },
   {
-    "day": 40,
+    "day": 48,
     "scenario": "rutgers tickets renew friday",
     "notes": "Deadline-like personal item should be Today, but not corporate.",
     "recommended_layout": "single_hero",
@@ -1773,6 +2043,101 @@
         "posture": "Watch",
         "story_type": "focusos",
         "importance_score": 34
+      }
+    ]
+  },
+  {
+    "day": 49,
+    "scenario": "vacation week",
+    "notes": "Travel planning should lead when dates create risk.",
+    "recommended_layout": "single_hero",
+    "layout_reason": "A single high-signal item deserves a hero treatment.",
+    "average_importance": 52.3,
+    "max_importance": 86,
+    "story_count": 3,
+    "focusos_story_count": 2,
+    "external_story_count": 1,
+    "static_hero_risk": false,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Travel",
+        "title": "Vacation departure needs a travel check",
+        "summary": "Weather and airport timing could affect departure planning.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 86
+      },
+      {
+        "section": "Around You",
+        "domain": "Sports",
+        "title": "Yankees start a normal series",
+        "summary": "Good result, but no meaningful change to your posture today.",
+        "posture": "Ignore",
+        "story_type": "external",
+        "importance_score": 36
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
+      }
+    ]
+  },
+  {
+    "day": 50,
+    "scenario": "busy work week",
+    "notes": "Work context should dominate only if inactivity or deadline signals exist.",
+    "recommended_layout": "two_lead",
+    "layout_reason": "Two meaningful items should share the top of the page.",
+    "average_importance": 57.2,
+    "max_importance": 84,
+    "story_count": 4,
+    "focusos_story_count": 3,
+    "external_story_count": 1,
+    "static_hero_risk": true,
+    "scan_violations": [],
+    "stories": [
+      {
+        "section": "Today",
+        "domain": "Work",
+        "title": "Two projects have been inactive for 10 days",
+        "summary": "This may create hidden drag if it is not reviewed.",
+        "posture": "Review",
+        "story_type": "focusos",
+        "importance_score": 84
+      },
+      {
+        "section": "Today",
+        "domain": "Life",
+        "title": "Wednesday is a good golf window",
+        "summary": "Good weather exists, but work context may constrain timing.",
+        "posture": "Consider",
+        "story_type": "focusos",
+        "importance_score": 68
+      },
+      {
+        "section": "Around You",
+        "domain": "Technology",
+        "title": "AI policy news remains background",
+        "summary": "Worth knowing, not a near-term decision.",
+        "posture": "Watch",
+        "story_type": "external",
+        "importance_score": 42
+      },
+      {
+        "section": "Around You",
+        "domain": "Portfolio",
+        "title": "No major portfolio actions currently identified.",
+        "summary": "No portfolio event is leading the morning brief.",
+        "posture": "Watch",
+        "story_type": "focusos",
+        "importance_score": 35
       }
     ]
   }

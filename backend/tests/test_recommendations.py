@@ -69,7 +69,7 @@ def test_portfolio_review_detail_groups_active_thresholds():
     assert "grouped into one review item" in detail["why_generated"][0]
     assert len(detail["raw_data"]["signals"]) >= 3
     assert detail["raw_data"]["provenance"]["source_watch_ids"] == [
-        source_watch_id("Portfolio & market positioning")
+        source_watch_id("Personal finance and liquidity runway")
     ]
     assert (
         detail["raw_data"]["provenance"]["triggered_surface_rule"]

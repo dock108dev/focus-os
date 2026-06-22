@@ -7,10 +7,10 @@ from threading import Thread
 from fastapi import Depends, FastAPI, File, HTTPException, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
-from sqlalchemy import delete, select
+from sqlalchemy import delete, inspect, select, text
 from sqlalchemy.orm import Session
 
+from .api_schemas import MockArchiveGenerate, WatchItemCreate, WatchItemUpdate
 from .attention import (
     build_assistant_briefing,
     build_attention,
@@ -27,10 +27,17 @@ from .briefing_archive import (
     upsert_archived_briefing,
 )
 from .database import Base, SessionLocal, engine, get_db
+from .daily_review import build_daily_review
 from .importer import CSVImportError, parse_holdings_csv
 from .models import Holding, JobRun, PortfolioSnapshot, SourceStatus, Topic, WatchItem
 from .novelty import apply_novelty, record_displayed_stories
 from .recommendations import recommendation_detail
+from .registries import (
+    GLOBAL_GUARDRAILS,
+    KNOWN_MISSING_SOURCE_STATUSES,
+    PERSONAL_ACCOUNT_REGISTRY,
+    SOURCE_REGISTRY,
+)
 from .security import (
     apply_security_headers,
     configured_cors_origins,
@@ -43,6 +50,8 @@ from .seeding import seed_if_empty
 from .source_status import serialize_source_status
 from .structured_sources import (
     crypto_attention_items,
+    finance_symbol_preferences,
+    github_attention_items,
     latest_crypto_prices,
     latest_market_prices,
     latest_weather_recommendations,
@@ -59,6 +68,7 @@ from .topic_engine import (
 )
 from .watchlist import (
     active_watch_status,
+    create_configured_watch_item,
     create_watch_item,
     evaluate_active_watch_items,
     latest_watch_evaluation,
@@ -76,25 +86,8 @@ logger = logging.getLogger(__name__)
 ALLOWED_ORIGINS = configured_cors_origins()
 
 
-class WatchItemCreate(BaseModel):
-    text: str = Field(..., min_length=1, max_length=2000)
-
-
-class WatchItemUpdate(BaseModel):
-    text: str | None = Field(default=None, min_length=1, max_length=2000)
-    title: str | None = Field(default=None, min_length=1, max_length=240)
-    original_text: str | None = Field(default=None, min_length=1, max_length=2000)
-    event_date: date | None = None
-    expires_at: date | None = None
-    check_frequency: str | None = Field(default=None, min_length=1, max_length=40)
-    watch_for: list[str] | None = None
-    surface_when: list[str] | None = None
-    status: str | None = None
-
-
-class MockArchiveGenerate(BaseModel):
-    days: int = Field(default=50, ge=1, le=365)
-    replace: bool = False
+class JobRunMissingError(RuntimeError):
+    """Raised when a background job can no longer persist status."""
 
 
 @asynccontextmanager
@@ -134,6 +127,93 @@ async def security_middleware(request: Request, call_next):
 
 def create_tables() -> None:
     Base.metadata.create_all(bind=engine)
+    ensure_watch_item_schema()
+
+
+def ensure_watch_item_schema() -> None:
+    dialect = engine.dialect.name
+    if dialect not in {"sqlite", "postgresql"}:
+        return
+
+    with engine.begin() as connection:
+        if dialect == "sqlite":
+            columns = {
+                row[1]
+                for row in connection.exec_driver_sql("PRAGMA table_info(watch_items)")
+            }
+        else:
+            inspector = inspect(connection)
+            if "watch_items" not in inspector.get_table_names():
+                return
+            columns = {
+                column["name"] for column in inspector.get_columns("watch_items")
+            }
+        if "watch_kind" not in columns:
+            connection.execute(
+                text(
+                    "ALTER TABLE watch_items "
+                    "ADD COLUMN watch_kind VARCHAR(40) DEFAULT 'personal_tracker'"
+                )
+            )
+        if "priority" not in columns:
+            connection.execute(
+                text("ALTER TABLE watch_items ADD COLUMN priority VARCHAR(40) DEFAULT 'watch_only'")
+            )
+        if "enabled" not in columns:
+            enabled_default = "BOOLEAN DEFAULT TRUE" if dialect == "postgresql" else "BOOLEAN DEFAULT 1"
+            connection.execute(text(f"ALTER TABLE watch_items ADD COLUMN enabled {enabled_default}"))
+        if "personal_state" not in columns:
+            json_default = "JSON DEFAULT '{}'::json" if dialect == "postgresql" else "JSON"
+            connection.execute(
+                text(f"ALTER TABLE watch_items ADD COLUMN personal_state {json_default}")
+            )
+            connection.execute(
+                text(
+                    "UPDATE watch_items SET personal_state = '{}' "
+                    "WHERE personal_state IS NULL"
+                )
+            )
+        if "external_state" not in columns:
+            json_default = "JSON DEFAULT '{}'::json" if dialect == "postgresql" else "JSON"
+            connection.execute(
+                text(f"ALTER TABLE watch_items ADD COLUMN external_state {json_default}")
+            )
+            connection.execute(
+                text(
+                    "UPDATE watch_items SET external_state = '{}' "
+                    "WHERE external_state IS NULL"
+                )
+            )
+        for column_name in (
+            "personal_context",
+            "source_config",
+            "evaluation_rules",
+            "prompt_config",
+        ):
+            if column_name not in columns:
+                json_default = "JSON DEFAULT '{}'::json" if dialect == "postgresql" else "JSON"
+                connection.execute(
+                    text(f"ALTER TABLE watch_items ADD COLUMN {column_name} {json_default}")
+                )
+                reset_statements = {
+                    "personal_context": (
+                        "UPDATE watch_items SET personal_context = '{}' "
+                        "WHERE personal_context IS NULL"
+                    ),
+                    "source_config": (
+                        "UPDATE watch_items SET source_config = '{}' "
+                        "WHERE source_config IS NULL"
+                    ),
+                    "evaluation_rules": (
+                        "UPDATE watch_items SET evaluation_rules = '{}' "
+                        "WHERE evaluation_rules IS NULL"
+                    ),
+                    "prompt_config": (
+                        "UPDATE watch_items SET prompt_config = '{}' "
+                        "WHERE prompt_config IS NULL"
+                    ),
+                }
+                connection.execute(text(reset_statements[column_name]))
 
 
 def upsert_snapshot(db: Session, summary: dict) -> None:
@@ -204,8 +284,7 @@ def update_job_run(
 ) -> None:
     job = db.get(JobRun, job_id)
     if not job:
-        logger.warning("job_run_missing", extra={"job_id": job_id, "status": status})
-        return
+        raise JobRunMissingError(f"Job run {job_id} is missing.")
     job.status = status
     job.message = message
     if details is not None:
@@ -243,14 +322,25 @@ def run_morning_job_background(job_id: int) -> None:
             )
         except Exception as exc:
             logger.exception("morning_briefing_job_failed", extra={"job_id": job_id})
-            update_job_run(
-                db,
-                job_id,
-                "failed",
-                "Morning briefing failed.",
-                {"error_type": type(exc).__name__},
-                completed=True,
-            )
+            try:
+                update_job_run(
+                    db,
+                    job_id,
+                    "failed",
+                    "Morning briefing failed.",
+                    {"error_type": type(exc).__name__},
+                    completed=True,
+                )
+            except JobRunMissingError:
+                logger.error(
+                    "morning_briefing_job_status_missing",
+                    extra={"job_id": job_id, "original_error_type": type(exc).__name__},
+                )
+            except Exception:
+                logger.exception(
+                    "morning_briefing_job_failure_status_update_failed",
+                    extra={"job_id": job_id, "original_error_type": type(exc).__name__},
+                )
 
 
 @app.get("/api/health")
@@ -264,9 +354,15 @@ def build_current_briefing_payload(db: Session) -> dict:
     )
     summary = apply_snapshot_changes(db, summarize(holdings))
     financial_attention = build_attention(holdings, summary)
-    market_attention = market_attention_items(latest_market_prices(db))
-    crypto_attention = crypto_attention_items(latest_crypto_prices(db))
+    symbol_preferences = finance_symbol_preferences(db)
+    market_attention = market_attention_items(
+        latest_market_prices(db), symbol_preferences
+    )
+    crypto_attention = crypto_attention_items(
+        latest_crypto_prices(db), symbol_preferences
+    )
     weather_attention = weather_attention_items(latest_weather_recommendations(db))
+    github_attention = github_attention_items(db)
     evaluate_active_watch_items(db)
     watch_attention = watch_attention_items(surfaced_watch_evaluations(db))
     watch_status = active_watch_status(db)
@@ -276,6 +372,7 @@ def build_current_briefing_payload(db: Session) -> dict:
             market_attention,
             crypto_attention,
             weather_attention,
+            github_attention,
             watch_attention,
             topic_attention_items(topic_briefings),
         ],
@@ -297,12 +394,6 @@ def build_current_briefing_payload(db: Session) -> dict:
         ),
         "opportunities": opportunities,
         "recommended_actions": recommended_actions,
-        "structured_attention": {
-            "market": market_attention,
-            "crypto": crypto_attention,
-            "weather": weather_attention,
-            "watchlist": watch_attention,
-        },
         "topic_briefings": [serialize_briefing(row) for row in topic_briefings],
         "holdings_count": len(holdings),
         "sources": sorted({holding.source for holding in holdings}),
@@ -376,7 +467,25 @@ def watch_items(db: Session = Depends(get_db)) -> dict:
 @app.post("/api/watch-items")
 def add_watch_item(payload: WatchItemCreate, db: Session = Depends(get_db)) -> dict:
     try:
-        row = create_watch_item(db, payload.text)
+        if payload.title:
+            row = create_configured_watch_item(
+                db,
+                title=payload.title,
+                original_text=payload.original_text or payload.text,
+                watch_kind=payload.watch_kind,
+                priority=payload.priority,
+                enabled=payload.enabled,
+                check_frequency=payload.check_frequency or "daily",
+                watch_for=payload.watch_for,
+                personal_context=payload.personal_context,
+                source_config=payload.source_config,
+                evaluation_rules=payload.evaluation_rules,
+                prompt_config=payload.prompt_config,
+            )
+        elif payload.text:
+            row = create_watch_item(db, payload.text)
+        else:
+            raise ValueError("Watch text or title is required.")
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     evaluate_active_watch_items(db)
@@ -447,6 +556,19 @@ def topics(db: Session = Depends(get_db)) -> dict:
     return {"topics": [serialize_topic(topic) for topic in rows]}
 
 
+@app.get("/api/source-registry")
+def source_registry() -> dict:
+    return {
+        "sources": SOURCE_REGISTRY,
+        "global_guardrails": GLOBAL_GUARDRAILS,
+    }
+
+
+@app.get("/api/personal-accounts")
+def personal_accounts() -> dict:
+    return {"personal_accounts": PERSONAL_ACCOUNT_REGISTRY}
+
+
 @app.get("/api/recommendations/{detail_id:path}")
 def recommendation(detail_id: str, db: Session = Depends(get_db)) -> dict:
     return recommendation_detail(db, detail_id)
@@ -465,7 +587,10 @@ def queue_morning_job(db: Session = Depends(get_db)) -> dict:
     }
 
 
-@app.get("/api/jobs/morning-briefing/{job_id}")
+@app.get(
+    "/api/jobs/morning-briefing/{job_id}",
+    dependencies=[Depends(require_internal_api_key)],
+)
 def morning_job_status(job_id: int, db: Session = Depends(get_db)) -> dict:
     job = db.get(JobRun, job_id)
     if job is None:
@@ -487,7 +612,37 @@ def morning_job_status(job_id: int, db: Session = Depends(get_db)) -> dict:
 )
 def source_statuses(db: Session = Depends(get_db)) -> dict:
     rows = list(db.scalars(select(SourceStatus).order_by(SourceStatus.name)).all())
-    return {"sources": [serialize_source_status(row) for row in rows]}
+    return {
+        "sources": [serialize_source_status(row) for row in rows],
+        "registry": SOURCE_REGISTRY,
+        "missing_or_unavailable": [
+            item
+            for item in SOURCE_REGISTRY
+            if item["auth_required"] or not item["available"]
+        ],
+        "known_missing": KNOWN_MISSING_SOURCE_STATUSES,
+    }
+
+
+@app.get(
+    "/api/internal/daily-review", dependencies=[Depends(require_internal_api_key)]
+)
+def daily_review(
+    review_date: date | None = Query(default=None, alias="date"),
+    db: Session = Depends(get_db),
+) -> dict:
+    today = date.today()
+    selected_date = review_date or today
+    if selected_date > today:
+        raise HTTPException(status_code=400, detail="Future reviews are not available.")
+
+    payload = get_archived_payload(db, selected_date)
+    if payload is None:
+        if selected_date < today:
+            raise HTTPException(status_code=404, detail="Daily review not found.")
+        payload = archive_metadata(build_current_briefing_payload(db), today, "live")
+
+    return build_daily_review(db, selected_date, payload)
 
 
 @app.post("/api/import/holdings")

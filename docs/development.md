@@ -18,7 +18,7 @@ Docker services:
 - PostgreSQL: `localhost:5432`
 - Scheduler: triggers the morning briefing job daily by POSTing to the API.
 
-The API creates tables on startup and seeds sample holdings, portfolio snapshots, topics, and fallback topic briefings when the database is empty.
+The API creates tables on startup and seeds topics, configured watches, and fallback topic briefings when the database is empty. Portfolio holdings are not seeded; portfolio attention starts after a real CSV import or another user-provided source.
 
 ## Backend Without Docker
 
@@ -43,18 +43,22 @@ The Vite dev server proxies `/api` to `http://localhost:8000` unless `VITE_API_T
 
 ## Validation
 
-Backend tests:
+Backend checks:
 
 ```bash
+python -m ruff check backend/app backend/tests
 python -m pytest -q
 ```
 
-Frontend build:
+Frontend checks:
 
 ```bash
 cd frontend
+npm run lint
 npm run build
 ```
+
+See [testing.md](testing.md) for Bandit, pip-audit, npm audit, coverage, Compose config, and Docker image-build validation.
 
 Full Docker smoke check:
 
@@ -101,6 +105,7 @@ If `FOCUSOS_INTERNAL_API_KEY` is configured, include:
 
 ```bash
 curl -H "X-FocusOS-Key: $FOCUSOS_INTERNAL_API_KEY" -X POST http://localhost:8000/api/jobs/morning-briefing
+curl -H "X-FocusOS-Key: $FOCUSOS_INTERNAL_API_KEY" http://localhost:8000/api/jobs/morning-briefing/<job_id>
 ```
 
 ## Archive And Watch Admin
@@ -132,6 +137,15 @@ curl http://localhost:8000/api/internal/source-status
 ```
 
 This endpoint is internal-only. Source diagnostics should not appear on the homepage.
+
+## Daily Review
+
+```bash
+curl http://localhost:8000/api/internal/daily-review
+curl "http://localhost:8000/api/internal/daily-review?date=2026-06-23"
+```
+
+Daily review is internal-only. It summarizes the job result, source counts, briefing buckets, missing integrations, and GitHub scan diagnostics for one date.
 
 ## More Detail
 

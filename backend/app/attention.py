@@ -238,6 +238,8 @@ def vertical_for_item(item: dict) -> str:
         return "Life"
     if source == "work" or topic == "work" or "project" in title:
         return "Work"
+    if source == "github" or topic == "github":
+        return "GitHub"
     if (
         source == "travel"
         or topic == "travel"
@@ -838,8 +840,12 @@ def build_morning_attention_feed(
     ]
     non_portfolio_items = [
         item for item in grouped_items if item not in portfolio_related
-    ]
-    portfolio_item = build_portfolio_review_item(financial_items + portfolio_related)
+    ] if financial_items else grouped_items
+    portfolio_item = (
+        build_portfolio_review_item(financial_items + portfolio_related)
+        if financial_items
+        else None
+    )
     candidates = sorted(
         [
             apply_attention_engine_fields(
@@ -850,7 +856,7 @@ def build_morning_attention_feed(
                 {**enrich_attention_item(item), "vertical": vertical_for_item(item)}
             )
         ]
-        + [apply_attention_engine_fields(portfolio_item)],
+        + ([apply_attention_engine_fields(portfolio_item)] if portfolio_item else []),
         key=attention_sort_key,
     )
 
@@ -917,7 +923,26 @@ def assistant_item(item: dict) -> dict:
         "triggered_surface_rule": item.get("triggered_surface_rule") or "",
         "suppressed_by": item.get("suppressed_by"),
         "why_today": item.get("why_today") or item.get("why_now", ""),
+        "watch_kind": item.get("watch_kind"),
+        "watch_priority": item.get("watch_priority"),
     }
+
+
+def assistant_item_key(item: dict) -> str:
+    detail_id = str(item.get("detail_id") or "")
+    if detail_id:
+        return detail_id
+    title = str(item.get("title") or "")
+    domain = str(item.get("domain") or item.get("vertical") or "")
+    return f"{domain}:{title}"
+
+
+def is_catch_up_item(item: dict) -> bool:
+    if item.get("attention_section") == "Catch Up":
+        return True
+    if item.get("attention_bucket") == "Catch Up":
+        return True
+    return item.get("suggested_posture") == "Catch Up"
 
 
 def is_quiet_attention_item(item: dict) -> bool:
@@ -933,7 +958,69 @@ def build_assistant_briefing(
     attention: Iterable[dict], watch_status: Iterable[dict] | None = None
 ) -> dict:
     items = list(attention)
-    meaningful = [item for item in items if not is_quiet_attention_item(item)]
+    catch_up_items = [item for item in items if is_catch_up_item(item)]
+    needs_attention_items = [
+        item
+        for item in items
+        if not is_catch_up_item(item)
+        and (
+            normalize_attention_category(
+                item.get("category") or item.get("classification")
+            )
+            == "action"
+            or item.get("suggested_posture") in {"Act", "Review"}
+        )
+    ]
+    catch_up_keys = {assistant_item_key(item) for item in catch_up_items}
+    needs_attention_keys = {assistant_item_key(item) for item in needs_attention_items}
+    watch_only_items = [
+        item
+        for item in items
+        if assistant_item_key(item) not in needs_attention_keys
+        and assistant_item_key(item) not in catch_up_keys
+        and not is_quiet_attention_item(item)
+    ]
+    quiet_attention_items = [
+        item
+        for item in items
+        if assistant_item_key(item) not in catch_up_keys
+        and is_quiet_attention_item(item)
+    ]
+    quiet_watch_items = [
+        {
+            "title": row.get("title", "Watch"),
+            "summary": row.get(
+                "summary", "No material change reached the briefing threshold today."
+            ),
+            "detail_id": row.get("detail_id", ""),
+            "domain": row.get("domain", "Watchlist"),
+            "category": "awareness",
+            "importance_score": 0,
+            "story_type": "focusos",
+            "source_watch_ids": row.get("source_watch_ids", []),
+            "triggered_surface_rule": "",
+            "suppressed_by": row.get(
+                "suppression_rule",
+                "No material change reached the briefing threshold today.",
+            ),
+            "why_today": row.get(
+                "summary", "No material change reached the briefing threshold today."
+            ),
+            "watch_kind": row.get("watch_kind"),
+            "watch_priority": row.get("priority"),
+        }
+        for row in list(watch_status or [])
+        if not row.get("should_surface")
+    ][:8]
+    meaningful = [
+        item
+        for item in items
+        if normalize_attention_category(
+            item.get("category") or item.get("classification")
+        )
+        == "action"
+        or (not is_catch_up_item(item) and not is_quiet_attention_item(item))
+    ]
     primary_source = meaningful[0] if meaningful else None
     primary_score = (
         int(primary_source.get("importance_score") or 0) if primary_source else 0
@@ -948,8 +1035,29 @@ def build_assistant_briefing(
 
     if has_primary:
         primary_focus = assistant_item(primary_source)
+        primary_key = assistant_item_key(primary_source)
         mode = "focused"
-        secondary_candidates = [item for item in items if item is not primary_source]
+        secondary_candidates = [
+            item for item in items if assistant_item_key(item) != primary_key
+        ]
+        needs_attention_items = [
+            item
+            for item in needs_attention_items
+            if assistant_item_key(item) != primary_key
+        ]
+        watch_only_items = [
+            item
+            for item in watch_only_items
+            if assistant_item_key(item) != primary_key
+        ]
+        catch_up_items = [
+            item for item in catch_up_items if assistant_item_key(item) != primary_key
+        ]
+        quiet_attention_items = [
+            item
+            for item in quiet_attention_items
+            if assistant_item_key(item) != primary_key
+        ]
     else:
         primary_focus = {
             "title": "No single focus today",
@@ -965,6 +1073,7 @@ def build_assistant_briefing(
             "why_today": "No item met the primary-focus threshold.",
         }
         mode = "quiet"
+        primary_key = ""
         secondary_candidates = items
 
     secondary_notes = [
@@ -981,5 +1090,10 @@ def build_assistant_briefing(
         "mode": mode,
         "primary_focus": primary_focus,
         "secondary_notes": secondary_notes,
+        "needs_attention": [assistant_item(item) for item in needs_attention_items],
+        "watch_only": [assistant_item(item) for item in watch_only_items],
+        "catch_up": [assistant_item(item) for item in catch_up_items],
+        "quiet": [assistant_item(item) for item in quiet_attention_items][:4]
+        + quiet_watch_items,
         "watch_status": list(watch_status or []),
     }

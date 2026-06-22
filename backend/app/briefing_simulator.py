@@ -630,10 +630,112 @@ def scenario_catalog() -> list[SimulatedScenario]:
                 ),
             ],
         ),
+        SimulatedScenario(
+            "liquidity warning day",
+            "Liquid cash below target should become Needs attention.",
+            [
+                finance_signal(
+                    "Liquid cash is below the $10,000 target",
+                    "Available liquid cash is close enough to the configured target to change spending and runway posture.",
+                    importance=92,
+                ),
+            ],
+            [
+                signal(
+                    "Opinion-only market chatter stayed noisy",
+                    "No verified price or thesis change was attached to the chatter.",
+                    category="awareness",
+                    source="market",
+                    topic="Markets",
+                    priority=3,
+                    importance=30,
+                ),
+            ],
+        ),
+        SimulatedScenario(
+            "github action queue day",
+            "Public repo health should create a practical action queue.",
+            [],
+            [
+                signal(
+                    "focus-os has an automated PR",
+                    "An automated PR is open and likely quick to review.",
+                    category="action",
+                    source="github",
+                    topic="github",
+                    priority=8,
+                    importance=84,
+                    actionability=74,
+                    story_type="focusos",
+                ),
+                signal(
+                    "Archived repo emitted noise",
+                    "Archived repositories are explicitly suppressed.",
+                    category="awareness",
+                    source="github",
+                    topic="github",
+                    priority=2,
+                    importance=20,
+                ),
+            ],
+        ),
+        SimulatedScenario(
+            "shopping media quiet day",
+            "Shopping and media should remain optional unless tied to saved interests.",
+            [],
+            [
+                signal(
+                    "Generic sale stayed quiet",
+                    "No saved product or target price matched the deal.",
+                    category="awareness",
+                    source="shopping",
+                    topic="Shopping",
+                    priority=2,
+                    importance=24,
+                ),
+                signal(
+                    "High-confidence media match is available",
+                    "A short recommendation matches known preferences and current availability.",
+                    category="awareness",
+                    source="media",
+                    topic="Media",
+                    priority=5,
+                    importance=58,
+                ),
+            ],
+        ),
+        SimulatedScenario(
+            "life reminder action day",
+            "User-entered personal admin should surface when the warning window opens.",
+            [],
+            [
+                signal(
+                    "Bogey medication refill enters warning window",
+                    "The user-entered refill date is close enough to avoid a scramble.",
+                    category="action",
+                    source="watchlist",
+                    topic="Life",
+                    priority=9,
+                    importance=90,
+                    actionability=84,
+                    story_type="focusos",
+                ),
+                signal(
+                    "Undated note stayed quiet",
+                    "The note has no action window or posture change.",
+                    category="awareness",
+                    source="watchlist",
+                    topic="Life",
+                    priority=2,
+                    importance=22,
+                    story_type="focusos",
+                ),
+            ],
+        ),
     ]
 
 
-def build_simulated_days(total_days: int = 40) -> list[SimulatedScenario]:
+def build_simulated_days(total_days: int = 50) -> list[SimulatedScenario]:
     catalog = scenario_catalog()
     return [catalog[index % len(catalog)] for index in range(total_days)]
 
@@ -713,7 +815,7 @@ def evaluate_day(day_number: int, scenario: SimulatedScenario) -> dict:
     }
 
 
-def run_simulation(total_days: int = 40) -> list[dict]:
+def run_simulation(total_days: int = 50) -> list[dict]:
     return [
         evaluate_day(index + 1, scenario)
         for index, scenario in enumerate(build_simulated_days(total_days))
@@ -729,7 +831,7 @@ def render_markdown(results: Iterable[dict]) -> str:
         )
 
     lines = [
-        "# FocusOS 40-Day Briefing Simulation",
+        f"# FocusOS {len(rows)}-Day Briefing Simulation",
         "",
         "Purpose: validate whether ranking and layout assumptions hold across many mornings before changing UI again.",
         "",
@@ -788,7 +890,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Generate synthetic FocusOS briefing days."
     )
-    parser.add_argument("--days", type=int, default=40)
+    parser.add_argument("--days", type=int, default=50)
     parser.add_argument("--output-dir", type=Path, default=Path("docs/simulations"))
     args = parser.parse_args()
     json_path, markdown_path = write_simulation_artifacts(args.days, args.output_dir)

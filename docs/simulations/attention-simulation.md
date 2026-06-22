@@ -1,13 +1,13 @@
-# FocusOS 40-Day Briefing Simulation
+# FocusOS 50-Day Briefing Simulation
 
 Purpose: validate whether ranking and layout assumptions hold across many mornings before changing UI again.
 
 ## Summary
 
-- Simulated days: 40
-- Layout recommendations: flat=6, major_event=5, quiet=17, single_hero=10, two_lead=2
-- Days where a static hero may overstate importance: 25
-- Days with scan-rule violations: 6
+- Simulated days: 50
+- Layout recommendations: flat=8, major_event=5, quiet=19, single_hero=15, two_lead=3
+- Days where a static hero may overstate importance: 30
+- Days with scan-rule violations: 14
 
 ## Manual Review Questions
 
@@ -189,7 +189,50 @@ For each day, ask:
 - **Today / Travel / Review / focusos**: Travel advisory issued for vacation route - The advisory could affect departure timing.
 - **Around You / Sports / Ignore / external**: Yankees game postponed - Good result, but no meaningful change to your posture today.
 
-### Day 16: Normal Tuesday
+### Day 16: Liquidity Warning Day
+
+- Notes: Liquid cash below target should become Needs attention.
+- Recommended layout: `single_hero`
+- Why: A single high-signal item deserves a hero treatment.
+- Signal: max=92, avg=92, stories=1, TypeB=1, TypeA=0
+- Scan issues: Homepage story count must be 3-7; got 1.
+
+- **Today / Portfolio / Review / focusos**: Review portfolio positioning - 1 portfolio signals crossed review thresholds.
+
+### Day 17: Github Action Queue Day
+
+- Notes: Public repo health should create a practical action queue.
+- Recommended layout: `quiet`
+- Why: The day is mostly background context.
+- Signal: max=84, avg=59.5, stories=2, TypeB=2, TypeA=0
+- Scan issues: Homepage story count must be 3-7; got 2.
+
+- **Today / GitHub / Review / focusos**: focus-os has an automated PR - An automated PR is open and likely quick to review.
+- **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
+
+### Day 18: Shopping Media Quiet Day
+
+- Notes: Shopping and media should remain optional unless tied to saved interests.
+- Recommended layout: `flat`
+- Why: No item is strong enough to force a hero; use a flat briefing.
+- Signal: max=58, avg=46.5, stories=2, TypeB=1, TypeA=1
+- Scan issues: Homepage story count must be 3-7; got 2.
+
+- **Around You / Awareness / Watch / external**: High-confidence media match is available - A short recommendation matches known preferences and current availability.
+- **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
+
+### Day 19: Life Reminder Action Day
+
+- Notes: User-entered personal admin should surface when the warning window opens.
+- Recommended layout: `single_hero`
+- Why: A single high-signal item deserves a hero treatment.
+- Signal: max=90, avg=62.5, stories=2, TypeB=2, TypeA=0
+- Scan issues: Homepage story count must be 3-7; got 2.
+
+- **Today / Awareness / Review / focusos**: Bogey medication refill enters warning window - The user-entered refill date is close enough to avoid a scramble.
+- **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
+
+### Day 20: Normal Tuesday
 
 - Notes: Low-signal day where a forced hero would overstate importance.
 - Recommended layout: `quiet`
@@ -201,7 +244,7 @@ For each day, ask:
 - **Around You / Sports / Ignore / external**: Yankees won 5-0 - Good result, but no meaningful change to your posture today.
 - **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
 
-### Day 17: Boring Market Day
+### Day 21: Boring Market Day
 
 - Notes: Portfolio is stable; external context should not inflate the page.
 - Recommended layout: `flat`
@@ -212,7 +255,7 @@ For each day, ask:
 - **Around You / Sports / Ignore / external**: Yankees had a scheduled off day - Good result, but no meaningful change to your posture today.
 - **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
 
-### Day 18: Market Crash Day
+### Day 22: Market Crash Day
 
 - Notes: Major portfolio day where a dominant hero is justified.
 - Recommended layout: `major_event`
@@ -223,7 +266,7 @@ For each day, ask:
 - **Today / Portfolio / Review / focusos**: Review portfolio positioning - 4 portfolio signals crossed review thresholds. Technology concentration is above target. 2 are opportunities, not separate homepage stories.
 - **Around You / Sports / Ignore / external**: Yankees won 4-2 - Good result, but no meaningful change to your posture today.
 
-### Day 19: Crypto Crash Day
+### Day 23: Crypto Crash Day
 
 - Notes: Crypto should matter only when it changes the user's portfolio posture.
 - Recommended layout: `single_hero`
@@ -234,7 +277,7 @@ For each day, ask:
 - **Today / Portfolio / Review / focusos**: Portfolio opportunity window is open - 3 portfolio signals crossed review thresholds.
 - **Around You / Technology / Watch / external**: AI product launches were routine - No material change to the AI landscape.
 
-### Day 20: No News Day
+### Day 24: No News Day
 
 - Notes: Tests whether the layout can avoid inventing a hero.
 - Recommended layout: `flat`
@@ -245,7 +288,7 @@ For each day, ask:
 - **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
 - **Around You / Sports / Ignore / external**: Yankees schedule is quiet - Good result, but no meaningful change to your posture today.
 
-### Day 21: Golf Weather Week
+### Day 25: Golf Weather Week
 
 - Notes: A Type B life-planning item should lead if portfolio is quiet.
 - Recommended layout: `quiet`
@@ -256,7 +299,7 @@ For each day, ask:
 - **Around You / Technology / Watch / external**: AI funding news stayed incremental - No major capability or access shift.
 - **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
 
-### Day 22: Yankees Playoff Clinch
+### Day 26: Yankees Playoff Clinch
 
 - Notes: Sports can matter when it changes context, but should not feel like a task.
 - Recommended layout: `quiet`
@@ -267,7 +310,7 @@ For each day, ask:
 - **Around You / Life / Watch / focusos**: Weekend golf weather is playable - Conditions are fine but not meaningfully better than alternatives.
 - **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
 
-### Day 23: Yankees Routine Win
+### Day 27: Yankees Routine Win
 
 - Notes: Routine sports reporting should recede or be omitted.
 - Recommended layout: `quiet`
@@ -279,7 +322,7 @@ For each day, ask:
 - **Around You / Sports / Ignore / external**: Yankees won 6-3 - Good result, but no meaningful change to your posture today.
 - **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
 
-### Day 24: Rutgers Game Week
+### Day 28: Rutgers Game Week
 
 - Notes: A personal calendar-adjacent item should outrank generic news.
 - Recommended layout: `quiet`
@@ -290,7 +333,7 @@ For each day, ask:
 - **Around You / Sports / Ignore / external**: Yankees won 5-4 - Good result, but no meaningful change to your posture today.
 - **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
 
-### Day 25: Rutgers Tickets Renew Friday
+### Day 29: Rutgers Tickets Renew Friday
 
 - Notes: Deadline-like personal item should be Today, but not corporate.
 - Recommended layout: `single_hero`
@@ -302,7 +345,7 @@ For each day, ask:
 - **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
 - **Around You / Life / Watch / focusos**: Golf weather is ordinary - No day is clearly better than the rest.
 
-### Day 26: Vacation Week
+### Day 30: Vacation Week
 
 - Notes: Travel planning should lead when dates create risk.
 - Recommended layout: `single_hero`
@@ -313,7 +356,7 @@ For each day, ask:
 - **Around You / Sports / Ignore / external**: Yankees start a normal series - Good result, but no meaningful change to your posture today.
 - **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
 
-### Day 27: Busy Work Week
+### Day 31: Busy Work Week
 
 - Notes: Work context should dominate only if inactivity or deadline signals exist.
 - Recommended layout: `two_lead`
@@ -325,7 +368,7 @@ For each day, ask:
 - **Around You / Technology / Watch / external**: AI policy news remains background - Worth knowing, not a near-term decision.
 - **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
 
-### Day 28: Ai Breakthrough Day
+### Day 32: Ai Breakthrough Day
 
 - Notes: External news can lead if the signal is genuinely high.
 - Recommended layout: `single_hero`
@@ -336,7 +379,7 @@ For each day, ask:
 - **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
 - **Around You / Life / Watch / focusos**: Golf forecast is ordinary - No strong planning window emerged.
 
-### Day 29: Iran Escalation Day
+### Day 33: Iran Escalation Day
 
 - Notes: World news should be Background unless it changes practical posture.
 - Recommended layout: `quiet`
@@ -347,7 +390,7 @@ For each day, ask:
 - **Around You / Sports / Ignore / external**: Yankees won 2-1 - Good result, but no meaningful change to your posture today.
 - **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
 
-### Day 30: Major Event Day
+### Day 34: Major Event Day
 
 - Notes: Single external event may justify one dominant story.
 - Recommended layout: `major_event`
@@ -358,7 +401,50 @@ For each day, ask:
 - **Today / Travel / Review / focusos**: Travel advisory issued for vacation route - The advisory could affect departure timing.
 - **Around You / Sports / Ignore / external**: Yankees game postponed - Good result, but no meaningful change to your posture today.
 
-### Day 31: Normal Tuesday
+### Day 35: Liquidity Warning Day
+
+- Notes: Liquid cash below target should become Needs attention.
+- Recommended layout: `single_hero`
+- Why: A single high-signal item deserves a hero treatment.
+- Signal: max=92, avg=92, stories=1, TypeB=1, TypeA=0
+- Scan issues: Homepage story count must be 3-7; got 1.
+
+- **Today / Portfolio / Review / focusos**: Review portfolio positioning - 1 portfolio signals crossed review thresholds.
+
+### Day 36: Github Action Queue Day
+
+- Notes: Public repo health should create a practical action queue.
+- Recommended layout: `quiet`
+- Why: The day is mostly background context.
+- Signal: max=84, avg=59.5, stories=2, TypeB=2, TypeA=0
+- Scan issues: Homepage story count must be 3-7; got 2.
+
+- **Today / GitHub / Review / focusos**: focus-os has an automated PR - An automated PR is open and likely quick to review.
+- **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
+
+### Day 37: Shopping Media Quiet Day
+
+- Notes: Shopping and media should remain optional unless tied to saved interests.
+- Recommended layout: `flat`
+- Why: No item is strong enough to force a hero; use a flat briefing.
+- Signal: max=58, avg=46.5, stories=2, TypeB=1, TypeA=1
+- Scan issues: Homepage story count must be 3-7; got 2.
+
+- **Around You / Awareness / Watch / external**: High-confidence media match is available - A short recommendation matches known preferences and current availability.
+- **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
+
+### Day 38: Life Reminder Action Day
+
+- Notes: User-entered personal admin should surface when the warning window opens.
+- Recommended layout: `single_hero`
+- Why: A single high-signal item deserves a hero treatment.
+- Signal: max=90, avg=62.5, stories=2, TypeB=2, TypeA=0
+- Scan issues: Homepage story count must be 3-7; got 2.
+
+- **Today / Awareness / Review / focusos**: Bogey medication refill enters warning window - The user-entered refill date is close enough to avoid a scramble.
+- **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
+
+### Day 39: Normal Tuesday
 
 - Notes: Low-signal day where a forced hero would overstate importance.
 - Recommended layout: `quiet`
@@ -370,7 +456,7 @@ For each day, ask:
 - **Around You / Sports / Ignore / external**: Yankees won 5-0 - Good result, but no meaningful change to your posture today.
 - **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
 
-### Day 32: Boring Market Day
+### Day 40: Boring Market Day
 
 - Notes: Portfolio is stable; external context should not inflate the page.
 - Recommended layout: `flat`
@@ -381,7 +467,7 @@ For each day, ask:
 - **Around You / Sports / Ignore / external**: Yankees had a scheduled off day - Good result, but no meaningful change to your posture today.
 - **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
 
-### Day 33: Market Crash Day
+### Day 41: Market Crash Day
 
 - Notes: Major portfolio day where a dominant hero is justified.
 - Recommended layout: `major_event`
@@ -392,7 +478,7 @@ For each day, ask:
 - **Today / Portfolio / Review / focusos**: Review portfolio positioning - 4 portfolio signals crossed review thresholds. Technology concentration is above target. 2 are opportunities, not separate homepage stories.
 - **Around You / Sports / Ignore / external**: Yankees won 4-2 - Good result, but no meaningful change to your posture today.
 
-### Day 34: Crypto Crash Day
+### Day 42: Crypto Crash Day
 
 - Notes: Crypto should matter only when it changes the user's portfolio posture.
 - Recommended layout: `single_hero`
@@ -403,7 +489,7 @@ For each day, ask:
 - **Today / Portfolio / Review / focusos**: Portfolio opportunity window is open - 3 portfolio signals crossed review thresholds.
 - **Around You / Technology / Watch / external**: AI product launches were routine - No material change to the AI landscape.
 
-### Day 35: No News Day
+### Day 43: No News Day
 
 - Notes: Tests whether the layout can avoid inventing a hero.
 - Recommended layout: `flat`
@@ -414,7 +500,7 @@ For each day, ask:
 - **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
 - **Around You / Sports / Ignore / external**: Yankees schedule is quiet - Good result, but no meaningful change to your posture today.
 
-### Day 36: Golf Weather Week
+### Day 44: Golf Weather Week
 
 - Notes: A Type B life-planning item should lead if portfolio is quiet.
 - Recommended layout: `quiet`
@@ -425,7 +511,7 @@ For each day, ask:
 - **Around You / Technology / Watch / external**: AI funding news stayed incremental - No major capability or access shift.
 - **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
 
-### Day 37: Yankees Playoff Clinch
+### Day 45: Yankees Playoff Clinch
 
 - Notes: Sports can matter when it changes context, but should not feel like a task.
 - Recommended layout: `quiet`
@@ -436,7 +522,7 @@ For each day, ask:
 - **Around You / Life / Watch / focusos**: Weekend golf weather is playable - Conditions are fine but not meaningfully better than alternatives.
 - **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
 
-### Day 38: Yankees Routine Win
+### Day 46: Yankees Routine Win
 
 - Notes: Routine sports reporting should recede or be omitted.
 - Recommended layout: `quiet`
@@ -448,7 +534,7 @@ For each day, ask:
 - **Around You / Sports / Ignore / external**: Yankees won 6-3 - Good result, but no meaningful change to your posture today.
 - **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
 
-### Day 39: Rutgers Game Week
+### Day 47: Rutgers Game Week
 
 - Notes: A personal calendar-adjacent item should outrank generic news.
 - Recommended layout: `quiet`
@@ -459,7 +545,7 @@ For each day, ask:
 - **Around You / Sports / Ignore / external**: Yankees won 5-4 - Good result, but no meaningful change to your posture today.
 - **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
 
-### Day 40: Rutgers Tickets Renew Friday
+### Day 48: Rutgers Tickets Renew Friday
 
 - Notes: Deadline-like personal item should be Today, but not corporate.
 - Recommended layout: `single_hero`
@@ -470,4 +556,27 @@ For each day, ask:
 - **Around You / Technology / Watch / external**: AI model news was incremental - No major access or capability shift.
 - **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
 - **Around You / Life / Watch / focusos**: Golf weather is ordinary - No day is clearly better than the rest.
+
+### Day 49: Vacation Week
+
+- Notes: Travel planning should lead when dates create risk.
+- Recommended layout: `single_hero`
+- Why: A single high-signal item deserves a hero treatment.
+- Signal: max=86, avg=52.3, stories=3, TypeB=2, TypeA=1
+
+- **Today / Travel / Review / focusos**: Vacation departure needs a travel check - Weather and airport timing could affect departure planning.
+- **Around You / Sports / Ignore / external**: Yankees start a normal series - Good result, but no meaningful change to your posture today.
+- **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
+
+### Day 50: Busy Work Week
+
+- Notes: Work context should dominate only if inactivity or deadline signals exist.
+- Recommended layout: `two_lead`
+- Why: Two meaningful items should share the top of the page.
+- Signal: max=84, avg=57.2, stories=4, TypeB=3, TypeA=1
+
+- **Today / Work / Review / focusos**: Two projects have been inactive for 10 days - This may create hidden drag if it is not reviewed.
+- **Today / Life / Consider / focusos**: Wednesday is a good golf window - Good weather exists, but work context may constrain timing.
+- **Around You / Technology / Watch / external**: AI policy news remains background - Worth knowing, not a near-term decision.
+- **Around You / Portfolio / Watch / focusos**: No major portfolio actions currently identified. - No portfolio event is leading the morning brief.
 

@@ -107,11 +107,16 @@ The watchlist is not a passive "things being watched" section. It is the user's 
 Each watch defines:
 
 - object
-- conditions
-- sources
+- watch kind: Personal Tracker, External Monitor, or Hybrid
+- priority: Primary Allowed, Watch Only, or Quiet By Default
+- what the system knows from user-provided state
+- what the system checks from external sources
+- personal accounts and interests, separate from data providers
+- connected data sources, missing sources, and manual inputs
 - cadence
 - surface rules
 - suppression rules
+- generated daily prompt and optional prompt override wrapped by global guardrails
 - expiration
 - preferred output
 
@@ -121,18 +126,18 @@ Mike's default profile must seed baseline active watches on first load. Presets 
 
 Default configured watches include:
 
-- Portfolio & market positioning
-- Yankees
-- Rutgers
-- Golf weather
-- Golf equipment
-- AI / developer tools
-- Work / namespace migration
-- Side projects
-- Home maintenance
-- Bogey
-- Life logistics
-- Travel
+- Personal finance and liquidity runway
+- Investing ideas and market pullbacks
+- Bitcoin accumulation posture
+- Trading systems and liquidity constraints
+- Personal GitHub repo health
+- Side project and FocusOS validation
+- Big tech, AI, and major company releases
+- Sports radar with spoiler-safe recap
+- Golf weather for Basking Ridge
+- Shopping and product interest radar
+- Media and watchlist radar
+- Life notes, reminders, and personal admin
 
 Planning artifacts must keep these layers separate:
 
@@ -153,7 +158,7 @@ Every briefing output must carry provenance:
 
 If an item cannot explain which configured watch produced it, which surface rule fired, and why it matters today, it should not appear.
 
-Manual imports and system-generated items must either bind to an existing configured watch or declare equivalent provenance. For example, portfolio import outputs bind to Portfolio & market positioning with the crossed threshold as the triggered rule.
+Manual imports and system-generated items must either bind to an existing configured watch or declare equivalent provenance. For example, portfolio import outputs bind to Personal finance and liquidity runway with the crossed threshold as the triggered rule.
 
 The backend is authoritative for stable watch provenance ids. API watch-item responses include `source_watch_id`, and the frontend must use that value instead of reconstructing watch ids from titles.
 
@@ -198,8 +203,9 @@ UI rules:
 - Primary focus appears only when a lead candidate exists.
 - Watch Admin is separate from the Briefing.
 - Watch Admin supports add, edit, delete, and preset-created editable watches.
-- Watch Admin shows conditions, sources, cadence, surface rules, suppression rules, expiration, and preferred output.
-- Appendix shows source watch, triggered rule, suppressed rule when present, and why today.
+- Watch Admin supports Quick Add, Guided Setup, and Advanced daily prompt override.
+- Watch Admin shows Personal Accounts / Interests, Connected Data Sources, Missing Sources, Manual Inputs, cadence, surface rules, suppression rules, prompt, expiration, and preferred output.
+- Appendix shows source watch, watch kind, priority, account/source/manual separation, triggered rule, suppressed rule when present, and why today.
 - Archive supports prior simulated days and must not navigate into future dates.
 
 Briefing rules:
@@ -213,7 +219,7 @@ Briefing rules:
 - Portfolio, Portfolio Intelligence, Topics, and watches are inputs. They should not appear as separate Briefing sections.
 - Portfolio concentration, allocation, cash, and holdings analysis belongs off the Briefing page unless it is important enough to be an actual morning event.
 
-Information classes are internal ranking/context only. They must not appear as homepage section headers.
+Information classes are internal ranking/context only. The public briefing buckets are Needs attention, Watch only, Catch Up, and Quiet.
 
 - Action Required: rare threshold breaks or urgent events, ideally 0-3 per day.
 - Potential Opportunity: windows worth considering, without turning them into tasks.
@@ -225,7 +231,7 @@ Portfolio layers:
 - Portfolio Intelligence: concentration, threshold crossings, allocation drift, and potential opportunities. This is analysis.
 - Attention Feed: conclusions and events that genuinely deserve morning attention.
 
-Implementation rule: the `attention` field returned by `GET /api/briefing` is the single supported homepage feed. Finance, structured sources, and topic briefings may contribute inputs, but the frontend must not reconstruct the feed from alternate portfolio or topic payloads.
+Implementation rule: the `attention` field returned by `GET /api/briefing` is the single supported homepage feed. Finance, structured sources, and topic briefings may contribute inputs, but the frontend must not reconstruct the feed from alternate portfolio, topic, or structured-source payloads. Duplicate homepage payloads such as `structured_attention`, `financial_attention`, and `portfolio_intelligence` should stay absent from the route contract.
 
 ## Morning Workflow
 

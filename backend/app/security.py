@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import secrets
 from collections.abc import Iterable
 
 from fastapi import Header, HTTPException, Request, status
@@ -50,7 +51,7 @@ async def require_internal_api_key(x_focusos_key: str | None = Header(default=No
     expected = os.getenv("FOCUSOS_INTERNAL_API_KEY")
     if not expected:
         return
-    if not x_focusos_key or x_focusos_key != expected:
+    if not x_focusos_key or not secrets.compare_digest(x_focusos_key, expected):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid internal API key.")
 
 
@@ -59,6 +60,7 @@ def apply_security_headers(response: Response) -> None:
     response.headers.setdefault("X-Frame-Options", "DENY")
     response.headers.setdefault("Referrer-Policy", "no-referrer")
     response.headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+    response.headers.setdefault("X-Robots-Tag", "noindex, nofollow")
     response.headers.setdefault("Cache-Control", "no-store")
     if os.getenv("FOCUSOS_ENABLE_HSTS", "").lower() in {"1", "true", "yes"}:
         response.headers.setdefault("Strict-Transport-Security", "max-age=31536000; includeSubDomains")

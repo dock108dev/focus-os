@@ -39,11 +39,11 @@ h3 {
 }
 
 h1 {
-  margin: 0 0 3px;
+  margin: 0;
   color: #111827;
   font-family: "Libre Baskerville", Georgia, "Times New Roman", serif;
-  font-size: clamp(1.85rem, 7vw, 2.9rem);
-  line-height: 1.05;
+  font-size: 3.2rem;
+  line-height: 0.98;
 }
 
 h2 {
@@ -74,15 +74,19 @@ h3 {
   align-items: flex-start;
   justify-content: space-between;
   gap: 14px;
-  padding: 10px 0 14px;
+  padding: 16px 0 16px;
   border-bottom: 1px solid #d8dce2;
 }
 
-.brand {
-  margin: 0 0 4px;
+.mastheadCopy {
+  min-width: 0;
+}
+
+.sectionTitle {
+  margin: 8px 0 2px;
   color: #1e3a5f;
-  font-size: 0.78rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 800;
   letter-spacing: 0;
 }
 
@@ -444,6 +448,65 @@ h3 {
   opacity: 0.65;
 }
 
+.guidedSetupPanel {
+  display: grid;
+  gap: 10px;
+  padding: 15px 0 18px;
+  border-bottom: 1px solid #eceff3;
+}
+
+.guidedGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.guidedSetupPanel input,
+.guidedSetupPanel select,
+.guidedSetupPanel textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #d8dce2;
+  border-radius: 6px;
+  padding: 9px 10px;
+  color: #111827;
+  font: inherit;
+  font-size: 0.84rem;
+  background: #ffffff;
+}
+
+.checkLine {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #374151;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.checkLine input {
+  width: auto;
+}
+
+.textButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  justify-self: start;
+  border: 1px solid #d8dce2;
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: #111827;
+  font-size: 0.8rem;
+  font-weight: 800;
+  background: #ffffff;
+}
+
+.textButton:disabled {
+  opacity: 0.45;
+}
+
 .ownedWatchList {
   display: grid;
   gap: 0;
@@ -468,6 +531,14 @@ h3 {
   justify-content: space-between;
   gap: 10px;
   margin-bottom: 4px;
+}
+
+.watchBadges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 5px;
+  min-width: max-content;
 }
 
 .ownedWatchItem h3 {
@@ -527,6 +598,31 @@ h3 {
   color: #111827;
   font-size: 0.84rem;
   line-height: 1.4;
+}
+
+.promptPreview {
+  margin-top: 10px;
+  color: #374151;
+  font-size: 0.78rem;
+}
+
+.promptPreview summary {
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.promptPreview pre {
+  overflow: auto;
+  max-height: 260px;
+  margin: 8px 0 0;
+  padding: 10px;
+  border: 1px solid #eceff3;
+  border-radius: 6px;
+  color: #111827;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  background: #f9fafb;
 }
 
 .miniIconButton {
@@ -914,6 +1010,10 @@ h3 {
     padding-top: 22px;
   }
 
+  h1 {
+    font-size: 4.1rem;
+  }
+
   .attentionItem {
     padding: 16px 0;
   }
@@ -934,6 +1034,10 @@ h3 {
 }
 
 @media (max-width: 680px) {
+  h1 {
+    font-size: 2.65rem;
+  }
+
   .masthead {
     align-items: stretch;
     flex-direction: column;
@@ -951,6 +1055,20 @@ h3 {
 
   .ownedWatchItem {
     grid-template-columns: 1fr;
+  }
+
+  .guidedGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .watchItemTitleRow {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .watchBadges {
+    justify-content: flex-start;
+    min-width: 0;
   }
 
   .watchItemActions {

@@ -119,14 +119,42 @@ def test_morning_attention_feed_collapses_portfolio_thresholds_before_awareness(
     assert feed[0]["signal_count"] == 2
     assert feed[0]["story_type"] == "focusos"
     assert feed[0]["source_watch_ids"] == [
-        source_watch_id("Portfolio & market positioning")
+        source_watch_id("Personal finance and liquidity runway")
     ]
     assert feed[0]["triggered_surface_rule"] == (
         "portfolio review threshold crossed"
     )
     assert feed[1]["story_type"] == "external"
-    assert feed[1]["source_watch_ids"] == [source_watch_id("Yankees")]
+    assert feed[1]["source_watch_ids"] == [
+        source_watch_id("Sports radar with spoiler-safe recap")
+    ]
     assert "Bitcoin is up 1.5% over 24 hours" not in [item["title"] for item in feed]
+
+
+def test_morning_attention_feed_does_not_invent_portfolio_without_holdings():
+    market_attention = [
+        {
+            "title": "UNH is down 6.0% from its five-day high",
+            "why_now": "Market pullback crossed the review range.",
+            "action": "",
+            "priority": 7,
+            "source": "market",
+            "detail_id": "market:UNH:pullback",
+            "category": "opportunity",
+            "importance_score": 80,
+            "actionability_score": 55,
+        }
+    ]
+
+    feed = build_morning_attention_feed([market_attention], [])
+
+    assert [item["title"] for item in feed] == [
+        "UNH is down 6.0% from its five-day high"
+    ]
+    assert feed[0]["vertical"] == "Markets"
+    assert "Portfolio opportunity window is open" not in [
+        item["title"] for item in feed
+    ]
 
 
 def test_portfolio_review_item_groups_financial_signals():
@@ -163,7 +191,7 @@ def test_portfolio_review_item_groups_financial_signals():
     assert item["vertical"] == "Portfolio"
     assert "Technology concentration is above target" in item["why_now"]
     assert item["source_watch_ids"] == [
-        source_watch_id("Portfolio & market positioning")
+        source_watch_id("Personal finance and liquidity runway")
     ]
 
 
@@ -287,4 +315,38 @@ def test_assistant_briefing_promotes_one_primary_focus_and_three_notes():
     assert briefing["mode"] == "focused"
     assert briefing["primary_focus"]["title"] == "Review portfolio positioning"
     assert len(briefing["secondary_notes"]) == 3
+    assert briefing["needs_attention"] == []
     assert briefing["watch_status"] == [{"title": "WWDC"}]
+
+
+def test_assistant_briefing_dedupes_primary_from_all_buckets():
+    primary = {
+        "title": "sda has a failing workflow",
+        "why_now": "Recent GitHub Actions workflow failure.",
+        "detail_id": "github:sda:failed_workflow",
+        "domain": "GitHub",
+        "category": "action",
+        "importance_score": 82,
+        "suggested_posture": "Review",
+        "story_type": "external",
+    }
+    catch_up = {
+        "title": "Yankees recap available from last night",
+        "why_now": "Spoiler-safe highlights are available if you want to catch up.",
+        "detail_id": "topic:99",
+        "domain": "Sports",
+        "category": "awareness",
+        "importance_score": 64,
+        "suggested_posture": "Catch Up",
+        "attention_section": "Catch Up",
+        "story_type": "external",
+    }
+
+    briefing = build_assistant_briefing([primary, catch_up])
+
+    assert briefing["primary_focus"]["detail_id"] == "github:sda:failed_workflow"
+    assert briefing["needs_attention"] == []
+    assert briefing["watch_only"] == []
+    assert [item["title"] for item in briefing["catch_up"]] == [
+        "Yankees recap available from last night"
+    ]

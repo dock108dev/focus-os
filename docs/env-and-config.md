@@ -33,14 +33,19 @@ These are read only when `AI_PROVIDER=codex_cli`:
 - `CODEX_CLI_TIMEOUT`: per-topic timeout in seconds. Defaults to `90`.
 - `CODEX_CLI_WORKDIR`: workspace passed to the Codex CLI. Defaults to the repository root.
 
-The stock backend Docker image does not install Codex CLI. Use this provider from a local backend environment or extend the image.
+The backend Docker image installs the same `@openai/codex` CLI family used locally, so `AI_PROVIDER=codex_cli` is supported in Docker. The container still needs credentials through the same environment path used by the CLI, typically `OPENAI_API_KEY`.
 
 ## Weather Inputs
 
-- `GOLF_LATITUDE`: Open-Meteo latitude. Defaults to central New Jersey.
-- `GOLF_LONGITUDE`: Open-Meteo longitude.
+- `GOLF_LATITUDE`: Open-Meteo latitude. Defaults to Basking Ridge, NJ.
+- `GOLF_LONGITUDE`: Open-Meteo longitude. Defaults to Basking Ridge, NJ.
 - `GOLF_LOCATION`: display label stored with the golf recommendation.
-- `WEATHER_TIMEZONE`: Open-Meteo forecast timezone.
+- `WEATHER_TIMEZONE`: Open-Meteo forecast timezone. Defaults to `America/New_York`.
+
+## GitHub Inputs
+
+- `GITHUB_TOKEN`: optional GitHub API token. When unset, FocusOS uses public unauthenticated GitHub API calls.
+- `FOCUSOS_GITHUB_OWNER`: GitHub user or organization to scan. Defaults to `dock108dev`.
 
 ## Frontend
 
@@ -48,4 +53,4 @@ The stock backend Docker image does not install Codex CLI. Use this provider fro
 
 ## Docker Defaults
 
-Docker Compose sets `DATABASE_URL` to PostgreSQL, defaults `AI_PROVIDER` to `fallback`, and mounts source directories into the API and web containers for local development. The API and scheduler receive `FOCUSOS_INTERNAL_API_KEY`; if the key is configured, the scheduler sends it as `X-FocusOS-Key`.
+Docker Compose sets `DATABASE_URL` to PostgreSQL, defaults `AI_PROVIDER` to `fallback`, forwards structured-source and Codex CLI settings into the API container, binds exposed ports to `127.0.0.1`, and mounts source directories into the API and web containers for local development. If `.env` sets `AI_PROVIDER=codex_cli`, the API uses the installed Codex CLI inside its container. The API and scheduler receive `FOCUSOS_INTERNAL_API_KEY`; if the key is configured, the scheduler sends it as `X-FocusOS-Key`.

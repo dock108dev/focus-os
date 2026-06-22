@@ -19,7 +19,7 @@ Then open:
 - API health: http://localhost:8000/api/health
 - Briefing payload: http://localhost:8000/api/briefing
 
-The API creates tables on startup and seeds sample holdings, default topics, portfolio snapshots, and fallback topic briefings when the database is empty.
+The API creates tables on startup and seeds default topics, configured watches, and fallback topic briefings when the database is empty. Portfolio holdings are not seeded; import real holdings CSVs before expecting portfolio-specific attention.
 
 ## Common Workflows
 
@@ -35,11 +35,15 @@ Operational routes require `X-FocusOS-Key` when `FOCUSOS_INTERNAL_API_KEY` is se
 ## Test And Build
 
 ```bash
+python -m ruff check backend/app backend/tests
 python -m pytest -q
 cd frontend
 npm ci
+npm run lint
 npm run build
 ```
+
+See [Testing](docs/testing.md) for security scans, dependency audits, Docker validation, and CI coverage gates.
 
 ## Documentation
 

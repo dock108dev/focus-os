@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import os
-import subprocess
+import subprocess  # nosec B404
 import tempfile
 from dataclasses import dataclass
 from datetime import date
@@ -21,6 +21,14 @@ from .voice import clean_action_text, clean_editorial_text
 
 
 logger = logging.getLogger(__name__)
+SPORTS_CATCH_UP_TOPICS = {
+    "cowboys",
+    "f1",
+    "major world sports",
+    "pga",
+    "rutgers",
+    "yankees",
+}
 
 
 class AIProviderConfigurationError(RuntimeError):
@@ -217,7 +225,7 @@ def briefing_prompt(topic: Topic) -> str:
         "Return strict JSON with keys: title, summary, bullets, action, priority. "
         "Write like an editor, not an assistant. Never use phrases like 'Mike should care', 'why this matters', "
         "'review whether', 'consider whether', or 'decide whether'. "
-        "The title must answer why the update is being shown before what happened. "
+        "The title must answer why the item is being shown before what happened. "
         "The summary should add concrete context only when useful. "
         "Some summaries can be one short sentence. Bullets must contain at most four short supporting facts. "
         "Set action to an empty string unless immediate action is genuinely warranted. "
@@ -269,7 +277,7 @@ def generate_codex_cli_payload(topic: Topic) -> dict | None:
             output.name,
             briefing_prompt(topic),
         ]
-        subprocess.run(
+        subprocess.run(  # nosec B603
             command,
             cwd=workspace,
             text=True,
@@ -298,6 +306,21 @@ def generate_ai_payload(topic: Topic) -> dict | None:
     raise AIProviderConfigurationError(f"Unsupported AI_PROVIDER {provider!r}.")
 
 
+def provider_error_message(exc: Exception) -> str:
+    if isinstance(exc, subprocess.CalledProcessError):
+        output = (exc.stderr or exc.stdout or "").strip()
+        message = f"Provider command exited with status {exc.returncode}."
+        if output:
+            message = f"{message} {output[-500:]}"
+        return message
+    if isinstance(exc, subprocess.TimeoutExpired):
+        return f"Provider command timed out after {exc.timeout} seconds."
+    if isinstance(exc, FileNotFoundError):
+        executable = exc.filename or "configured executable"
+        return f"Provider executable not found: {executable}."
+    return str(exc)
+
+
 def generate_topic_briefing(
     topic: Topic, errors: list[TopicGenerationError] | None = None
 ) -> TopicBriefing:
@@ -318,7 +341,7 @@ def generate_topic_briefing(
                     topic=topic.name,
                     provider=provider,
                     error_type=type(exc).__name__,
-                    message=str(exc),
+                    message=provider_error_message(exc),
                 )
             )
         payload = fallback_payload(topic)
@@ -345,7 +368,7 @@ def run_morning_briefing(db: Session) -> list[TopicBriefing]:
     topics = list(
         db.scalars(
             select(Topic)
-            .where(Topic.is_active == True, Topic.source_type != "structured")
+            .where(Topic.is_active.is_(True), Topic.source_type != "structured")
             .order_by(Topic.priority.desc())
         ).all()
     )
@@ -393,7 +416,7 @@ def seed_topic_briefings_if_empty(db: Session) -> None:
     seed_topics_if_empty(db)
     topics = list(
         db.scalars(
-            select(Topic).where(Topic.is_active == True).order_by(Topic.priority.desc())
+            select(Topic).where(Topic.is_active.is_(True)).order_by(Topic.priority.desc())
         ).all()
     )
     db.add_all(
@@ -417,7 +440,7 @@ def seed_topic_briefings_if_empty(db: Session) -> None:
 
 
 def latest_topic_briefings(db: Session) -> list[TopicBriefing]:
-    topics = list(db.scalars(select(Topic).where(Topic.is_active == True)).all())
+    topics = list(db.scalars(select(Topic).where(Topic.is_active.is_(True))).all())
     rows: list[TopicBriefing] = []
     for topic in topics:
         briefing = db.scalar(
@@ -479,17 +502,87 @@ def topic_decision_metadata(briefing: TopicBriefing) -> dict:
     }
 
 
+def is_sports_catch_up_briefing(briefing: TopicBriefing) -> bool:
+    topic_name = (briefing.topic.name if briefing.topic else "").lower()
+    if topic_name not in SPORTS_CATCH_UP_TOPICS:
+        return False
+    text = f"{briefing.title} {briefing.summary} {' '.join(briefing.bullets or [])}".lower()
+    if topic_name == "yankees":
+        return True
+    return any(
+        token in text
+        for token in (
+            "completed",
+            "game recap",
+            "highlights",
+            "last night",
+            "postgame",
+            "qualifying recap",
+            "race recap",
+            "recap available",
+        )
+    )
+
+
+def spoiler_safe_catch_up_title(briefing: TopicBriefing) -> str:
+    topic_name = briefing.topic.name if briefing.topic else "Sports"
+    normalized = topic_name.lower()
+    if normalized == "yankees":
+        return "Yankees recap available from last night"
+    if normalized == "rutgers":
+        return "Rutgers highlights are available"
+    if normalized == "cowboys":
+        return "Cowboys postgame highlights are available"
+    if normalized == "f1":
+        return "F1 race recap is available"
+    if normalized == "pga":
+        return "PGA recap is available"
+    return "Major sports recap available"
+
+
+def catch_up_metadata(metadata: dict) -> dict:
+    return {
+        **metadata,
+        "category": "awareness",
+        "importance_score": min(70, int(metadata.get("importance_score") or 60)),
+        "actionability_score": min(20, int(metadata.get("actionability_score") or 8)),
+        "suggested_posture": "Catch Up",
+        "attention_section": "Catch Up",
+        "why_user_cares": (
+            "A completed event has a recap available if you want to catch up."
+        ),
+    }
+
+
+def catch_up_summary(briefing: TopicBriefing) -> str:
+    topic_name = briefing.topic.name if briefing.topic else "Sports"
+    if topic_name.lower() == "yankees":
+        return "Spoiler-safe highlights are available if you want to catch up."
+    return "A completed event has a recap available if you want to catch up."
+
+
 def topic_attention_items(briefings: Iterable[TopicBriefing]) -> list[dict]:
     items = []
     for briefing in briefings:
         if briefing.generated_by == "fallback":
             continue
         metadata = topic_decision_metadata(briefing)
+        catch_up = is_sports_catch_up_briefing(briefing)
+        if catch_up:
+            metadata = catch_up_metadata(metadata)
         items.append(
             enrich_attention_item(
                 {
-                    "title": clean_editorial_text(briefing.title),
-                    "why_now": clean_editorial_text(briefing.summary),
+                    "title": (
+                        spoiler_safe_catch_up_title(briefing)
+                        if catch_up
+                        else clean_editorial_text(briefing.title)
+                    ),
+                    "why_now": (
+                        catch_up_summary(briefing)
+                        if catch_up
+                        else clean_editorial_text(briefing.summary)
+                    ),
                     "action": clean_action_text(briefing.action),
                     "priority": briefing.priority,
                     "source": "topic",

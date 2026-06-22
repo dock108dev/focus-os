@@ -2,10 +2,10 @@ from app.briefing_simulator import layout_recommendation, run_simulation
 
 
 def test_simulation_generates_required_scenarios():
-    results = run_simulation(40)
+    results = run_simulation(50)
     scenarios = {row["scenario"] for row in results}
 
-    assert len(results) == 40
+    assert len(results) == 50
     assert "boring market day" in scenarios
     assert "market crash day" in scenarios
     assert "yankees playoff clinch" in scenarios
@@ -16,10 +16,14 @@ def test_simulation_generates_required_scenarios():
     assert "ai breakthrough day" in scenarios
     assert "golf weather week" in scenarios
     assert "crypto crash day" in scenarios
+    assert "liquidity warning day" in scenarios
+    assert "github action queue day" in scenarios
+    assert "shopping media quiet day" in scenarios
+    assert "life reminder action day" in scenarios
 
 
 def test_simulation_reveals_non_hero_days():
-    results = run_simulation(40)
+    results = run_simulation(50)
     layouts = {row["recommended_layout"] for row in results}
 
     assert "flat" in layouts or "quiet" in layouts

@@ -13,7 +13,7 @@ Purpose: portfolio, cash, allocation, market movement, and opportunities.
 Implemented:
 
 - Manual CSV import for Fidelity, SoFi, and Tastytrade.
-- Yahoo Finance for market prices.
+- Yahoo Finance for holdings-derived market prices plus tracked symbols UNH, USO, SPY, QQQ, AAPL, and S&P 500 proxy.
 
 Planned alternatives:
 
@@ -47,9 +47,28 @@ Open-Meteo was selected first because it requires no API key and allows the golf
 
 Priority use case:
 
-- “Thursday is the best golf day this week.”
+- “Basking Ridge has a standout playable golf window.”
 
-Weather should probably arrive before sports because it creates direct personal actions.
+Open-Meteo is evaluated against Basking Ridge defaults. Monday is suppressed because the course is closed, and Friday afternoon is downranked because it is likely crowded.
+
+### Public GitHub
+
+Purpose: repo health for Mike's public `dock108dev` repos.
+
+Implemented:
+
+- GitHub public REST API.
+- Non-archived public repos only.
+- Open PR detection.
+- Automated PR detection from author metadata.
+- About-two-week inactivity detection.
+- Optional `GITHUB_TOKEN` for authenticated API calls; unauthenticated public calls are used when unset.
+
+Missing:
+
+- Private repos unless granted.
+- Security alerts unless token scope allows them.
+- Failing Actions beyond public metadata available to the current API path.
 
 ### Sports
 
@@ -71,9 +90,10 @@ SportsDataIO is a later paid option if ESPN is not enough.
 
 The morning job refreshes:
 
-- Yahoo Finance market prices for non-cash, non-Bitcoin holdings.
+- Yahoo Finance market prices for non-cash, non-Bitcoin holdings and Mike's tracked market symbols.
 - CoinGecko Bitcoin price and 24-hour movement.
-- Open-Meteo seven-day weather for the golf recommendation.
+- Open-Meteo seven-day Basking Ridge weather for the golf recommendation.
+- GitHub public repo health for `dock108dev`.
 - AI or fallback briefings for active unstructured topics.
 
 The app records source health for refreshes and provider failures. Failed source refreshes do not stop every other source from refreshing, but database commit failures are allowed to fail the job.
@@ -87,6 +107,15 @@ Source health is stored internally and exposed at:
 ```
 
 This endpoint is intentionally not shown on the homepage. Mike should see useful cards, not connector diagnostics.
+
+The source registry is also exposed at:
+
+```text
+/api/source-registry
+/api/personal-accounts
+```
+
+The registry separates personal accounts/interests from provider integrations and marks missing or auth-required sources explicitly.
 
 ## Tier 2: AI Sources
 

@@ -14,8 +14,17 @@ from .briefing_simulator import build_simulated_days, layout_recommendation
 from .models import ArchivedBriefing
 
 
+BRIEFING_PAYLOAD_DUPLICATE_KEYS = (
+    "structured_attention",
+    "financial_attention",
+    "portfolio_intelligence",
+)
+
+
 def archive_metadata(payload: dict, briefing_date: date, source: str) -> dict:
     next_payload = dict(payload)
+    for duplicate_key in BRIEFING_PAYLOAD_DUPLICATE_KEYS:
+        next_payload.pop(duplicate_key, None)
     today = date.today()
     if "assistant_briefing" not in next_payload:
         next_payload["assistant_briefing"] = build_assistant_briefing(
@@ -143,12 +152,6 @@ def mock_briefing_payload(briefing_date: date, scenario) -> dict:
             "watch_status": watch_status,
             "opportunities": [],
             "recommended_actions": [],
-            "structured_attention": {
-                "market": [],
-                "crypto": [],
-                "weather": [],
-                "watchlist": [],
-            },
             "topic_briefings": [],
             "holdings_count": 0,
             "sources": ["mock-archive"],

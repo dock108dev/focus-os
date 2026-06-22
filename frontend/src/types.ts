@@ -100,6 +100,8 @@ export type AssistantBriefingItem = {
   triggered_surface_rule: string;
   suppressed_by: string | null;
   why_today: string;
+  watch_kind?: WatchKind | null;
+  watch_priority?: WatchPriority | null;
 };
 
 export type WatchStatus = {
@@ -116,6 +118,10 @@ export type AssistantBriefing = {
   mode: "focused" | "quiet";
   primary_focus: AssistantBriefingItem;
   secondary_notes: AssistantBriefingItem[];
+  needs_attention: AssistantBriefingItem[];
+  watch_only: AssistantBriefingItem[];
+  catch_up: AssistantBriefingItem[];
+  quiet: AssistantBriefingItem[];
   watch_status: WatchStatus[];
 };
 
@@ -141,6 +147,9 @@ export type GenerationMetadata = {
   expiration_date: string;
 };
 
+export type WatchKind = "personal_tracker" | "external_monitor" | "hybrid";
+export type WatchPriority = "primary_allowed" | "watch_only" | "quiet_by_default";
+
 export type WatchItem = {
   id: number;
   source_watch_id: string;
@@ -149,9 +158,66 @@ export type WatchItem = {
   event_date: string | null;
   expires_at: string | null;
   check_frequency: string;
+  watch_kind: WatchKind;
+  priority: WatchPriority;
+  enabled: boolean;
   watch_for: string[];
   conditions: string[];
   source_inputs: string[];
+  personal_state: {
+    inputs: string[];
+    known_facts: string[];
+    last_user_update: string | null;
+    thresholds: Record<string, number>;
+    next_relevant_date: string | null;
+    actionable_when: string[];
+    ignore: string[];
+  };
+  external_state: {
+    sources: string[];
+    query_strategy: string[];
+    freshness_window: string;
+    signal_threshold: string;
+    materiality_test: string[];
+    briefing_rule: string;
+  };
+  personal_context: {
+    why_i_care: string;
+    accounts: string[];
+    interests: string[];
+    owned_assets: string[];
+    ignored_accounts: string[];
+    manual_facts?: {
+      tracked_symbols?: string[];
+      symbol_notes?: Record<string, string | { position?: string; note?: string; thesis?: string }>;
+      [key: string]: unknown;
+    };
+  };
+  source_config: {
+    connected_sources: string[];
+    available_sources: string[];
+    missing_sources: string[];
+    manual_inputs: string[];
+  };
+  evaluation_rules: {
+    surface_when: string[];
+    suppress_when: string[];
+    primary_focus_allowed: boolean;
+  };
+  prompt_config: {
+    generated_prompt: string;
+    daily_prompt_override: string | null;
+    guardrails_enabled: boolean;
+    global_guardrails: string[];
+  };
+  personal_inputs: string[];
+  external_sources: string[];
+  personal_accounts: string[];
+  personal_interests: string[];
+  connected_data_sources: string[];
+  missing_sources: string[];
+  manual_inputs: string[];
+  validation_warnings: string[];
   cadence: string;
   surface_when: string[];
   surface_rules: string[];

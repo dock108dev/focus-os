@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import os
+import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta
 
@@ -21,6 +22,9 @@ def next_run(now: datetime, target: str) -> datetime:
 
 
 def trigger_job(api_url: str) -> None:
+    parsed = urllib.parse.urlparse(api_url)
+    if parsed.scheme not in {"http", "https"}:
+        raise ValueError("FOCUSOS_API_URL must use http or https")
     headers = {}
     internal_key = os.getenv("FOCUSOS_INTERNAL_API_KEY")
     if internal_key:
@@ -30,7 +34,7 @@ def trigger_job(api_url: str) -> None:
         headers=headers,
         method="POST",
     )
-    with urllib.request.urlopen(request, timeout=120) as response:
+    with urllib.request.urlopen(request, timeout=120) as response:  # nosec B310
         response.read()
 
 

@@ -5,10 +5,12 @@ from datetime import date, timedelta
 from typing import Iterable
 
 from sqlalchemy import delete, func, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from .attention import enrich_attention_item
 from .models import WatchEvaluation, WatchItem
+from .registries import GLOBAL_GUARDRAILS
 from .watch_provenance import source_watch_id
 
 
@@ -23,6 +25,59 @@ DEFAULT_SUPPRESS_WHEN = [
     "filler that only says the watched object is coming up",
 ]
 DEFAULT_WATCH_FOR = ["timing", "schedule changes"]
+WATCH_KINDS = {"personal_tracker", "external_monitor", "hybrid"}
+WATCH_PRIORITIES = {"primary_allowed", "watch_only", "quiet_by_default"}
+PERSONAL_SOURCE_LABELS = {
+    "manual portfolio imports",
+    "calendar",
+    "work project status",
+    "work project metrics",
+    "repo migration tracker",
+    "project notes",
+    "project spend tracker",
+    "project activity log",
+    "project roadmap",
+    "contractor messages",
+    "home maintenance log",
+    "vet or pharmacy source",
+    "pet supply source",
+    "boarding reservation source",
+    "care calendar",
+    "calendar and admin inbox",
+    "admin inbox",
+    "bill calendar",
+    "hotel reservation source",
+}
+EXTERNAL_SOURCE_LABELS = {
+    "weather",
+    "parking feed",
+    "maps or transit",
+    "calendar or venue/source update",
+    "post-event sources",
+    "developer docs",
+    "vendor pricing pages",
+    "vendor changelog",
+    "crypto price feed",
+    "rate feed",
+    "market price feed",
+    "sports results feed",
+    "sports schedule feed",
+    "sports injury reports",
+    "sports standings feed",
+    "sports rankings feed",
+    "golf retailer and manufacturer feeds",
+    "golf fitting calendar",
+    "retailer price feed",
+    "manufacturer release calendar",
+    "airline source",
+    "airline and maps",
+}
+PORTFOLIO_THRESHOLDS = {
+    "cash_above": 0.08,
+    "technology_above": 0.45,
+    "single_position_above": 0.25,
+    "pullback_above": 0.05,
+}
 SOURCE_HINTS = {
     "weather": "weather",
     "wind": "weather",
@@ -221,8 +276,272 @@ def source_inputs_for(watch_for: Iterable[str]) -> list[str]:
     return list(dict.fromkeys(sources or ["user-provided watch config"]))
 
 
+def split_source_inputs(watch_for: Iterable[str]) -> tuple[list[str], list[str]]:
+    personal: list[str] = []
+    external: list[str] = []
+    for source in source_inputs_for(watch_for):
+        if source in PERSONAL_SOURCE_LABELS or source == "user-provided watch config":
+            personal.append(source)
+        if source in EXTERNAL_SOURCE_LABELS:
+            external.append(source)
+        if source not in PERSONAL_SOURCE_LABELS and source not in EXTERNAL_SOURCE_LABELS:
+            external.append(source)
+    return list(dict.fromkeys(personal)), list(dict.fromkeys(external))
+
+
+def infer_watch_kind(title: str, watch_for: Iterable[str]) -> str:
+    personal_sources, external_sources = split_source_inputs(watch_for)
+    lower_title = title.lower()
+    if "portfolio" in lower_title:
+        return "hybrid"
+    if personal_sources and external_sources:
+        return "hybrid"
+    if external_sources and not personal_sources:
+        return "external_monitor"
+    return "personal_tracker"
+
+
+def personal_state_for(
+    title: str,
+    original_text: str,
+    watch_for: Iterable[str],
+    surface_when: Iterable[str],
+    event_date: date | None,
+) -> dict:
+    personal_sources, _ = split_source_inputs(watch_for)
+    lower_title = title.lower()
+    thresholds = PORTFOLIO_THRESHOLDS if "portfolio" in lower_title else {}
+    known_facts = [line.strip(" -\t") for line in original_text.splitlines()[1:] if line.strip()]
+    ignore = [
+        "generic advice",
+        "repeated reminders with no new state change",
+        "inputs that do not meet configured surface rules",
+    ]
+    return {
+        "inputs": personal_sources,
+        "known_facts": known_facts[:4],
+        "last_user_update": None,
+        "thresholds": thresholds,
+        "next_relevant_date": event_date.isoformat() if event_date else None,
+        "actionable_when": list(surface_when),
+        "ignore": ignore,
+    }
+
+
+def external_state_for(
+    title: str,
+    watch_for: Iterable[str],
+    surface_when: Iterable[str],
+) -> dict:
+    _, external_sources = split_source_inputs(watch_for)
+    lower_title = title.lower()
+    watch_terms = list(watch_for)
+    query_terms = [title, *watch_terms[:4]]
+    freshness = "daily"
+    if any(
+        token in lower_title or token in watch_terms
+        for token in ("weather", "travel", "yankees", "rutgers")
+    ):
+        freshness = "same-day"
+    return {
+        "sources": external_sources,
+        "query_strategy": query_terms,
+        "freshness_window": freshness,
+        "signal_threshold": "material change from the previous checked state",
+        "materiality_test": list(surface_when),
+        "briefing_rule": "surface only when the change alters attention, timing, or posture",
+    }
+
+
+def normalize_watch_kind(value: str | None) -> str:
+    kind = (value or "").strip().lower().replace("-", "_").replace(" ", "_")
+    if kind in {"personal", "personal_state", "personal_tracker"}:
+        return "personal_tracker"
+    if kind in {"external", "external_signal", "external_monitor"}:
+        return "external_monitor"
+    if kind == "hybrid":
+        return "hybrid"
+    raise ValueError("Watch kind must be personal_tracker, external_monitor, or hybrid.")
+
+
+def normalize_watch_priority(value: str | None) -> str:
+    priority = (value or "").strip().lower().replace("-", "_").replace(" ", "_")
+    if priority in WATCH_PRIORITIES:
+        return priority
+    if priority in {"primary", "can_be_primary"}:
+        return "primary_allowed"
+    if priority in {"quiet", "low"}:
+        return "quiet_by_default"
+    if not priority:
+        return "watch_only"
+    raise ValueError("Watch priority must be primary_allowed, watch_only, or quiet_by_default.")
+
+
+def personal_context_for(
+    title: str,
+    original_text: str,
+    watch_for: Iterable[str],
+    *,
+    why_i_care: str | None = None,
+    accounts: list[str] | None = None,
+    interests: list[str] | None = None,
+    owned_assets: list[str] | None = None,
+    ignored_accounts: list[str] | None = None,
+) -> dict:
+    text_lines = [line.strip() for line in original_text.splitlines() if line.strip()]
+    return {
+        "why_i_care": why_i_care or (text_lines[1] if len(text_lines) > 1 else f"Mike asked FocusOS to monitor {title}."),
+        "accounts": accounts or [],
+        "interests": interests or list(watch_for),
+        "owned_assets": owned_assets or [],
+        "ignored_accounts": ignored_accounts or [],
+    }
+
+
+def source_config_for(
+    watch_for: Iterable[str],
+    *,
+    connected_sources: list[str] | None = None,
+    available_sources: list[str] | None = None,
+    missing_sources: list[str] | None = None,
+    manual_inputs: list[str] | None = None,
+) -> dict:
+    personal_sources, external_sources = split_source_inputs(watch_for)
+    return {
+        "connected_sources": connected_sources or external_sources,
+        "available_sources": available_sources or [],
+        "missing_sources": missing_sources or [],
+        "manual_inputs": manual_inputs or personal_sources,
+    }
+
+
+def evaluation_rules_for(
+    surface_when: Iterable[str],
+    suppress_when: Iterable[str] | None = None,
+    *,
+    primary_focus_allowed: bool | None = None,
+) -> dict:
+    return {
+        "surface_when": list(surface_when),
+        "suppress_when": list(suppress_when or DEFAULT_SUPPRESS_WHEN),
+        "primary_focus_allowed": bool(primary_focus_allowed),
+    }
+
+
+def generated_daily_prompt(
+    *,
+    title: str,
+    watch_kind: str,
+    priority: str,
+    personal_context: dict,
+    source_config: dict,
+    evaluation_rules: dict,
+    daily_prompt_override: str | None = None,
+) -> str:
+    accounts_interests = list(personal_context.get("accounts") or []) + list(
+        personal_context.get("interests") or []
+    )
+    lines = [
+        "Evaluate this watch for today's FocusOS briefing.",
+        "",
+        f"Watch:\n{title}",
+        "",
+        f"Watch kind:\n{watch_kind}",
+        "",
+        f"Priority:\n{priority}",
+        "",
+        f"Why Mike cares:\n{personal_context.get('why_i_care', '')}",
+        "",
+        f"Personal accounts / interests:\n{', '.join(accounts_interests) or 'None'}",
+        "",
+        f"Connected data sources:\n{', '.join(source_config.get('connected_sources') or []) or 'None'}",
+        "",
+        f"Missing sources:\n{', '.join(source_config.get('missing_sources') or []) or 'None'}",
+        "",
+        f"Manual inputs:\n{', '.join(source_config.get('manual_inputs') or []) or 'None'}",
+        "",
+        f"Surface only when:\n{'; '.join(evaluation_rules.get('surface_when') or []) or 'No surface rules configured'}",
+        "",
+        f"Stay quiet when:\n{'; '.join(evaluation_rules.get('suppress_when') or []) or 'No suppression rules configured'}",
+        "",
+        "Global rules:",
+        *[f"- {rule}" for rule in GLOBAL_GUARDRAILS],
+    ]
+    if daily_prompt_override:
+        lines.extend(["", "User override instruction:", daily_prompt_override])
+    lines.extend(
+        [
+            "",
+            "Return:",
+            "- status: needs_attention | watch_only | quiet",
+            "- title",
+            "- summary",
+            "- source evidence",
+            "- personal facts used",
+            "- external facts checked",
+            "- missing data",
+            "- triggered rule",
+            "- suppression result",
+            "- recommended action if any",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def prompt_config_for(
+    *,
+    title: str,
+    watch_kind: str,
+    priority: str,
+    personal_context: dict,
+    source_config: dict,
+    evaluation_rules: dict,
+    daily_prompt_override: str | None = None,
+) -> dict:
+    return {
+        "generated_prompt": generated_daily_prompt(
+            title=title,
+            watch_kind=watch_kind,
+            priority=priority,
+            personal_context=personal_context,
+            source_config=source_config,
+            evaluation_rules=evaluation_rules,
+            daily_prompt_override=daily_prompt_override,
+        ),
+        "daily_prompt_override": daily_prompt_override,
+        "guardrails_enabled": True,
+        "global_guardrails": list(GLOBAL_GUARDRAILS),
+    }
+
+
+def validation_warnings_for(row: WatchItem) -> list[str]:
+    source_config = row.source_config or {}
+    evaluation_rules = row.evaluation_rules or {}
+    prompt_config = row.prompt_config or {}
+    warnings: list[str] = []
+    if not source_config.get("connected_sources") and not source_config.get("manual_inputs"):
+        warnings.append("No data source enabled")
+    if source_config.get("manual_inputs") and not row.original_text.strip():
+        warnings.append("Manual input required")
+    if not evaluation_rules.get("suppress_when"):
+        warnings.append("No suppression rules configured")
+    if len(row.watch_for or []) > 8:
+        warnings.append("This watch may be too broad")
+    if source_config.get("missing_sources") and not source_config.get("connected_sources"):
+        warnings.append("This watch cannot currently produce real data")
+    override = prompt_config.get("daily_prompt_override")
+    if override:
+        lower = str(override).lower()
+        if "surface" not in lower:
+            warnings.append("Prompt override lacks a surface rule")
+        if "suppress" not in lower and "quiet" not in lower:
+            warnings.append("Prompt override lacks a suppress rule")
+    return warnings
+
+
 def suppression_rules_for(row: WatchItem) -> list[str]:
-    rules = list(DEFAULT_SUPPRESS_WHEN)
+    configured = (row.evaluation_rules or {}).get("suppress_when")
+    rules = list(configured or DEFAULT_SUPPRESS_WHEN)
     surface_rules = row.surface_when or []
     if surface_rules:
         rules.append("inputs that do not meet configured surface rules")
@@ -237,14 +556,38 @@ def parse_watch_item(text: str, today: date | None = None) -> dict:
         event_date + timedelta(days=1) if event_date else today + timedelta(days=30)
     )
     watch_for = extract_watch_for(text)
+    surface_when = list(DEFAULT_SURFACE_WHEN)
+    watch_kind = infer_watch_kind(title, watch_for)
+    priority = "watch_only"
+    personal_context = personal_context_for(title, text.strip(), watch_for)
+    source_config = source_config_for(watch_for)
+    evaluation_rules = evaluation_rules_for(surface_when, DEFAULT_SUPPRESS_WHEN)
     return {
         "title": title,
         "original_text": text.strip(),
         "event_date": event_date,
         "expires_at": expires_at,
         "check_frequency": "daily",
+        "watch_kind": watch_kind,
+        "priority": priority,
+        "enabled": True,
         "watch_for": watch_for,
-        "surface_when": list(DEFAULT_SURFACE_WHEN),
+        "personal_state": personal_state_for(
+            title, text.strip(), watch_for, surface_when, event_date
+        ),
+        "external_state": external_state_for(title, watch_for, surface_when),
+        "personal_context": personal_context,
+        "source_config": source_config,
+        "evaluation_rules": evaluation_rules,
+        "prompt_config": prompt_config_for(
+            title=title,
+            watch_kind=watch_kind,
+            priority=priority,
+            personal_context=personal_context,
+            source_config=source_config,
+            evaluation_rules=evaluation_rules,
+        ),
+        "surface_when": surface_when,
         "briefing_posture": "watch",
         "status": "active",
     }
@@ -254,6 +597,79 @@ def create_watch_item(db: Session, text: str, today: date | None = None) -> Watc
     if not text.strip():
         raise ValueError("Watch text is required.")
     row = WatchItem(**parse_watch_item(text, today=today))
+    db.add(row)
+    db.commit()
+    db.refresh(row)
+    return row
+
+
+def create_configured_watch_item(
+    db: Session,
+    *,
+    title: str,
+    original_text: str | None = None,
+    watch_kind: str | None = None,
+    priority: str | None = None,
+    enabled: bool = True,
+    check_frequency: str = "daily",
+    watch_for: list[str] | None = None,
+    personal_context: dict | None = None,
+    source_config: dict | None = None,
+    evaluation_rules: dict | None = None,
+    prompt_config: dict | None = None,
+    today: date | None = None,
+) -> WatchItem:
+    today = today or date.today()
+    cleaned_title = clean_title(title)
+    if not cleaned_title:
+        raise ValueError("Watch title is required.")
+    text = (original_text or cleaned_title).strip()
+    dimensions = [item.strip() for item in (watch_for or extract_watch_for(text)) if item.strip()]
+    surface_when = list((evaluation_rules or {}).get("surface_when") or DEFAULT_SURFACE_WHEN)
+    suppress_when = list((evaluation_rules or {}).get("suppress_when") or DEFAULT_SUPPRESS_WHEN)
+    resolved_kind = normalize_watch_kind(watch_kind or infer_watch_kind(cleaned_title, dimensions))
+    resolved_priority = normalize_watch_priority(priority)
+    context = personal_context or personal_context_for(cleaned_title, text, dimensions)
+    sources = source_config or source_config_for(dimensions)
+    rules = evaluation_rules_for(
+        surface_when,
+        suppress_when,
+        primary_focus_allowed=(evaluation_rules or {}).get(
+            "primary_focus_allowed", resolved_priority == "primary_allowed"
+        ),
+    )
+    override = (prompt_config or {}).get("daily_prompt_override")
+    prompts = prompt_config_for(
+        title=cleaned_title,
+        watch_kind=resolved_kind,
+        priority=resolved_priority,
+        personal_context=context,
+        source_config=sources,
+        evaluation_rules=rules,
+        daily_prompt_override=override,
+    )
+    row = WatchItem(
+        title=cleaned_title,
+        original_text=text,
+        event_date=extract_event_date(text, today),
+        expires_at=None,
+        check_frequency=check_frequency.strip() or "daily",
+        watch_kind=resolved_kind,
+        priority=resolved_priority,
+        enabled=enabled,
+        watch_for=dimensions,
+        personal_state=personal_state_for(
+            cleaned_title, text, dimensions, surface_when, None
+        ),
+        external_state=external_state_for(cleaned_title, dimensions, surface_when),
+        personal_context=context,
+        source_config=sources,
+        evaluation_rules=rules,
+        prompt_config=prompts,
+        surface_when=surface_when,
+        briefing_posture="briefing output" if resolved_priority == "primary_allowed" else "watch",
+        status="active",
+    )
     db.add(row)
     db.commit()
     db.refresh(row)
@@ -270,7 +686,16 @@ def update_watch_item(
     event_date: date | None = None,
     expires_at: date | None = None,
     check_frequency: str | None = None,
+    watch_kind: str | None = None,
+    priority: str | None = None,
+    enabled: bool | None = None,
     watch_for: list[str] | None = None,
+    personal_state: dict | None = None,
+    external_state: dict | None = None,
+    personal_context: dict | None = None,
+    source_config: dict | None = None,
+    evaluation_rules: dict | None = None,
+    prompt_config: dict | None = None,
     surface_when: list[str] | None = None,
     status: str | None = None,
     today: date | None = None,
@@ -295,14 +720,101 @@ def update_watch_item(
         row.expires_at = expires_at
     if check_frequency is not None:
         row.check_frequency = check_frequency.strip() or "daily"
+    if watch_kind is not None:
+        row.watch_kind = normalize_watch_kind(watch_kind)
+    if priority is not None:
+        row.priority = normalize_watch_priority(priority)
+    if enabled is not None:
+        row.enabled = bool(enabled)
     if watch_for is not None:
         row.watch_for = [item.strip() for item in watch_for if item.strip()]
+    if personal_state is not None:
+        row.personal_state = personal_state
+    if external_state is not None:
+        row.external_state = external_state
+    if personal_context is not None:
+        row.personal_context = personal_context
+    if source_config is not None:
+        row.source_config = source_config
+    if evaluation_rules is not None:
+        row.evaluation_rules = evaluation_rules
+        row.surface_when = [
+            item.strip()
+            for item in evaluation_rules.get("surface_when", row.surface_when or [])
+            if str(item).strip()
+        ]
+    if prompt_config is not None:
+        row.prompt_config = prompt_config
     if surface_when is not None:
         row.surface_when = [item.strip() for item in surface_when if item.strip()]
     if status is not None:
         if status not in {"active", "completed", "archived"}:
             raise ValueError("Watch status must be active, completed, or archived.")
         row.status = status
+
+    if any(
+        value is not None
+        for value in (
+            title,
+            original_text,
+            watch_kind,
+            priority,
+            watch_for,
+            personal_context,
+            source_config,
+            evaluation_rules,
+            prompt_config,
+            surface_when,
+            event_date,
+        )
+    ):
+        if watch_kind is None:
+            row.watch_kind = infer_watch_kind(row.title, row.watch_for or [])
+        if priority is None:
+            row.priority = row.priority or "watch_only"
+        if personal_context is None:
+            row.personal_context = personal_context_for(
+                row.title,
+                row.original_text,
+                row.watch_for or [],
+                **(row.personal_context or {}),
+            )
+        if source_config is None:
+            row.source_config = source_config_for(
+                row.watch_for or [], **(row.source_config or {})
+            )
+        if evaluation_rules is None:
+            row.evaluation_rules = evaluation_rules_for(
+                row.surface_when or [],
+                (row.evaluation_rules or {}).get("suppress_when"),
+                primary_focus_allowed=(row.evaluation_rules or {}).get(
+                    "primary_focus_allowed", row.priority == "primary_allowed"
+                ),
+            )
+        if personal_state is None:
+            row.personal_state = personal_state_for(
+                row.title,
+                row.original_text,
+                row.watch_for or [],
+                row.surface_when or [],
+                row.event_date,
+            )
+        if external_state is None:
+            row.external_state = external_state_for(
+                row.title, row.watch_for or [], row.surface_when or []
+            )
+        if prompt_config is None:
+            row.prompt_config = prompt_config_for(
+                title=row.title,
+                watch_kind=row.watch_kind,
+                priority=row.priority,
+                personal_context=row.personal_context or {},
+                source_config=row.source_config or {},
+                evaluation_rules=row.evaluation_rules or {},
+                daily_prompt_override=(row.prompt_config or {}).get(
+                    "daily_prompt_override"
+                ),
+            )
 
     row.last_evaluated_on = None
     db.commit()
@@ -335,6 +847,34 @@ def watch_counts(db: Session) -> dict:
 def serialize_watch_item(row: WatchItem, latest: WatchEvaluation | None = None) -> dict:
     watch_for = row.watch_for or []
     surface_when = row.surface_when or []
+    inferred_kind = infer_watch_kind(row.title, watch_for)
+    watch_kind = row.watch_kind if row.watch_kind in WATCH_KINDS else inferred_kind
+    personal_state = row.personal_state or personal_state_for(
+        row.title, row.original_text, watch_for, surface_when, row.event_date
+    )
+    external_state = row.external_state or external_state_for(
+        row.title, watch_for, surface_when
+    )
+    priority = normalize_watch_priority(row.priority)
+    personal_context = row.personal_context or personal_context_for(
+        row.title, row.original_text, watch_for
+    )
+    source_config = row.source_config or source_config_for(watch_for)
+    evaluation_rules = row.evaluation_rules or evaluation_rules_for(
+        surface_when,
+        suppression_rules_for(row),
+        primary_focus_allowed=priority == "primary_allowed",
+    )
+    prompt_config = row.prompt_config or prompt_config_for(
+        title=row.title,
+        watch_kind=watch_kind,
+        priority=priority,
+        personal_context=personal_context,
+        source_config=source_config,
+        evaluation_rules=evaluation_rules,
+    )
+    personal_inputs = personal_state.get("inputs") or []
+    external_sources = external_state.get("sources") or []
     return {
         "id": row.id,
         "source_watch_id": source_watch_id(row.title),
@@ -343,12 +883,29 @@ def serialize_watch_item(row: WatchItem, latest: WatchEvaluation | None = None) 
         "event_date": row.event_date.isoformat() if row.event_date else None,
         "expires_at": row.expires_at.isoformat() if row.expires_at else None,
         "check_frequency": row.check_frequency,
+        "watch_kind": watch_kind,
+        "priority": priority,
+        "enabled": bool(row.enabled),
         "watch_for": watch_for,
         "conditions": watch_for,
         "source_inputs": source_inputs_for(watch_for),
+        "personal_state": personal_state,
+        "external_state": external_state,
+        "personal_context": personal_context,
+        "source_config": source_config,
+        "evaluation_rules": evaluation_rules,
+        "prompt_config": prompt_config,
+        "personal_inputs": personal_inputs,
+        "external_sources": external_sources,
+        "personal_accounts": personal_context.get("accounts") or [],
+        "personal_interests": personal_context.get("interests") or [],
+        "connected_data_sources": source_config.get("connected_sources") or [],
+        "missing_sources": source_config.get("missing_sources") or [],
+        "manual_inputs": source_config.get("manual_inputs") or [],
+        "validation_warnings": validation_warnings_for(row),
         "cadence": row.check_frequency,
         "surface_when": surface_when,
-        "surface_rules": surface_when,
+        "surface_rules": evaluation_rules.get("surface_when") or surface_when,
         "suppression_rules": suppression_rules_for(row),
         "briefing_posture": row.briefing_posture,
         "preferred_output": row.briefing_posture,
@@ -419,11 +976,52 @@ def planning_dimensions(row: WatchItem) -> str:
     return ", ".join(dimensions[:-1]) + f", and {dimensions[-1]}"
 
 
+def quiet_summary_for_watch(row: WatchItem) -> str:
+    title = row.title.lower()
+    if "bitcoin" in title:
+        return "No BTC accumulation trigger today. Price movement did not meet the review rule."
+    if "trading systems" in title:
+        return "No trading-system action. Liquidity still keeps this on hold."
+    if "side project" in title or "focusos validation" in title:
+        return "No project changed ship-or-stop posture today."
+    if "big tech" in title or "ai, and major company" in title:
+        return "No major tech release changed your workflow today."
+    if "sports radar" in title:
+        return "No major game, injury, playoff, or spoiler-safe recap item found."
+    if "golf weather" in title:
+        return "No better local golf window than the current watch-only item."
+    if "shopping" in title:
+        return "No saved shopping interest produced a high-confidence match."
+    if "media" in title or "watchlist radar" in title:
+        return "No saved media interest produced a high-confidence match."
+    if "life notes" in title:
+        return "No dated reminder entered its action window."
+    if "personal finance" in title:
+        return "No liquidity or portfolio threshold crossed today."
+    if "investing ideas" in title or "market pullbacks" in title:
+        return "No tracked market move changed the review posture today."
+    if row.event_date:
+        days_until = (row.event_date - date.today()).days
+        if days_until >= 0:
+            return f"{days_until} days away. No planning trigger has opened yet."
+        return "Event has passed with no recap item needed."
+    return "No material change reached the briefing threshold today."
+
+
 def evaluate_watch_item(row: WatchItem, today: date | None = None) -> dict:
     today = today or date.today()
     domain = watch_domain(row.title, row.watch_for or [])
+    inferred_kind = infer_watch_kind(row.title, row.watch_for or [])
+    watch_kind = row.watch_kind if row.watch_kind in WATCH_KINDS else inferred_kind
     evidence = {
+        "watch_kind": watch_kind,
+        "priority": row.priority,
         "watch_for": row.watch_for or [],
+        "personal_state": row.personal_state or {},
+        "external_state": row.external_state or {},
+        "personal_context": row.personal_context or {},
+        "source_config": row.source_config or {},
+        "evaluation_rules": row.evaluation_rules or {},
         "surface_when": row.surface_when or [],
         "event_date": row.event_date.isoformat() if row.event_date else None,
         "expires_at": row.expires_at.isoformat() if row.expires_at else None,
@@ -537,7 +1135,7 @@ def evaluate_active_watch_items(
     rows = list(
         db.scalars(
             select(WatchItem)
-            .where(WatchItem.status == "active")
+            .where(WatchItem.status == "active", WatchItem.enabled.is_(True))
             .order_by(WatchItem.created_at, WatchItem.id)
         ).all()
     )
@@ -559,7 +1157,22 @@ def evaluate_active_watch_items(
         row.last_evaluated_on = today
         db.add(evaluation)
         evaluations.append(evaluation)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        return list(
+            db.scalars(
+                select(WatchEvaluation)
+                .join(WatchItem)
+                .where(
+                    WatchEvaluation.as_of == today,
+                    WatchItem.status == "active",
+                    WatchItem.enabled.is_(True),
+                )
+                .order_by(WatchEvaluation.id)
+            ).all()
+        )
     for evaluation in evaluations:
         db.refresh(evaluation)
     return evaluations
@@ -589,7 +1202,7 @@ def active_watch_status(db: Session) -> list[dict]:
     rows = list(
         db.scalars(
             select(WatchItem)
-            .where(WatchItem.status == "active")
+            .where(WatchItem.status == "active", WatchItem.enabled.is_(True))
             .order_by(
                 WatchItem.expires_at.is_(None),
                 WatchItem.expires_at,
@@ -602,21 +1215,24 @@ def active_watch_status(db: Session) -> list[dict]:
         latest = latest_watch_evaluation(db, row.id)
         if latest and latest.should_surface:
             summary = latest.trigger_reason
-        elif row.event_date:
-            days_until = (row.event_date - date.today()).days
-            summary = (
-                f"{days_until} days away. Watching {planning_dimensions(row)}."
-                if days_until >= 0
-                else "Event has passed; waiting for archive cleanup."
-            )
         else:
-            summary = f"Watching {planning_dimensions(row)}."
+            summary = quiet_summary_for_watch(row)
         statuses.append(
             {
                 "id": row.id,
                 "title": row.title,
                 "summary": summary,
                 "status": row.status,
+                "watch_kind": row.watch_kind,
+                "priority": row.priority,
+                "domain": watch_domain(row.title, row.watch_for or []),
+                "should_surface": bool(latest and latest.should_surface),
+                "source_watch_ids": [source_watch_id(row.title)],
+                "suppression_rule": (
+                    "No material update today."
+                    if not (latest and latest.should_surface)
+                    else None
+                ),
                 "event_date": row.event_date.isoformat() if row.event_date else None,
                 "detail_id": f"watch:{row.id}",
             }
@@ -657,6 +1273,8 @@ def watch_attention_items(evaluations: Iterable[WatchEvaluation]) -> list[dict]:
                     "triggered_surface_rule": row.trigger_reason,
                     "suppressed_by": None,
                     "why_today": row.summary,
+                    "watch_kind": watch.watch_kind if watch else None,
+                    "watch_priority": watch.priority if watch else None,
                 },
                 category=row.category,
                 importance_score=row.importance_score,

@@ -17,7 +17,7 @@ The homepage requests:
 GET /api/briefing
 ```
 
-The frontend uses only the response `attention` array for the primary Morning Briefing. Supporting payload fields exist for detail views and audit use, but the frontend should not rebuild the homepage from portfolio summaries, topic briefings, or source status.
+The frontend uses only the response `attention` array for the primary Morning Briefing. Supporting payload fields exist for detail views and audit use, but the frontend should not rebuild the homepage from portfolio summaries, topic briefings, source status, or structured-source breakdowns.
 
 Clickable briefing items call:
 
@@ -49,10 +49,13 @@ Today is assembled live and archived after assembly. Past dates are served from 
 - `POST /api/watch-items/{watch_item_id}/archive`: archive a watch.
 - `DELETE /api/watch-items/{watch_item_id}`: remove a watch.
 - `POST /api/import/holdings`: CSV holdings import.
+- `GET /api/source-registry`: source capabilities, missing integrations, and global guardrails.
+- `GET /api/personal-accounts`: personal account and interest registry used by watch configuration.
 - `POST /api/jobs/morning-briefing`: queue the background morning refresh job.
 - `GET /api/jobs/morning-briefing/{job_id}`: read job status.
 - `POST /api/internal/briefing-archive/mock`: generate local mock archive snapshots.
 - `GET /api/internal/source-status`: read source health.
+- `GET /api/internal/daily-review`: summarize one date's job result, source health, briefing shape, and missing integrations.
 
 Internal operational routes require `X-FocusOS-Key` only when `FOCUSOS_INTERNAL_API_KEY` is set.
 
@@ -84,11 +87,11 @@ Topic generation lives in `backend/app/topic_engine.py`:
 
 ## Startup Seeding
 
-`backend/app/main.py` creates tables during FastAPI lifespan startup. `backend/app/seeding.py` then seeds the empty database with sample holdings, portfolio snapshots, default topics, default configured watches, and fallback topic briefings.
+`backend/app/main.py` creates tables during FastAPI lifespan startup. `backend/app/seeding.py` then seeds the empty database with default topics, default configured watches, and fallback topic briefings. Portfolio holdings and snapshots are created only from user-provided portfolio data.
 
 ## Current SSOTs
 
-- Homepage briefing feed: `backend/app/main.py` serves `GET /api/briefing`, and `backend/app/attention.py` assembles the authoritative `attention` array.
+- Homepage briefing feed: `backend/app/main.py` serves `GET /api/briefing`, and `backend/app/attention.py` assembles the authoritative `attention` array. Alternate homepage feeds such as `structured_attention`, `financial_attention`, and `portfolio_intelligence` are intentionally not part of the public payload.
 - Watch configuration: persisted `WatchItem` rows in `backend/app/models.py` are evaluated by `backend/app/watchlist.py`.
 - Watch provenance ids: `backend/app/watch_provenance.py` defines the stable `source_watch_id` format. The API serializes this id with each watch item; the frontend displays it but does not reconstruct it.
 - Briefing archive: `backend/app/briefing_archive.py` owns archived payload storage, metadata normalization, and mock archive generation for local review.
