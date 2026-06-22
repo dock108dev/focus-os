@@ -37,17 +37,35 @@ def test_unsafe_requests_reject_untrusted_browser_origins():
 
 def test_internal_routes_require_key_when_configured(monkeypatch):
     monkeypatch.setenv("FOCUSOS_INTERNAL_API_KEY", "test-secret")
-    client = TestClient(main.app)
+    engine = create_engine(
+        "sqlite:///:memory:",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    Base.metadata.create_all(bind=engine)
 
-    missing = client.post("/api/jobs/morning-briefing")
-    wrong = client.post(
-        "/api/jobs/morning-briefing", headers={"X-FocusOS-Key": "wrong"}
-    )
-    status_missing_key = client.get("/api/jobs/morning-briefing/123")
-    status_with_key = client.get(
-        "/api/jobs/morning-briefing/123",
-        headers={"X-FocusOS-Key": "test-secret"},
-    )
+    def override_db() -> Iterator[Session]:
+        db = TestingSessionLocal()
+        try:
+            yield db
+        finally:
+            db.close()
+
+    main.app.dependency_overrides[main.get_db] = override_db
+    client = TestClient(main.app)
+    try:
+        missing = client.post("/api/jobs/morning-briefing")
+        wrong = client.post(
+            "/api/jobs/morning-briefing", headers={"X-FocusOS-Key": "wrong"}
+        )
+        status_missing_key = client.get("/api/jobs/morning-briefing/123")
+        status_with_key = client.get(
+            "/api/jobs/morning-briefing/123",
+            headers={"X-FocusOS-Key": "test-secret"},
+        )
+    finally:
+        main.app.dependency_overrides.clear()
 
     assert missing.status_code == 401
     assert wrong.status_code == 401
