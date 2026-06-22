@@ -143,6 +143,7 @@ export type GenerationMetadata = {
 
 export type WatchItem = {
   id: number;
+  source_watch_id: string;
   title: string;
   original_text: string;
   event_date: string | null;

@@ -12,6 +12,7 @@ from app.attention import (
     summarize,
 )
 from app.models import Holding
+from app.watch_provenance import source_watch_id
 
 
 def test_attention_requires_actionable_thresholds():
@@ -117,7 +118,14 @@ def test_morning_attention_feed_collapses_portfolio_thresholds_before_awareness(
     assert feed[0]["detail_id"] == "portfolio:review"
     assert feed[0]["signal_count"] == 2
     assert feed[0]["story_type"] == "focusos"
+    assert feed[0]["source_watch_ids"] == [
+        source_watch_id("Portfolio & market positioning")
+    ]
+    assert feed[0]["triggered_surface_rule"] == (
+        "portfolio review threshold crossed"
+    )
     assert feed[1]["story_type"] == "external"
+    assert feed[1]["source_watch_ids"] == [source_watch_id("Yankees")]
     assert "Bitcoin is up 1.5% over 24 hours" not in [item["title"] for item in feed]
 
 
@@ -154,6 +162,9 @@ def test_portfolio_review_item_groups_financial_signals():
     assert item["signal_count"] == 2
     assert item["vertical"] == "Portfolio"
     assert "Technology concentration is above target" in item["why_now"]
+    assert item["source_watch_ids"] == [
+        source_watch_id("Portfolio & market positioning")
+    ]
 
 
 def test_homepage_scan_rules_reject_too_many_or_duplicate_domain_stories():

@@ -24,6 +24,7 @@ from .structured_sources import (
 )
 from .voice import clean_action_text, clean_editorial_text
 from .watchlist import latest_watch_evaluation, watch_domain
+from .watch_provenance import provenance_for_attention_item
 
 
 def not_found(detail_id: str) -> dict:
@@ -209,6 +210,7 @@ def portfolio_review_detail(db: Session, detail_id: str) -> dict:
         *[f"Signal: {item['title']} - {item['why_now']}" for item in signals],
     ]
     detail["raw_data"] = {"signals": signals}
+    detail["raw_data"]["provenance"] = provenance_for_attention_item(grouped)
     detail["source_data"] = {
         "provider": "Manual portfolio imports",
         "accounts": sorted({row.source for row in holdings}),

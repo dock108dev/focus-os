@@ -7,6 +7,7 @@ from sqlalchemy.pool import StaticPool
 from app.database import Base
 from app.models import Holding
 from app.recommendations import recommendation_detail
+from app.watch_provenance import source_watch_id
 
 
 class EmptySession:
@@ -67,6 +68,13 @@ def test_portfolio_review_detail_groups_active_thresholds():
     assert detail["title"] == "Review portfolio positioning"
     assert "grouped into one review item" in detail["why_generated"][0]
     assert len(detail["raw_data"]["signals"]) >= 3
+    assert detail["raw_data"]["provenance"]["source_watch_ids"] == [
+        source_watch_id("Portfolio & market positioning")
+    ]
+    assert (
+        detail["raw_data"]["provenance"]["triggered_surface_rule"]
+        == "portfolio review threshold crossed"
+    )
     assert (
         detail["suppressed_signals"][0]["reason"]
         == "Collapsed into Portfolio to preserve homepage diversity."

@@ -117,6 +117,23 @@ Each watch defines:
 
 The daily briefing is downstream of Watchlist Admin. It only shows what changed, what needs attention now, or what the user would otherwise forget.
 
+Mike's default profile must seed baseline active watches on first load. Presets are additive onboarding tools, not replacements for the user's active watch configuration.
+
+Default configured watches include:
+
+- Portfolio & market positioning
+- Yankees
+- Rutgers
+- Golf weather
+- Golf equipment
+- AI / developer tools
+- Work / namespace migration
+- Side projects
+- Home maintenance
+- Bogey
+- Life logistics
+- Travel
+
 Planning artifacts must keep these layers separate:
 
 - Configured Watches: user-authored attention infrastructure
@@ -135,6 +152,10 @@ Every briefing output must carry provenance:
 ```
 
 If an item cannot explain which configured watch produced it, which surface rule fired, and why it matters today, it should not appear.
+
+Manual imports and system-generated items must either bind to an existing configured watch or declare equivalent provenance. For example, portfolio import outputs bind to Portfolio & market positioning with the crossed threshold as the triggered rule.
+
+The backend is authoritative for stable watch provenance ids. API watch-item responses include `source_watch_id`, and the frontend must use that value instead of reconstructing watch ids from titles.
 
 ## Watch Quality Review
 

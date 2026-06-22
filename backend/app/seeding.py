@@ -5,8 +5,9 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from .attention import summarize
-from .models import Holding, PortfolioSnapshot
+from .models import Holding, PortfolioSnapshot, WatchItem
 from .topic_engine import seed_topic_briefings_if_empty, seed_topics_if_empty
+from .watch_provenance import DEFAULT_MIKE_WATCHES
 
 
 def seed_snapshots_if_empty(db: Session, total_value: Decimal, cash_available: Decimal) -> None:
@@ -103,8 +104,39 @@ def sample_holdings() -> list[Holding]:
     ]
 
 
+def seed_default_watches(db: Session) -> int:
+    existing_titles = {
+        title
+        for title in db.scalars(select(WatchItem.title)).all()
+        if isinstance(title, str)
+    }
+    rows = []
+    for watch in DEFAULT_MIKE_WATCHES:
+        if watch["title"] in existing_titles:
+            continue
+        rows.append(
+            WatchItem(
+                title=watch["title"],
+                original_text=watch["original_text"],
+                event_date=None,
+                expires_at=None,
+                check_frequency="daily",
+                watch_for=watch["watch_for"],
+                surface_when=watch["surface_when"],
+                briefing_posture="briefing output",
+                status="active",
+            )
+        )
+    if not rows:
+        return 0
+    db.add_all(rows)
+    db.commit()
+    return len(rows)
+
+
 def seed_if_empty(db: Session) -> None:
     seed_topics_if_empty(db)
+    seed_default_watches(db)
     has_holdings = db.scalar(select(Holding.id).limit(1))
     if has_holdings:
         holdings = list(db.scalars(select(Holding)).all())

@@ -4,17 +4,22 @@ from collections.abc import Iterator
 from datetime import date, timedelta
 
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app import main
 from app.database import Base
+from app.models import WatchItem
+from app.seeding import seed_default_watches
+from app.watch_provenance import DEFAULT_MIKE_WATCHES
+from app.watch_provenance import source_watch_id
 from app.watchlist import (
     archive_expired_watch_items,
     create_watch_item,
     evaluate_active_watch_items,
     parse_watch_item,
+    serialize_watch_item,
     watch_attention_items,
 )
 
@@ -98,6 +103,60 @@ def test_expired_watch_items_are_archived_automatically():
 
     assert archived == 1
     assert row.status == "archived"
+
+
+def test_mike_default_profile_seeds_active_configured_watches():
+    engine = create_engine(
+        "sqlite:///:memory:",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    Base.metadata.create_all(bind=engine)
+    TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = TestingSessionLocal()
+    try:
+        seeded = seed_default_watches(db)
+        seeded_again = seed_default_watches(db)
+        evaluations = evaluate_active_watch_items(db, today=date(2026, 6, 21))
+        watches = [
+            serialize_watch_item(row)
+            for row in db.scalars(select(WatchItem)).all()
+        ]
+    finally:
+        db.close()
+
+    assert seeded == len(DEFAULT_MIKE_WATCHES)
+    assert seeded_again == 0
+    assert len(evaluations) == len(DEFAULT_MIKE_WATCHES)
+    assert len(watches) == len(DEFAULT_MIKE_WATCHES)
+    titles = {watch["title"] for watch in watches}
+    assert {
+        "Portfolio & market positioning",
+        "Yankees",
+        "Rutgers",
+        "Golf weather",
+        "Golf equipment",
+        "AI / developer tools",
+        "Work / namespace migration",
+        "Side projects",
+        "Home maintenance",
+        "Bogey",
+        "Life logistics",
+        "Travel",
+    } <= titles
+    portfolio_watch = next(
+        watch for watch in watches if watch["title"] == "Portfolio & market positioning"
+    )
+    assert portfolio_watch["status"] == "active"
+    assert portfolio_watch["source_watch_id"] == source_watch_id(
+        "Portfolio & market positioning"
+    )
+    assert portfolio_watch["conditions"]
+    assert portfolio_watch["source_inputs"]
+    assert portfolio_watch["cadence"] == "daily"
+    assert portfolio_watch["surface_rules"]
+    assert portfolio_watch["suppression_rules"]
+    assert portfolio_watch["expires_at"] is None
 
 
 def test_watch_item_api_creates_and_feeds_briefing(monkeypatch):

@@ -17,7 +17,7 @@ The homepage requests:
 GET /api/briefing
 ```
 
-The frontend uses only the response `attention` array for the primary Morning Briefing. Other payload fields exist for compatibility, detail views, and audit use, but the frontend should not rebuild the homepage from portfolio summaries, topic briefings, or source status.
+The frontend uses only the response `attention` array for the primary Morning Briefing. Supporting payload fields exist for detail views and audit use, but the frontend should not rebuild the homepage from portfolio summaries, topic briefings, or source status.
 
 Clickable briefing items call:
 
@@ -68,7 +68,15 @@ Topic generation lives in `backend/app/topic_engine.py`:
 
 ## Startup Seeding
 
-`backend/app/main.py` creates tables during FastAPI lifespan startup. `backend/app/seeding.py` then seeds the empty database with sample holdings, portfolio snapshots, default topics, and fallback topic briefings.
+`backend/app/main.py` creates tables during FastAPI lifespan startup. `backend/app/seeding.py` then seeds the empty database with sample holdings, portfolio snapshots, default topics, default configured watches, and fallback topic briefings.
+
+## Current SSOTs
+
+- Homepage briefing feed: `backend/app/main.py` serves `GET /api/briefing`, and `backend/app/attention.py` assembles the authoritative `attention` array.
+- Watch configuration: persisted `WatchItem` rows in `backend/app/models.py` are evaluated by `backend/app/watchlist.py`.
+- Watch provenance ids: `backend/app/watch_provenance.py` defines the stable `source_watch_id` format. The API serializes this id with each watch item; the frontend displays it but does not reconstruct it.
+- Structured sources: `backend/app/structured_sources.py` owns market, crypto, and weather refresh/read behavior.
+- Topic generation: `backend/app/topic_engine.py` owns AI provider selection and topic briefing serialization.
 
 ## Security Boundaries
 

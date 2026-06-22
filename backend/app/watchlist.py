@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from .attention import enrich_attention_item
 from .models import WatchEvaluation, WatchItem
+from .watch_provenance import source_watch_id
 
 
 DEFAULT_SURFACE_WHEN = [
@@ -24,13 +25,58 @@ DEFAULT_SUPPRESS_WHEN = [
 DEFAULT_WATCH_FOR = ["timing", "schedule changes"]
 SOURCE_HINTS = {
     "weather": "weather",
+    "wind": "weather",
+    "rain": "weather",
+    "tee time": "calendar",
     "parking": "parking feed",
     "traffic": "maps or transit",
     "timing": "calendar",
     "schedule changes": "calendar or venue/source update",
     "summary": "post-event sources",
     "developer tooling": "developer docs",
+    "api": "developer docs",
+    "pricing": "vendor pricing pages",
+    "xcode": "developer docs",
     "ai": "vendor changelog",
+    "cash": "manual portfolio imports",
+    "concentration": "manual portfolio imports",
+    "pullbacks": "manual portfolio imports",
+    "Bitcoin": "crypto price feed",
+    "mortgage rates": "rate feed",
+    "market moves": "market price feed",
+    "results": "sports results feed",
+    "next game": "sports schedule feed",
+    "injuries": "sports injury reports",
+    "standings": "sports standings feed",
+    "rankings": "sports rankings feed",
+    "equipment": "golf retailer and manufacturer feeds",
+    "fitting": "golf fitting calendar",
+    "price changes": "retailer price feed",
+    "release windows": "manufacturer release calendar",
+    "blocked teams": "work project status",
+    "adoption gaps": "work project metrics",
+    "migration status": "repo migration tracker",
+    "deadline": "calendar",
+    "validation": "project notes",
+    "cost": "project spend tracker",
+    "progress stalls": "project activity log",
+    "launch windows": "project roadmap",
+    "due dates": "calendar",
+    "contractor timing": "contractor messages",
+    "maintenance risk": "home maintenance log",
+    "appointments": "calendar",
+    "food": "pet supply source",
+    "boarding": "boarding reservation source",
+    "medication": "vet or pharmacy source",
+    "coverage": "care calendar",
+    "renewals": "calendar and admin inbox",
+    "paperwork": "admin inbox",
+    "deadlines": "calendar",
+    "family dates": "calendar",
+    "bills": "bill calendar",
+    "flights": "airline source",
+    "hotels": "hotel reservation source",
+    "airport timing": "airline and maps",
 }
 WATCH_KEYWORDS = {
     "weather": {"weather", "rain", "temperature", "forecast"},
@@ -41,6 +87,44 @@ WATCH_KEYWORDS = {
     "summary": {"summarize", "summary", "announcements", "takeaways", "recap"},
     "developer tooling": {"xcode", "developer", "tooling", "api", "sdk"},
     "ai": {"ai", "siri", "model"},
+    "cash": {"cash"},
+    "concentration": {"concentration", "allocation"},
+    "pullbacks": {"pullback", "pullbacks", "drawdown"},
+    "Bitcoin": {"bitcoin", "btc"},
+    "mortgage rates": {"mortgage", "rates"},
+    "market moves": {"market", "markets"},
+    "results": {"results", "result", "won", "lost"},
+    "next game": {"next", "game", "kickoff"},
+    "injuries": {"injury", "injuries"},
+    "standings": {"standings", "division"},
+    "rankings": {"rankings", "ranking"},
+    "equipment": {"equipment", "gear", "club", "clubs"},
+    "fitting": {"fitting", "fit"},
+    "price changes": {"price", "prices"},
+    "release windows": {"release", "releases"},
+    "blocked teams": {"blocked", "team", "teams"},
+    "adoption gaps": {"adoption", "gaps"},
+    "migration status": {"migration", "repo", "namespace"},
+    "deadline": {"deadline", "deadlines"},
+    "validation": {"validation", "validate"},
+    "cost": {"cost", "costs"},
+    "progress stalls": {"stalls", "stalled", "progress"},
+    "launch windows": {"launch"},
+    "due dates": {"due"},
+    "contractor timing": {"contractor"},
+    "maintenance risk": {"maintenance"},
+    "appointments": {"appointment", "appointments"},
+    "food": {"food"},
+    "boarding": {"boarding"},
+    "medication": {"medication", "medicine"},
+    "coverage": {"coverage"},
+    "renewals": {"renewal", "renewals"},
+    "paperwork": {"paperwork"},
+    "family dates": {"family"},
+    "bills": {"bill", "bills"},
+    "flights": {"flight", "flights"},
+    "hotels": {"hotel", "hotels"},
+    "airport timing": {"airport"},
 }
 WEEKDAYS = {
     "monday": 0,
@@ -101,14 +185,28 @@ def extract_watch_for(text: str) -> list[str]:
 def watch_domain(title: str, watch_for: Iterable[str]) -> str:
     lower = title.lower()
     dimensions = set(watch_for)
+    if any(token in lower for token in ("portfolio", "market", "bitcoin", "mortgage")):
+        return "Finance & Markets"
+    if "yankees" in lower:
+        return "Sports"
     if "rutgers" in lower:
         return "Rutgers"
+    if "bogey" in lower:
+        return "Dog"
+    if "golf equipment" in lower:
+        return "Golf Equipment"
+    if "golf weather" in lower:
+        return "Golf"
     if any(token in lower for token in ("wwdc", "apple", "xcode", "siri")):
         return "Technology"
     if any(token in lower for token in ("flight", "vacation", "airport", "hotel")):
         return "Travel"
-    if any(token in lower for token in ("project", "deadline", "work")):
+    if any(token in lower for token in ("project", "deadline", "work", "migration")):
         return "Work"
+    if "home" in lower:
+        return "Home"
+    if "life" in lower:
+        return "Life"
     if dimensions.intersection({"weather", "parking", "traffic"}):
         return "Life"
     return "Watchlist"
@@ -239,6 +337,7 @@ def serialize_watch_item(row: WatchItem, latest: WatchEvaluation | None = None) 
     surface_when = row.surface_when or []
     return {
         "id": row.id,
+        "source_watch_id": source_watch_id(row.title),
         "title": row.title,
         "original_text": row.original_text,
         "event_date": row.event_date.isoformat() if row.event_date else None,

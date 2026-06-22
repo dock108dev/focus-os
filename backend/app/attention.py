@@ -8,6 +8,7 @@ from typing import Iterable
 
 from .models import Holding
 from .personalization import MIKE_PROFILE, large_cap_pullback_reason
+from .watch_provenance import provenance_for_attention_item
 
 
 TECH_SYMBOLS = {
@@ -173,10 +174,22 @@ def enrich_attention_item(
         or next_item.get("what_changed")
         or "This is appearing because it affects today's attention."
     )
-    next_item["source_watch_ids"] = list(next_item.get("source_watch_ids") or [])
-    next_item["triggered_surface_rule"] = next_item.get("triggered_surface_rule") or ""
-    next_item["suppressed_by"] = next_item.get("suppressed_by")
-    next_item["why_today"] = next_item.get("why_today") or next_item.get("why_now", "")
+    provenance = provenance_for_attention_item(next_item)
+    next_item["source_watch_ids"] = list(
+        next_item.get("source_watch_ids") or provenance["source_watch_ids"]
+    )
+    next_item["triggered_surface_rule"] = (
+        next_item.get("triggered_surface_rule")
+        or provenance["triggered_surface_rule"]
+    )
+    next_item["suppressed_by"] = (
+        next_item.get("suppressed_by")
+        if "suppressed_by" in next_item
+        else provenance["suppressed_by"]
+    )
+    next_item["why_today"] = (
+        next_item.get("why_today") or provenance["why_today"] or next_item.get("why_now", "")
+    )
     next_item["generation_metadata"] = attention_generation_metadata(next_item)
     return next_item
 

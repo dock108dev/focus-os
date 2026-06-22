@@ -344,6 +344,13 @@ function listText(values: string[]) {
   return values.length ? values.join(", ") : "None configured";
 }
 
+function formatSourceWatchLabel(value: string) {
+  if (value === "system:manual-or-topic-import") return "System/manual import";
+  if (value.startsWith("system:")) return value.replace("system:", "System: ").replace(/-/g, " ");
+  if (value.startsWith("watch:")) return value.replace("watch:", "").replace(/-/g, " ");
+  return value;
+}
+
 function WatchConfigRows({ watch }: { watch: WatchItem }) {
   const rows: Array<[string, string]> = [
     ["Conditions", listText(watch.conditions)],
@@ -531,8 +538,13 @@ function AppendixView({
   watches: WatchItem[];
 }) {
   const provenance = extractProvenance(item, detail);
-  const watchNameById = new Map(watches.map((watch) => [`watch:${watch.id}`, watch.title]));
-  const sourceWatches = provenance.source_watch_ids.map((id) => watchNameById.get(id) || id);
+  const watchNameById = new Map(
+    watches.flatMap((watch) => [
+      [`watch:${watch.id}`, watch.title],
+      [watch.source_watch_id, watch.title]
+    ])
+  );
+  const sourceWatches = provenance.source_watch_ids.map((id) => watchNameById.get(id) || formatSourceWatchLabel(id));
 
   return (
     <section className="appendixView">
