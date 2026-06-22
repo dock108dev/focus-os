@@ -26,6 +26,8 @@ The API creates tables on startup and seeds sample holdings, default topics, por
 - Import holdings CSV: `POST /api/import/holdings?source=Fidelity&replace=true`
 - Trigger morning briefing: `POST /api/jobs/morning-briefing`
 - Check job status: `GET /api/jobs/morning-briefing/{job_id}`
+- Manage watches: `GET`, `POST`, `PATCH`, and `DELETE` under `/api/watch-items`
+- Read archived briefings: `GET /api/briefing?date=YYYY-MM-DD`
 - Read internal source health: `GET /api/internal/source-status`
 
 Operational routes require `X-FocusOS-Key` when `FOCUSOS_INTERNAL_API_KEY` is set.

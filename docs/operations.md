@@ -37,6 +37,34 @@ curl -H "X-FocusOS-Key: $FOCUSOS_INTERNAL_API_KEY" -X POST http://localhost:8000
 
 The API returns immediately after queuing. Refresh work runs in-process on a daemon thread, so this is not a durable job queue.
 
+## Briefing Archive
+
+Today's briefing is assembled live from current database state and then stored in `archived_briefings`. Prior days are read through the same endpoint:
+
+```bash
+curl "http://localhost:8000/api/briefing?date=2026-06-21"
+```
+
+Generate local mock archive snapshots for review:
+
+```bash
+curl -H "Content-Type: application/json" -d '{"days":50,"replace":false}' http://localhost:8000/api/internal/briefing-archive/mock
+```
+
+This mock-generation route is internal and requires `X-FocusOS-Key` when `FOCUSOS_INTERNAL_API_KEY` is configured.
+
+## Watch Admin
+
+Watch Admin stores editable attention configuration. The briefing can surface watch evaluations, but the watch list itself is not homepage content.
+
+```bash
+curl http://localhost:8000/api/watch-items
+curl -H "Content-Type: application/json" -d '{"text":"Home maintenance\nWatch weather risk, due dates, and contractor timing."}' http://localhost:8000/api/watch-items
+curl -X POST http://localhost:8000/api/watch-items/<watch_item_id>/complete
+curl -X POST http://localhost:8000/api/watch-items/<watch_item_id>/archive
+curl -X DELETE http://localhost:8000/api/watch-items/<watch_item_id>
+```
+
 ## Source Health
 
 Read internal source status:

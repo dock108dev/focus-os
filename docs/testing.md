@@ -14,6 +14,9 @@ The backend suite covers:
 - Topic fallback and AI payload cleanup.
 - API security headers, CORS origin checks, upload limits, and internal API key checks.
 - Recommendation detail routing.
+- Watch Admin create, update, status, delete, and provenance serialization.
+- Briefing archive metadata, prior-date reads, and mock archive generation.
+- Novelty tracking for repeated briefing stories.
 - Scheduler next-run calculation.
 
 Run the frontend production build from `frontend/`:

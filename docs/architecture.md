@@ -27,15 +27,31 @@ GET /api/recommendations/{detail_id}
 
 The backend returns an appendix payload with summary text, source metadata, supporting facts, raw data, optional AI methodology, and suppressed signals.
 
+Past briefing dates are read through the same briefing route:
+
+```text
+GET /api/briefing?date=YYYY-MM-DD
+```
+
+Today is assembled live and archived after assembly. Past dates are served from `archived_briefings`; future dates are rejected.
+
 ## Backend Route Map
 
 - `GET /api/health`: liveness check.
 - `GET /api/briefing`: assembled briefing payload.
+- `GET /api/briefing?date=YYYY-MM-DD`: archived briefing lookup for prior dates.
 - `GET /api/topics`: configured topics.
 - `GET /api/recommendations/{detail_id}`: appendix detail for a briefing item.
+- `GET /api/watch-items`: list editable watch configuration and latest evaluations.
+- `POST /api/watch-items`: create a watch from natural-language text.
+- `PATCH /api/watch-items/{watch_item_id}`: update watch configuration.
+- `POST /api/watch-items/{watch_item_id}/complete`: mark a watch complete.
+- `POST /api/watch-items/{watch_item_id}/archive`: archive a watch.
+- `DELETE /api/watch-items/{watch_item_id}`: remove a watch.
 - `POST /api/import/holdings`: CSV holdings import.
 - `POST /api/jobs/morning-briefing`: queue the background morning refresh job.
 - `GET /api/jobs/morning-briefing/{job_id}`: read job status.
+- `POST /api/internal/briefing-archive/mock`: generate local mock archive snapshots.
 - `GET /api/internal/source-status`: read source health.
 
 Internal operational routes require `X-FocusOS-Key` only when `FOCUSOS_INTERNAL_API_KEY` is set.
@@ -75,6 +91,7 @@ Topic generation lives in `backend/app/topic_engine.py`:
 - Homepage briefing feed: `backend/app/main.py` serves `GET /api/briefing`, and `backend/app/attention.py` assembles the authoritative `attention` array.
 - Watch configuration: persisted `WatchItem` rows in `backend/app/models.py` are evaluated by `backend/app/watchlist.py`.
 - Watch provenance ids: `backend/app/watch_provenance.py` defines the stable `source_watch_id` format. The API serializes this id with each watch item; the frontend displays it but does not reconstruct it.
+- Briefing archive: `backend/app/briefing_archive.py` owns archived payload storage, metadata normalization, and mock archive generation for local review.
 - Structured sources: `backend/app/structured_sources.py` owns market, crypto, and weather refresh/read behavior.
 - Topic generation: `backend/app/topic_engine.py` owns AI provider selection and topic briefing serialization.
 

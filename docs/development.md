@@ -26,7 +26,7 @@ The API creates tables on startup and seeds sample holdings, portfolio snapshots
 python -m venv .venv
 . .venv/bin/activate
 python -m pip install -r backend/requirements.txt
-uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000 --reload
+python -m uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000 --reload
 ```
 
 Without `DATABASE_URL`, the backend uses local SQLite at `focusos-dev.db`. The API still creates tables and seeds default data on startup.
@@ -102,6 +102,28 @@ If `FOCUSOS_INTERNAL_API_KEY` is configured, include:
 ```bash
 curl -H "X-FocusOS-Key: $FOCUSOS_INTERNAL_API_KEY" -X POST http://localhost:8000/api/jobs/morning-briefing
 ```
+
+## Archive And Watch Admin
+
+The briefing endpoint also serves archive snapshots:
+
+```bash
+curl "http://localhost:8000/api/briefing?date=2026-06-21"
+```
+
+Future dates return `400`. Past dates return `404` unless an archived or mock briefing exists for that day.
+
+Watch Admin is the editable attention-configuration surface:
+
+```bash
+curl http://localhost:8000/api/watch-items
+curl -H "Content-Type: application/json" -d '{"text":"Travel\nWatch flight timing, weather, and parking changes."}' http://localhost:8000/api/watch-items
+curl -X POST http://localhost:8000/api/watch-items/<watch_item_id>/complete
+curl -X POST http://localhost:8000/api/watch-items/<watch_item_id>/archive
+curl -X DELETE http://localhost:8000/api/watch-items/<watch_item_id>
+```
+
+The frontend uses Watch Admin separately from the Morning Briefing. Watch rows are inputs and provenance; only surfaced watch evaluations can become briefing outputs.
 
 ## Source Health
 

@@ -49,7 +49,7 @@ Allowed:
 - User-defined topics
 - Watchlist Admin as the user-authored attention configuration system
 - AI-generated topic briefings
-- Structured source placeholders for market, crypto, weather, and sports APIs
+- Structured source integrations for market, crypto, and weather
 
 Banned:
 

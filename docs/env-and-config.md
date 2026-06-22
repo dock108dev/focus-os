@@ -48,4 +48,4 @@ The stock backend Docker image does not install Codex CLI. Use this provider fro
 
 ## Docker Defaults
 
-Docker Compose sets `DATABASE_URL` to PostgreSQL and mounts source directories into the API and web containers for local development. The API and scheduler receive `FOCUSOS_INTERNAL_API_KEY`; if the key is configured, the scheduler sends it as `X-FocusOS-Key`.
+Docker Compose sets `DATABASE_URL` to PostgreSQL, defaults `AI_PROVIDER` to `fallback`, and mounts source directories into the API and web containers for local development. The API and scheduler receive `FOCUSOS_INTERNAL_API_KEY`; if the key is configured, the scheduler sends it as `X-FocusOS-Key`.

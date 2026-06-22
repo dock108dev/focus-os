@@ -43,6 +43,30 @@ The backend uses SQLAlchemy models in `backend/app/models.py`. Tables are create
 - Open-Meteo activity recommendation rows.
 - Current implementation stores a golf recommendation with raw candidate forecast data.
 
+## Briefing Memory
+
+`displayed_stories`
+
+- Novelty tracking for briefing stories.
+- Stores a stable story key, domain, category, title, fingerprint, first seen date, last seen date, and seen count.
+
+`archived_briefings`
+
+- Stored briefing payloads keyed by briefing date.
+- Today's live briefing is archived after assembly. Mock archive generation writes review snapshots for prior days.
+
+## Watch Admin
+
+`watch_items`
+
+- Editable attention configuration authored by the user or seeded defaults.
+- Stores title, original text, event and expiration dates, cadence, watch rules, surface rules, briefing posture, status, and evaluation date.
+
+`watch_evaluations`
+
+- Daily evaluation rows for configured watches.
+- Stores generated title, summary, category, importance score, actionability score, surface decision, trigger reason, and evidence.
+
 ## Operations
 
 `source_statuses`
@@ -68,4 +92,4 @@ Generated artifacts:
 
 ## Relationships
 
-`Topic` has many `TopicBriefing` rows. Other tables are currently queried directly rather than through ORM relationships.
+`Topic` has many `TopicBriefing` rows. `WatchItem` has many `WatchEvaluation` rows. Other tables are currently queried directly rather than through ORM relationships.

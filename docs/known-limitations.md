@@ -14,6 +14,10 @@ Database tables are created with SQLAlchemy `create_all()` on startup. Schema mi
 
 The morning job runs in a daemon thread inside the API process. If the API process exits during a refresh, that job is not resumed.
 
+## Archive Is Local Database State
+
+Briefing archive snapshots live in the same application database. There is no retention policy, export job, or backup workflow. Mock archive generation is for local product review, not production history.
+
 ## External Source Coverage Is Narrow
 
 Implemented structured sources are Yahoo Finance for holdings-derived symbols, CoinGecko for Bitcoin, and Open-Meteo for golf weather. Sports APIs, YouTube, calendar, travel, and broader news connectors are not implemented.
