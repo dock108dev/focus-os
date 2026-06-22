@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
-from datetime import date, timedelta
+from contextlib import contextmanager
+from datetime import date
 
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, select
@@ -24,6 +25,26 @@ from app.watchlist import (
 )
 
 
+def in_memory_sessionmaker():
+    engine = create_engine(
+        "sqlite:///:memory:",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    Base.metadata.create_all(bind=engine)
+    return sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+@contextmanager
+def in_memory_session() -> Iterator[Session]:
+    testing_session = in_memory_sessionmaker()
+    db = testing_session()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
 def test_plain_english_watch_extracts_event_and_monitoring_dimensions():
     parsed = parse_watch_item(
         "Outdoor concert Friday\nWatch weather, parking, timing, and plan changes.",
@@ -40,16 +61,8 @@ def test_plain_english_watch_extracts_event_and_monitoring_dimensions():
 
 
 def test_watch_evaluation_surfaces_planning_window_but_suppresses_far_future():
-    engine = create_engine(
-        "sqlite:///:memory:",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
-    Base.metadata.create_all(bind=engine)
-    TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    db = TestingSessionLocal()
     today = date(2026, 6, 21)
-    try:
+    with in_memory_session() as db:
         create_watch_item(
             db,
             "Outdoor concert in 4 days\nWatch weather, parking, traffic, and door time.",
@@ -64,8 +77,6 @@ def test_watch_evaluation_surfaces_planning_window_but_suppresses_far_future():
         evaluations = evaluate_active_watch_items(db, today=today)
         surfaced = [row for row in evaluations if row.should_surface]
         attention = watch_attention_items(surfaced)
-    finally:
-        db.close()
 
     assert len(surfaced) == 1
     assert (
@@ -82,15 +93,7 @@ def test_watch_evaluation_surfaces_planning_window_but_suppresses_far_future():
 
 
 def test_expired_watch_items_are_archived_automatically():
-    engine = create_engine(
-        "sqlite:///:memory:",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
-    Base.metadata.create_all(bind=engine)
-    TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    db = TestingSessionLocal()
-    try:
+    with in_memory_session() as db:
         row = create_watch_item(
             db,
             "Past concert 2026-06-19\nWatch parking.",
@@ -98,23 +101,13 @@ def test_expired_watch_items_are_archived_automatically():
         )
         archived = archive_expired_watch_items(db, today=date(2026, 6, 22))
         db.refresh(row)
-    finally:
-        db.close()
 
     assert archived == 1
     assert row.status == "archived"
 
 
 def test_mike_default_profile_seeds_active_configured_watches():
-    engine = create_engine(
-        "sqlite:///:memory:",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
-    Base.metadata.create_all(bind=engine)
-    TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    db = TestingSessionLocal()
-    try:
+    with in_memory_session() as db:
         seeded = seed_default_watches(db)
         seeded_again = seed_default_watches(db)
         evaluations = evaluate_active_watch_items(db, today=date(2026, 6, 21))
@@ -122,8 +115,6 @@ def test_mike_default_profile_seeds_active_configured_watches():
             serialize_watch_item(row)
             for row in db.scalars(select(WatchItem)).all()
         ]
-    finally:
-        db.close()
 
     assert seeded == len(DEFAULT_MIKE_WATCHES)
     assert seeded_again == 0
@@ -159,14 +150,8 @@ def test_mike_default_profile_seeds_active_configured_watches():
     assert portfolio_watch["expires_at"] is None
 
 
-def test_watch_item_api_creates_and_feeds_briefing(monkeypatch):
-    engine = create_engine(
-        "sqlite:///:memory:",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
-    TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    Base.metadata.create_all(bind=engine)
+def test_watch_item_api_creates_and_feeds_briefing():
+    TestingSessionLocal = in_memory_sessionmaker()
 
     def override_db() -> Iterator[Session]:
         db = TestingSessionLocal()
@@ -206,14 +191,8 @@ def test_watch_item_api_creates_and_feeds_briefing(monkeypatch):
     )
 
 
-def test_watch_item_api_supports_owner_lifecycle(monkeypatch):
-    engine = create_engine(
-        "sqlite:///:memory:",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
-    TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    Base.metadata.create_all(bind=engine)
+def test_watch_item_api_supports_owner_lifecycle():
+    TestingSessionLocal = in_memory_sessionmaker()
 
     def override_db() -> Iterator[Session]:
         db = TestingSessionLocal()

@@ -48,6 +48,7 @@ npm run build
 - [Operations](docs/operations.md): scheduler behavior, job status, source health, and Docker smoke checks.
 - [Data Models](docs/data-models.md): current SQLAlchemy tables and relationships.
 - [Data Sources](docs/data-sources.md): implemented source integrations and planned source tiers.
+- [Maintenance Notes](docs/maintenance.md): validation commands, cleanup rules, and large-file rationale.
 - [Known Limitations](docs/known-limitations.md): intentionally unsupported or unverified behavior.
 - [MVP Specification](docs/mvp-spec.md): product scope and homepage rules.
 

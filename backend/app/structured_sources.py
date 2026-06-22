@@ -6,7 +6,7 @@ import os
 import urllib.parse
 import urllib.request
 import urllib.error
-from datetime import date, datetime, timezone
+from datetime import date
 from decimal import Decimal, InvalidOperation
 from typing import Iterable
 

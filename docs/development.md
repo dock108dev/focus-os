@@ -116,3 +116,4 @@ This endpoint is internal-only. Source diagnostics should not appear on the home
 - Configuration reference: [env-and-config.md](env-and-config.md)
 - Test matrix: [testing.md](testing.md)
 - Scheduler and source operations: [operations.md](operations.md)
+- Cleanup and large-file notes: [maintenance.md](maintenance.md)

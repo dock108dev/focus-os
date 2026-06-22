@@ -5,15 +5,9 @@ from decimal import Decimal
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from .attention import holding_value, is_cash, is_technology, pct, summarize
+from .attention import holding_value, is_technology, pct, summarize
 from .attention import build_attention, build_portfolio_review_item
-from .models import (
-    CryptoPrice,
-    Holding,
-    MarketPrice,
-    TopicBriefing,
-    WeatherRecommendation,
-)
+from .models import Holding, TopicBriefing
 from .personalization import MIKE_PROFILE
 from .structured_sources import (
     crypto_attention_items,
