@@ -6,7 +6,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 
 - Simulated days: 50
 - Unique scenarios: 50
-- No-spotlight days: 11
+- No-spotlight days: 26
 - Competing-focus days: 2
 
 ## Days
@@ -15,14 +15,14 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 
 - Dominant domain: None
 - Primary focus: Nothing deserves the spotlight today.
-- Selected events: 4
+- Selected events: 2
 - Suppressed events: 2
 - Review note: Nothing deserves the spotlight today; verify the system does not manufacture a hero.
 
 ### 2026-05-04: Namespace Adoption Count Becomes Urgent
 
 - Dominant domain: Work
-- Primary focus: Namespace adoption stalled at 52% with freeze inside 61 days; after the tracker refresh
+- Primary focus: Nothing deserves the spotlight today.
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -30,7 +30,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-05-05: Mortgage Rate Threshold Watch
 
 - Dominant domain: Finance & Markets
-- Primary focus: Mortgage rates moved back below 6.2%; after the weekly move
+- Primary focus: Mortgage rates moved back below 6.0%; before the Fed week
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -38,7 +38,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-05-06: Trip Parking And Packing Open Loops
 
 - Dominant domain: Travel
-- Primary focus: Flight departure is inside 7 days and parking is not confirmed; after airline email
+- Primary focus: Flight departure is inside 3 days and parking is not confirmed; after airline email
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -46,7 +46,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-05-07: Deck Deadline Competes With Family Date
 
 - Dominant domain: Work
-- Primary focus: Executive deck due Friday; adoption story is still missing; before Friday status
+- Primary focus: Leadership review moved up with 61 days to reconcile metrics; before Friday status
 - Selected events: 6
 - Suppressed events: 2
 - Review note: Multiple high-value contexts compete; review whether one truly dominates.
@@ -55,14 +55,14 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 
 - Dominant domain: None
 - Primary focus: Nothing deserves the spotlight today.
-- Selected events: 4
+- Selected events: 2
 - Suppressed events: 2
 - Review note: Nothing deserves the spotlight today; verify the system does not manufacture a hero.
 
 ### 2026-05-09: Coding-Agent Workflow Posture Shift
 
 - Dominant domain: Technology & AI
-- Primary focus: Claude Code now beats Mike's current workflow on test repair; after WWDC follow-up
+- Primary focus: Nothing deserves the spotlight today.
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -70,7 +70,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-05-10: Bogey Care Window
 
 - Dominant domain: Dog
-- Primary focus: Bogey grooming is overdue by 61 days; before the refill gap
+- Primary focus: Nothing deserves the spotlight today.
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -78,23 +78,23 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-05-11: Property Tax Paperwork Window
 
 - Dominant domain: Life Logistics
-- Primary focus: Life-admin deadline is close enough to leave monitoring; before weekend errands
+- Primary focus: Insurance document needs renewal before the mortgage file update; with travel optionality in view
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
 
-### 2026-05-12: Watch Object Stays Quiet
+### 2026-05-12: Configured Watch Stays Quiet
 
-- Dominant domain: Watch Items
+- Dominant domain: None
 - Primary focus: Nothing deserves the spotlight today.
-- Selected events: 4
+- Selected events: 2
 - Suppressed events: 2
 - Review note: Nothing deserves the spotlight today; verify the system does not manufacture a hero.
 
 ### 2026-05-13: Kev Blast Radius Widened
 
 - Dominant domain: Work
-- Primary focus: 21 services inherited the new KEV exposure; after the tracker refresh
+- Primary focus: 21 services inherited the new KEV exposure; after owner silence
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -102,7 +102,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-05-14: S&P Breadth Changed The Backdrop
 
 - Dominant domain: Finance & Markets
-- Primary focus: S&P breadth improved to 48% above the 50-day average; with breadth diverging
+- Primary focus: Nothing deserves the spotlight today.
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -110,7 +110,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-05-15: Wwdc Project Assumptions Changed
 
 - Dominant domain: Technology & AI
-- Primary focus: WWDC happened; three iOS changes matter to Mike's projects; before the next coding block
+- Primary focus: WWDC happened; three iOS changes matter to Mike's projects; after WWDC follow-up
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -118,7 +118,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-05-16: Home Upkeep Before Weather Shift
 
 - Dominant domain: Home Ownership
-- Primary focus: Dryer vent cleaning has been deferred twice; after seasonal checklist
+- Primary focus: Nothing deserves the spotlight today.
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -126,7 +126,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-05-17: Side Project Ship-Or-Stop Posture
 
 - Dominant domain: Side Projects
-- Primary focus: Side project has gone 14 days without a user-facing step; before weekend coding time
+- Primary focus: Side project has gone 21 days without a user-facing step; with spend rising
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -135,7 +135,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 
 - Dominant domain: None
 - Primary focus: Nothing deserves the spotlight today.
-- Selected events: 4
+- Selected events: 2
 - Suppressed events: 2
 - Review note: Nothing deserves the spotlight today; verify the system does not manufacture a hero.
 
@@ -150,7 +150,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-05-20: Passport And Travel Paperwork
 
 - Dominant domain: Life Logistics
-- Primary focus: Passport expires inside 3 days; after email scan
+- Primary focus: Passport expires inside 2 days; before paperwork friction
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -158,7 +158,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-05-21: Unh Drawdown Changed Context
 
 - Dominant domain: Finance & Markets
-- Primary focus: UNH is down another 11.5% while healthcare lag widens; with breadth diverging
+- Primary focus: UNH drawdown changed the portfolio context again; before the Fed week
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -166,7 +166,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-05-22: Health Admin Scheduling Window
 
 - Dominant domain: Health
-- Primary focus: Eye exam is due this month; after provider reminder
+- Primary focus: Nothing deserves the spotlight today.
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -174,7 +174,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-05-23: Team Silence Is The Blocker
 
 - Dominant domain: Work
-- Primary focus: TSA PreCheck renewal window opened; before renewal window closes
+- Primary focus: Nothing deserves the spotlight today.
 - Selected events: 2
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -183,7 +183,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 
 - Dominant domain: None
 - Primary focus: Nothing deserves the spotlight today.
-- Selected events: 4
+- Selected events: 2
 - Suppressed events: 2
 - Review note: Nothing deserves the spotlight today; verify the system does not manufacture a hero.
 
@@ -198,7 +198,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-05-26: Return Travel Detail Still Open
 
 - Dominant domain: Travel
-- Primary focus: Flight departure is inside 7 days and parking is not confirmed; after airline email
+- Primary focus: Flight departure is inside 3 days and parking is not confirmed; after airline email
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -206,7 +206,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-05-27: Macro Data Changed Rate Path
 
 - Dominant domain: Finance & Markets
-- Primary focus: Fed path shifted after CPI cooled to 4.8%; before the Fed week
+- Primary focus: Nothing deserves the spotlight today.
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -214,7 +214,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-05-28: Duplicate-Method Cluster Is Leverage
 
 - Dominant domain: Work
-- Primary focus: One namespace has 73 duplicate methods; before staff review
+- Primary focus: Nothing deserves the spotlight today.
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -223,14 +223,14 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 
 - Dominant domain: None
 - Primary focus: Nothing deserves the spotlight today.
-- Selected events: 4
+- Selected events: 2
 - Suppressed events: 2
 - Review note: Nothing deserves the spotlight today; verify the system does not manufacture a hero.
 
 ### 2026-05-30: Bogey Trip Coverage Blocks Confidence
 
 - Dominant domain: Dog
-- Primary focus: Bogey boarding is not booked for the trip in 29 days; with boarding options narrowing
+- Primary focus: Bogey boarding is not booked for the trip in 43 days; after the vet reminder
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -238,7 +238,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-05-31: Side-Project Cost Without Progress
 
 - Dominant domain: Side Projects
-- Primary focus: Side project has gone 14 days without a user-facing step; with spend rising
+- Primary focus: Side project has gone 4 days without a user-facing step; before another build cycle
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -246,7 +246,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-06-01: Home And Family Both Need Small Actions
 
 - Dominant domain: Personal & Family
-- Primary focus: birthday dinner is inside 5 days; with work likely to crowd it out
+- Primary focus: Family commitment moved from background to calendar risk; before the week fills
 - Selected events: 6
 - Suppressed events: 2
 - Review note: Multiple high-value contexts compete; review whether one truly dominates.
@@ -255,14 +255,14 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 
 - Dominant domain: None
 - Primary focus: Nothing deserves the spotlight today.
-- Selected events: 4
+- Selected events: 2
 - Suppressed events: 2
 - Review note: Nothing deserves the spotlight today; verify the system does not manufacture a hero.
 
 ### 2026-06-03: Executive Packet Needs Decision Story
 
 - Dominant domain: Work
-- Primary focus: Executive deck due Friday; adoption story is still missing; before Friday status
+- Primary focus: Leadership review moved up with 7 days to reconcile metrics; after owner silence
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -270,15 +270,15 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-06-04: Bitcoin Range Nears But Does Not Cross
 
 - Dominant domain: Finance & Markets
-- Primary focus: Bitcoin moved 11.5% this week but still has no decision hook; with breadth diverging
-- Selected events: 3
+- Primary focus: Nothing deserves the spotlight today.
+- Selected events: 4
 - Suppressed events: 2
-- Review note: A dominant context exists; review whether it earns primary focus.
+- Review note: Nothing deserves the spotlight today; verify the system does not manufacture a hero.
 
 ### 2026-06-05: Cursor Removed Recurring Edit Friction
 
 - Dominant domain: Technology & AI
-- Primary focus: Editor change matters because it fixes the exact loop Mike avoids; before workflow reset
+- Primary focus: Editor change matters because it fixes the exact loop Mike avoids; with side projects in mind
 - Selected events: 3
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -286,7 +286,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-06-06: Car Registration Renewal Surfaced
 
 - Dominant domain: Life Logistics
-- Primary focus: Passport expires inside 3 days; after email scan
+- Primary focus: TSA PreCheck renewal window opened; with travel optionality in view
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -295,14 +295,14 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 
 - Dominant domain: None
 - Primary focus: Nothing deserves the spotlight today.
-- Selected events: 4
+- Selected events: 2
 - Suppressed events: 2
 - Review note: Nothing deserves the spotlight today; verify the system does not manufacture a hero.
 
 ### 2026-06-08: Travel Weather Changed Packing
 
 - Dominant domain: Travel
-- Primary focus: Flight departure is inside 7 days and parking is not confirmed; before departure week
+- Primary focus: Vacation weather changed the packing plan; before departure week
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -310,7 +310,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-06-09: Annual Physical Scheduling Window
 
 - Dominant domain: Health
-- Primary focus: Prescription refill window opens in 29 days; after provider reminder
+- Primary focus: Nothing deserves the spotlight today.
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -318,7 +318,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-06-10: Repo Consolidation Long Tail Slowed
 
 - Dominant domain: Work
-- Primary focus: Repo consolidation slowed to 37 merges this week; after owner silence
+- Primary focus: Nothing deserves the spotlight today.
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -327,14 +327,14 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 
 - Dominant domain: None
 - Primary focus: Nothing deserves the spotlight today.
-- Selected events: 4
+- Selected events: 2
 - Suppressed events: 2
 - Review note: Nothing deserves the spotlight today; verify the system does not manufacture a hero.
 
 ### 2026-06-12: Family Date Has Real Timing Risk
 
 - Dominant domain: Personal & Family
-- Primary focus: birthday dinner is inside 5 days; with work likely to crowd it out
+- Primary focus: family visit needs a gift or plan before the week fills up; before gift timing gets tight
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -342,7 +342,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-06-13: Range Pass Renewal Window
 
 - Dominant domain: Golf Equipment
-- Primary focus: Club fitting slot opened during Mike's range window; with spring setup in mind
+- Primary focus: Ping release creates a G430 replacement question; before renewal pricing changes
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -350,23 +350,23 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-06-14: Household Finance Due Date
 
 - Dominant domain: Life Logistics
-- Primary focus: Life-admin deadline is close enough to leave monitoring; before weekend errands
+- Primary focus: Insurance document needs renewal before the mortgage file update; with travel optionality in view
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
 
-### 2026-06-15: Watch Expiration Is Near
+### 2026-06-15: Configured Watch Expiration Is Near
 
-- Dominant domain: Watch Items
-- Primary focus: Life-admin deadline is close enough to leave monitoring; before weekend errands
-- Selected events: 2
+- Dominant domain: Travel
+- Primary focus: Flight departure is inside 3 days and parking is not confirmed; after airline email
+- Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
 
 ### 2026-06-16: Sonar Adoption Remains Below Target
 
 - Dominant domain: Work
-- Primary focus: Coding-agent workflow crossed from interesting to usable; after WWDC follow-up
+- Primary focus: Nothing deserves the spotlight today.
 - Selected events: 2
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -375,14 +375,14 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 
 - Dominant domain: None
 - Primary focus: Nothing deserves the spotlight today.
-- Selected events: 4
+- Selected events: 2
 - Suppressed events: 2
 - Review note: Nothing deserves the spotlight today; verify the system does not manufacture a hero.
 
 ### 2026-06-18: Fed Path Affects Housing Math
 
 - Dominant domain: Finance & Markets
-- Primary focus: Fed path shifted after CPI cooled to 11.5%; with breadth diverging
+- Primary focus: Nothing deserves the spotlight today.
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -390,7 +390,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-06-19: Dryer Vent Task Became Risk
 
 - Dominant domain: Home Ownership
-- Primary focus: Dryer vent cleaning has been deferred twice; after seasonal checklist
+- Primary focus: Nothing deserves the spotlight today.
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -398,7 +398,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 ### 2026-06-20: Project Validation Changed Direction
 
 - Dominant domain: Side Projects
-- Primary focus: Side project has gone 14 days without a user-facing step; with spend rising
+- Primary focus: Side project has gone 4 days without a user-facing step; before another build cycle
 - Selected events: 5
 - Suppressed events: 2
 - Review note: A dominant context exists; review whether it earns primary focus.
@@ -407,7 +407,7 @@ Purpose: review the Mike v2 attention model across realistic mornings before cha
 
 - Dominant domain: None
 - Primary focus: Nothing deserves the spotlight today.
-- Selected events: 4
+- Selected events: 2
 - Suppressed events: 2
 - Review note: Nothing deserves the spotlight today; verify the system does not manufacture a hero.
 

@@ -27,7 +27,7 @@ Do not add new integrations, categories, or homepage layouts until these artifac
 - [personal-attention-simulation-may-june-2026.json](simulations/personal-attention-simulation-may-june-2026.json)
 - [personal-attention-simulation-may-june-2026.md](simulations/personal-attention-simulation-may-june-2026.md)
 
-The planning artifacts define event classes, ranking outcomes, promotion rules, suppression rules, watch object semantics, and 50 simulated mornings from May 3, 2026 through June 21, 2026.
+The planning artifacts define configured watches, generated events, briefing outputs, event classes, ranking outcomes, promotion rules, suppression rules, watch admin semantics, and 50 simulated mornings from May 3, 2026 through June 21, 2026.
 
 The MVP now supports both structured sources and AI-generated topic briefings.
 
@@ -47,6 +47,7 @@ Allowed:
 - Internal attention item classification: Action Required, Potential Opportunity, or Worth Knowing
 - Opportunity candidates
 - User-defined topics
+- Watchlist Admin as the user-authored attention configuration system
 - AI-generated topic briefings
 - Structured source placeholders for market, crypto, weather, and sports APIs
 
@@ -58,7 +59,7 @@ Banned:
 - Options chains
 - Candlestick charts
 - Raw news feeds
-- Watchlists
+- Passive watchlists that are separate from attention configuration
 - Social features
 - AI chat
 - Multi-user portfolios
@@ -99,27 +100,97 @@ Initial topics:
 - AI
 - Golf
 
-## Homepage
+## Watchlist Admin
 
-One page.
+The watchlist is not a passive "things being watched" section. It is the user's source-of-truth attention configuration system.
 
-- Morning Briefing
-- one curated scroll of edited briefing items
-- one featured item and secondary stories
-- briefing appendix modal after tapping an item
+Each watch defines:
 
-No navigation, settings, profile, administration, or dashboard sprawl.
+- object
+- conditions
+- sources
+- cadence
+- surface rules
+- suppression rules
+- expiration
+- preferred output
 
-Homepage rules:
+The daily briefing is downstream of Watchlist Admin. It only shows what changed, what needs attention now, or what the user would otherwise forget.
+
+Planning artifacts must keep these layers separate:
+
+- Configured Watches: user-authored attention infrastructure
+- Generated Events: candidate observations produced from configured watches and other sources
+- Briefing Outputs: filtered conclusions shown in the Morning Briefing
+
+Every briefing output must carry provenance:
+
+```json
+{
+  "source_watch_ids": [],
+  "triggered_surface_rule": "",
+  "suppressed_by": null,
+  "why_today": ""
+}
+```
+
+If an item cannot explain which configured watch produced it, which surface rule fired, and why it matters today, it should not appear.
+
+## Watch Quality Review
+
+Run Watch Quality Review before more UI work.
+
+Every configured watch and onboarding preset must pass:
+
+- object is specific enough
+- sources are realistic
+- cadence is appropriate
+- surface rules are concrete
+- suppression rules are aggressive
+- expiration makes sense
+- preferred output would help the user remember something instead of creating noise
+
+A valid watch must prove all three outcomes:
+
+- Silent monitoring: no briefing item when source data is unchanged or outside the action window.
+- Useful surface: a concrete rule fires and creates a current-day reason.
+- Explicit suppression: generic, unchanged, or filler input is rejected.
+
+Presets must create editable watches. They must not create fixed categories.
+
+## UI vNext
+
+The UI exposes the validated attention model without redesigning it:
+
+- Briefing
+- Archive
+- Watch Admin
+- Appendix / provenance
+
+The Briefing page is still one curated scroll of edited briefing outputs. It does not show watches as content.
+
+UI rules:
+
+- Briefing shows only briefing outputs.
+- Briefing does not show inactive watches.
+- No-spotlight days are allowed and must not force a hero.
+- Primary focus appears only when a lead candidate exists.
+- Watch Admin is separate from the Briefing.
+- Watch Admin supports add, edit, delete, and preset-created editable watches.
+- Watch Admin shows conditions, sources, cadence, surface rules, suppression rules, expiration, and preferred output.
+- Appendix shows source watch, triggered rule, suppressed rule when present, and why today.
+- Archive supports prior simulated days and must not navigate into future dates.
+
+Briefing rules:
 
 - Do not show priority, category, confidence, scores, or source labels in the primary briefing.
 - Do not show generic calls to action such as "review whether," "decide whether," or "consider whether" in the primary briefing.
 - The existence of an item implies it is worth attention.
 - Each line should read like an editor already interpreted the data.
-- Audit details belong in the appendix modal, not on the homepage.
+- Audit details belong in the Appendix, not on the Briefing page.
 - Routine portfolio facts do not belong in the Morning Briefing.
-- Portfolio, Portfolio Intelligence, and Topics are inputs. They should not appear as separate homepage sections.
-- Portfolio concentration, allocation, cash, and holdings analysis belongs off the homepage unless it is important enough to be an actual morning event.
+- Portfolio, Portfolio Intelligence, Topics, and watches are inputs. They should not appear as separate Briefing sections.
+- Portfolio concentration, allocation, cash, and holdings analysis belongs off the Briefing page unless it is important enough to be an actual morning event.
 
 Information classes are internal ranking/context only. They must not appear as homepage section headers.
 

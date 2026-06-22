@@ -29,6 +29,10 @@ export type AttentionItem = {
   classification?: BriefingClass;
   source?: string;
   topic?: string;
+  source_watch_ids?: string[];
+  triggered_surface_rule?: string;
+  suppressed_by?: string | null;
+  why_today?: string;
   generation_metadata?: GenerationMetadata;
 };
 
@@ -92,6 +96,10 @@ export type AssistantBriefingItem = {
   category: AttentionCategory;
   importance_score: number;
   story_type: "focusos" | "external";
+  source_watch_ids: string[];
+  triggered_surface_rule: string;
+  suppressed_by: string | null;
+  why_today: string;
 };
 
 export type WatchStatus = {
@@ -141,8 +149,14 @@ export type WatchItem = {
   expires_at: string | null;
   check_frequency: string;
   watch_for: string[];
+  conditions: string[];
+  source_inputs: string[];
+  cadence: string;
   surface_when: string[];
+  surface_rules: string[];
+  suppression_rules: string[];
   briefing_posture: string;
+  preferred_output: string;
   status: "active" | "completed" | "archived";
   last_evaluated_on: string | null;
   latest_evaluation: WatchEvaluation | null;

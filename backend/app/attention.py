@@ -173,6 +173,10 @@ def enrich_attention_item(
         or next_item.get("what_changed")
         or "This is appearing because it affects today's attention."
     )
+    next_item["source_watch_ids"] = list(next_item.get("source_watch_ids") or [])
+    next_item["triggered_surface_rule"] = next_item.get("triggered_surface_rule") or ""
+    next_item["suppressed_by"] = next_item.get("suppressed_by")
+    next_item["why_today"] = next_item.get("why_today") or next_item.get("why_now", "")
     next_item["generation_metadata"] = attention_generation_metadata(next_item)
     return next_item
 
@@ -896,6 +900,10 @@ def assistant_item(item: dict) -> dict:
         ),
         "importance_score": int(item.get("importance_score") or 0),
         "story_type": item.get("story_type", "external"),
+        "source_watch_ids": list(item.get("source_watch_ids") or []),
+        "triggered_surface_rule": item.get("triggered_surface_rule") or "",
+        "suppressed_by": item.get("suppressed_by"),
+        "why_today": item.get("why_today") or item.get("why_now", ""),
     }
 
 
@@ -938,6 +946,10 @@ def build_assistant_briefing(
             "category": "awareness",
             "importance_score": 0,
             "story_type": "focusos",
+            "source_watch_ids": [],
+            "triggered_surface_rule": "",
+            "suppressed_by": None,
+            "why_today": "No item met the primary-focus threshold.",
         }
         mode = "quiet"
         secondary_candidates = items

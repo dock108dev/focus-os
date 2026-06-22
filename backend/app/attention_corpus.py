@@ -10,20 +10,19 @@ from typing import Iterable
 
 
 DOMAIN_TARGETS = {
-    "Work": 240,
-    "Finance & Markets": 220,
-    "Technology & AI": 160,
+    "Work": 250,
+    "Finance & Markets": 230,
+    "Technology & AI": 165,
     "Personal & Family": 90,
-    "Dog": 70,
+    "Dog": 75,
     "Sports & Golf": 110,
     "Golf Equipment": 60,
     "Books & Entertainment": 60,
-    "Health": 70,
-    "Life Logistics": 110,
-    "Home Ownership": 80,
-    "Travel": 80,
-    "Side Projects": 90,
-    "Watch Items": 60,
+    "Health": 75,
+    "Life Logistics": 120,
+    "Home Ownership": 85,
+    "Travel": 85,
+    "Side Projects": 95,
 }
 
 EVENT_CLASSES = [
@@ -54,6 +53,301 @@ class AttentionScenario:
     sources: tuple[str, ...]
     lead_eligible: bool = False
     watch_conditions: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class ConfiguredWatch:
+    name: str
+    object: str
+    conditions: tuple[str, ...]
+    sources: tuple[str, ...]
+    cadence: str
+    surface_rules: tuple[str, ...]
+    suppression_rules: tuple[str, ...]
+    expiration: str
+    preferred_output: str
+
+
+@dataclass(frozen=True)
+class WatchPreset:
+    name: str
+    creates_watch: str
+    default_sources: tuple[str, ...]
+    default_cadence: str
+    editable_fields: tuple[str, ...]
+
+
+CONFIGURED_WATCHES: tuple[ConfiguredWatch, ...] = (
+    ConfiguredWatch(
+        "Outdoor concert Friday",
+        "outdoor concert",
+        ("weather", "parking prices", "venue policy", "timing"),
+        ("calendar", "weather", "venue email", "parking feed"),
+        "daily until 72 hours out, then morning and afternoon",
+        (
+            "rain risk > 35%",
+            "parking changes materially",
+            "event is within 48 hours",
+            "venue sends an update",
+        ),
+        (
+            "generic reminders",
+            "unchanged weather",
+            "concert is coming up filler",
+        ),
+        "day after event",
+        "brief only what changed or what needs a decision",
+    ),
+    ConfiguredWatch(
+        "Bitcoin range",
+        "Bitcoin",
+        ("price range", "liquidity", "macro risk", "cash availability"),
+        ("CoinGecko", "market close", "portfolio import"),
+        "daily after market close",
+        ("configured accumulation range crossed", "weekly move changes risk posture"),
+        ("minor daily moves", "generic crypto headlines", "price-only updates"),
+        "until range is retired",
+        "decision-window note",
+    ),
+    ConfiguredWatch(
+        "UNH watch",
+        "UNH",
+        ("drawdown", "healthcare sector context", "portfolio exposure"),
+        ("portfolio import", "market close", "sector watch"),
+        "daily after market close",
+        ("drawdown materially changes assumptions", "sector weakness accelerates"),
+        ("routine price noise", "generic analyst notes"),
+        "until watch thesis is closed",
+        "context change note",
+    ),
+    ConfiguredWatch(
+        "Market backdrop",
+        "S&P breadth, AI trade, oil, and Fed path",
+        ("S&P breadth", "QQQ concentration", "AI stocks", "oil", "Fed path"),
+        ("market close", "index breadth", "sector watch", "Fed calendar"),
+        "daily after market close, plus after macro events",
+        ("risk backdrop changes", "breadth diverges from index", "macro path changes"),
+        ("minor index moves", "generic market commentary", "price-only updates"),
+        "until backdrop watch is retired",
+        "context change note",
+    ),
+    ConfiguredWatch(
+        "Mortgage rates",
+        "mortgage-rate watch",
+        ("rate threshold", "Fed signal", "housing inventory"),
+        ("FRED", "mortgage rate feed", "housing watch"),
+        "weekly, plus after Fed/CPI events",
+        ("rate threshold crossed", "housing math changes materially"),
+        ("unchanged rates", "generic housing news"),
+        "configured review window",
+        "decision-window note",
+    ),
+    ConfiguredWatch(
+        "Bogey care",
+        "Bogey",
+        ("vet schedule", "heartworm refill", "grooming", "boarding"),
+        ("calendar", "vet email", "notes", "boarding email"),
+        "weekly, daily inside travel windows",
+        ("care deadline inside 7 days", "boarding missing before travel"),
+        ("generic pet reminders", "completed care items"),
+        "after care window closes",
+        "small action reminder",
+    ),
+    ConfiguredWatch(
+        "Travel logistics",
+        "trip logistics",
+        ("flight", "parking", "weather", "packing", "return plan"),
+        ("calendar", "airline email", "weather", "travel advisory"),
+        "daily inside 7 days",
+        ("departure is near", "parking missing", "weather changes packing or timing"),
+        ("generic countdowns", "unchanged itinerary", "destination filler"),
+        "return date",
+        "open travel loop",
+    ),
+    ConfiguredWatch(
+        "Yankees and Rutgers",
+        "Yankees/Rutgers season and ticket posture",
+        ("standings context", "ticket deadlines", "kickoff logistics"),
+        ("sports schedule", "team news", "ticket portal"),
+        "daily in season",
+        ("planning or standings context changes", "ticket deadline nears"),
+        ("routine wins", "routine losses", "generic offseason notes"),
+        "end of season or renewal window",
+        "only planning/context changes",
+    ),
+    ConfiguredWatch(
+        "Golf weather and equipment",
+        "golf setup",
+        ("weather window", "tee time", "equipment release", "fitting slots"),
+        ("weather", "course email", "manufacturer release", "range account"),
+        "weekly, plus day before tee times",
+        ("playability changes", "fitting slot opens", "renewal window nears"),
+        ("generic golf content", "unchanged forecasts"),
+        "after tee time or renewal window",
+        "planning or opportunity note",
+    ),
+    ConfiguredWatch(
+        "Work migrations",
+        "work migration posture",
+        ("adoption count", "team response gap", "deadline", "blast radius"),
+        ("GitHub Enterprise", "Slack", "Jira", "security tooling"),
+        "workday mornings",
+        ("deadline or response gap threatens plan", "exposure count changes"),
+        ("project-name updates", "unchanged status", "generic rollout chatter"),
+        "after migration freeze",
+        "posture change or escalation note",
+    ),
+    ConfiguredWatch(
+        "Side projects",
+        "side-project direction",
+        ("shipping momentum", "validation evidence", "cost", "expiration"),
+        ("GitHub", "billing email", "project notes", "domain registrar"),
+        "twice weekly",
+        ("ship-or-stop posture changes", "cost rises without progress"),
+        ("task backlog churn", "generic repo activity"),
+        "after project is shipped, stopped, or archived",
+        "ship-or-stop note",
+    ),
+    ConfiguredWatch(
+        "Home maintenance",
+        "home upkeep",
+        ("service windows", "seasonal risk", "deferred tasks", "renewals"),
+        ("home checklist", "calendar", "email", "seasonal rule"),
+        "weekly",
+        ("due inside 10 days", "deferred repeatedly", "season changes risk"),
+        ("generic home tips", "not-due-yet chores"),
+        "after task is completed or season passes",
+        "small action reminder",
+    ),
+    ConfiguredWatch(
+        "Life logistics",
+        "administrative deadlines",
+        ("passport", "TSA PreCheck", "car registration", "property taxes"),
+        ("email", "calendar", "state portal", "home folder"),
+        "weekly, daily inside due windows",
+        ("expiration or due date is inside action window", "paperwork blocks travel"),
+        ("generic reminders", "paperwork with no open loop"),
+        "after deadline is closed",
+        "small action reminder",
+    ),
+    ConfiguredWatch(
+        "Family dates",
+        "family calendar",
+        ("birthdays", "holidays", "gift windows", "visit logistics"),
+        ("calendar", "notes", "messages"),
+        "weekly, daily inside 7 days",
+        ("date inside 7 days", "gift or plan not closed"),
+        ("generic calendar reminders", "events with no open loop"),
+        "day after event",
+        "small action reminder",
+    ),
+    ConfiguredWatch(
+        "WWDC and coding tools",
+        "developer tooling posture",
+        ("workflow friction", "developer impact", "pricing", "project assumptions"),
+        ("vendor changelog", "developer docs", "project notes", "pricing page"),
+        "daily during event windows, otherwise weekly",
+        ("tool default should change", "project assumption changes", "cost model changes"),
+        ("generic launch coverage", "unchanged benchmarks", "rumor recap"),
+        "after event window or tool trial closes",
+        "posture change note",
+    ),
+    ConfiguredWatch(
+        "Health admin",
+        "health logistics",
+        ("refill window", "annual physical", "eye exam", "appointment availability"),
+        ("calendar", "pharmacy notice", "provider portal"),
+        "monthly, weekly inside due windows",
+        ("routine care window opens", "appointment slots narrow", "refill gap nears"),
+        ("medical interpretation", "generic wellness content", "not-due-yet reminders"),
+        "after appointment or refill is closed",
+        "small action reminder",
+    ),
+    ConfiguredWatch(
+        "Media queue",
+        "books and shows",
+        ("prior-watch hook", "saved recommendation", "release timing"),
+        ("streaming queue", "book notes", "recommendation"),
+        "weekly",
+        ("prior intent matches release", "recommendation fits saved queue"),
+        ("generic releases", "trailer drops", "lists with no prior intent"),
+        "after queue item is watched, read, or ignored",
+        "light personal context note",
+    ),
+)
+
+WATCH_PRESETS: tuple[WatchPreset, ...] = (
+    WatchPreset(
+        "Markets",
+        "Bitcoin range",
+        ("market close", "crypto feed", "portfolio import"),
+        "daily after market close",
+        ("object", "conditions", "sources", "cadence", "surface_rules", "suppression_rules", "expiration", "preferred_output"),
+    ),
+    WatchPreset(
+        "Sports teams",
+        "Yankees and Rutgers",
+        ("sports schedule", "team news", "ticket portal"),
+        "daily in season",
+        ("object", "conditions", "sources", "cadence", "surface_rules", "suppression_rules", "expiration", "preferred_output"),
+    ),
+    WatchPreset(
+        "Travel",
+        "Outdoor concert Friday",
+        ("calendar", "weather", "venue email", "travel email"),
+        "daily inside 7 days",
+        ("object", "conditions", "sources", "cadence", "surface_rules", "suppression_rules", "expiration", "preferred_output"),
+    ),
+    WatchPreset(
+        "Family dates",
+        "Family dates",
+        ("calendar", "notes", "messages"),
+        "weekly, daily inside 7 days",
+        ("object", "conditions", "sources", "cadence", "surface_rules", "suppression_rules", "expiration", "preferred_output"),
+    ),
+    WatchPreset(
+        "Home maintenance",
+        "Home maintenance",
+        ("home checklist", "calendar", "email"),
+        "weekly",
+        ("object", "conditions", "sources", "cadence", "surface_rules", "suppression_rules", "expiration", "preferred_output"),
+    ),
+    WatchPreset(
+        "Pets",
+        "Bogey care",
+        ("calendar", "vet email", "notes"),
+        "weekly, daily inside travel windows",
+        ("object", "conditions", "sources", "cadence", "surface_rules", "suppression_rules", "expiration", "preferred_output"),
+    ),
+    WatchPreset(
+        "Medical appointments",
+        "Health admin",
+        ("calendar", "pharmacy notice", "provider portal"),
+        "monthly, weekly inside due windows",
+        ("object", "conditions", "sources", "cadence", "surface_rules", "suppression_rules", "expiration", "preferred_output"),
+    ),
+    WatchPreset(
+        "Work projects",
+        "Work migrations",
+        ("GitHub Enterprise", "Slack", "Jira"),
+        "workday mornings",
+        ("object", "conditions", "sources", "cadence", "surface_rules", "suppression_rules", "expiration", "preferred_output"),
+    ),
+    WatchPreset(
+        "Side projects",
+        "Side projects",
+        ("GitHub", "billing email", "project notes"),
+        "twice weekly",
+        ("object", "conditions", "sources", "cadence", "surface_rules", "suppression_rules", "expiration", "preferred_output"),
+    ),
+    WatchPreset(
+        "Tech interests",
+        "WWDC and coding tools",
+        ("vendor changelog", "developer docs", "project notes"),
+        "daily during event windows, otherwise weekly",
+        ("object", "conditions", "sources", "cadence", "surface_rules", "suppression_rules", "expiration", "preferred_output"),
+    ),
+)
 
 
 SCENARIOS: tuple[AttentionScenario, ...] = (
@@ -859,7 +1153,7 @@ SIMULATION_PATTERNS = [
     {"name": "coding-agent workflow posture shift", "dominant": "Technology & AI", "primary": "technology", "subject": "Claude Code workflow"},
     {"name": "Bogey care window", "dominant": "Dog", "primary": "dog", "subject": "Bogey"},
     {"name": "property tax paperwork window", "dominant": "Life Logistics", "primary": "life", "subject": "property taxes"},
-    {"name": "watch object stays quiet", "dominant": "Watch Items", "primary": None},
+    {"name": "configured watch stays quiet", "dominant": None, "primary": None},
     {"name": "KEV blast radius widened", "dominant": "Work", "primary": "work", "subject": "critical KEV exposure"},
     {"name": "S&P breadth changed the backdrop", "dominant": "Finance & Markets", "primary": "finance", "subject": "S&P breadth"},
     {"name": "WWDC project assumptions changed", "dominant": "Technology & AI", "primary": "technology", "subject": "WWDC"},
@@ -882,7 +1176,7 @@ SIMULATION_PATTERNS = [
     {"name": "home and family both need small actions", "dominant": "Personal & Family", "primary": "competing"},
     {"name": "oil move is only macro context", "dominant": None, "primary": None},
     {"name": "executive packet needs decision story", "dominant": "Work", "primary": "work", "subject": "executive deck"},
-    {"name": "Bitcoin range nears but does not cross", "dominant": "Finance & Markets", "primary": "finance", "subject": "Bitcoin"},
+    {"name": "Bitcoin range nears but does not cross", "dominant": "Finance & Markets", "primary": None, "subject": "Bitcoin"},
     {"name": "Cursor removed recurring edit friction", "dominant": "Technology & AI", "primary": "technology", "subject": "Cursor workflow"},
     {"name": "car registration renewal surfaced", "dominant": "Life Logistics", "primary": "life", "subject": "life logistics"},
     {"name": "sports context stays low priority", "dominant": None, "primary": None},
@@ -893,7 +1187,7 @@ SIMULATION_PATTERNS = [
     {"name": "family date has real timing risk", "dominant": "Personal & Family", "primary": "family", "subject": "family calendar"},
     {"name": "range pass renewal window", "dominant": "Golf Equipment", "primary": "golf-equipment", "subject": "golf equipment"},
     {"name": "household finance due date", "dominant": "Life Logistics", "primary": "life", "subject": "property taxes"},
-    {"name": "watch expiration is near", "dominant": "Watch Items", "primary": "watch"},
+    {"name": "configured watch expiration is near", "dominant": "Travel", "primary": "travel", "subject": "travel logistics"},
     {"name": "Sonar adoption remains below target", "dominant": "Work", "primary": "work", "subject": "Sonar onboarding"},
     {"name": "no spotlight after suppression", "dominant": None, "primary": None},
     {"name": "Fed path affects housing math", "dominant": "Finance & Markets", "primary": "finance", "subject": "Fed and CPI path"},
@@ -926,25 +1220,21 @@ def scenarios_for_domain(domain: str) -> list[AttentionScenario]:
 
 
 def evaluation_for(
-    scenario: AttentionScenario, local_index: int, lead_stories_used: int
-) -> tuple[str, int]:
-    if (
-        scenario.lead_eligible
-        and lead_stories_used < LEAD_STORY_TARGET
-        and local_index % 11 == 0
-    ):
-        return "Lead Story", lead_stories_used + 1
+    scenario: AttentionScenario, local_index: int, force_lead_story: bool = False
+) -> str:
+    if force_lead_story:
+        return "Lead Story"
     if scenario.event_class == "Noise":
-        return "Ignore", lead_stories_used
+        return "Ignore"
     if scenario.event_class == "Monitoring":
-        return ("Mention" if local_index % 7 == 0 else "Monitor"), lead_stories_used
+        return "Mention" if local_index % 7 == 0 else "Monitor"
     if scenario.event_class == "Maintenance":
-        return ("Surface" if local_index % 5 == 0 else "Mention"), lead_stories_used
+        return "Surface" if local_index % 5 == 0 else "Mention"
     if scenario.event_class == "Deadline":
-        return ("Surface" if local_index % 3 == 0 else "Mention"), lead_stories_used
+        return "Surface" if local_index % 3 == 0 else "Mention"
     if scenario.event_class == "Opportunity":
-        return ("Surface" if local_index % 4 == 0 else "Mention"), lead_stories_used
-    return ("Surface" if local_index % 6 == 0 else "Mention"), lead_stories_used
+        return "Surface" if local_index % 4 == 0 else "Mention"
+    return "Surface" if local_index % 6 == 0 else "Mention"
 
 
 def score_for(evaluation: str, event_class: str, index: int) -> int:
@@ -1049,11 +1339,9 @@ def build_event(
     scenario: AttentionScenario,
     local_index: int,
     global_index: int,
-    lead_stories_used: int,
-) -> tuple[dict, int]:
-    evaluation, lead_stories_used = evaluation_for(
-        scenario, local_index, lead_stories_used
-    )
+    force_lead_story: bool = False,
+) -> dict:
+    evaluation = evaluation_for(scenario, local_index, force_lead_story)
     title = render_template(
         scenario.title_templates[local_index % len(scenario.title_templates)],
         local_index,
@@ -1064,6 +1352,9 @@ def build_event(
         scenario.description_templates[local_index % len(scenario.description_templates)],
         local_index,
         global_index,
+    )
+    event_suppression_rules = suppression_rules(
+        scenario.event_class, scenario.subject, scenario.domain
     )
     event = {
         "id": f"mike-v2-{global_index:04d}",
@@ -1083,9 +1374,17 @@ def build_event(
         "value_if_caught": scenario.value_if_caught,
         "loss_if_ignored": scenario.loss_if_ignored,
         "promotion_rules": promotion_rules(scenario.event_class, scenario.subject),
-        "suppression_rules": suppression_rules(
-            scenario.event_class, scenario.subject, scenario.domain
+        "suppression_rules": event_suppression_rules,
+        "source_watch_ids": source_watch_ids_for_event(
+            scenario.domain, scenario.subject
         ),
+        "triggered_surface_rule": triggered_surface_rule_for_event(
+            scenario.event_class, evaluation
+        ),
+        "suppressed_by": suppressed_by_for_event(evaluation, event_suppression_rules),
+        "why_today": scenario.value_if_caught
+        if evaluation in {"Lead Story", "Surface", "Mention"}
+        else "No briefing output today; the configured watch remains below threshold.",
         "tags": [
             scenario.domain.lower().replace(" & ", "-").replace(" ", "-"),
             scenario.event_class.lower().replace(" ", "-"),
@@ -1094,12 +1393,19 @@ def build_event(
     }
     if scenario.domain == "Watch Items" or scenario.watch_conditions:
         event["watch"] = watch_model_for(scenario, local_index, global_index)
-    return event, lead_stories_used
+    return event
 
 
 def generate_event_corpus() -> list[dict]:
     events: list[dict] = []
     global_index = 1
+    lead_eligible_total = sum(
+        1
+        for domain, target in DOMAIN_TARGETS.items()
+        for local_index in range(target)
+        if scenarios_for_domain(domain)[local_index % len(scenarios_for_domain(domain))].lead_eligible
+    )
+    lead_eligible_seen = 0
     lead_stories_used = 0
     for domain, target in DOMAIN_TARGETS.items():
         scenarios = scenarios_for_domain(domain)
@@ -1107,9 +1413,16 @@ def generate_event_corpus() -> list[dict]:
             raise ValueError(f"No scenarios configured for domain {domain}")
         for local_index in range(target):
             scenario = scenarios[local_index % len(scenarios)]
-            event, lead_stories_used = build_event(
-                scenario, local_index, global_index, lead_stories_used
-            )
+            force_lead_story = False
+            if scenario.lead_eligible:
+                lead_eligible_seen += 1
+                target_leads_seen = (
+                    lead_eligible_seen * LEAD_STORY_TARGET
+                ) // lead_eligible_total
+                force_lead_story = target_leads_seen > lead_stories_used
+                if force_lead_story:
+                    lead_stories_used += 1
+            event = build_event(scenario, local_index, global_index, force_lead_story)
             events.append(event)
             global_index += 1
     return events
@@ -1117,6 +1430,8 @@ def generate_event_corpus() -> list[dict]:
 
 def corpus_summary(events: Iterable[dict]) -> dict:
     rows = list(events)
+    watch_reviews = watch_quality_reviews()
+    preset_reviews = preset_quality_reviews()
     by_domain = {domain: 0 for domain in DOMAIN_TARGETS}
     by_class = {event_class: 0 for event_class in EVENT_CLASSES}
     by_evaluation = {evaluation: 0 for evaluation in EVALUATIONS}
@@ -1126,10 +1441,259 @@ def corpus_summary(events: Iterable[dict]) -> dict:
         by_evaluation[row["evaluation"]] += 1
     return {
         "total_events": len(rows),
+        "configured_watch_count": len(CONFIGURED_WATCHES),
+        "valid_watch_count": sum(1 for review in watch_reviews if review["valid"]),
+        "valid_preset_count": sum(1 for review in preset_reviews if review["valid"]),
         "domain_counts": by_domain,
         "class_counts": by_class,
         "evaluation_counts": by_evaluation,
         "unique_title_count": len({row["title"] for row in rows}),
+    }
+
+
+def configured_watches() -> list[dict]:
+    return [
+        {
+            "id": watch_id(watch.name),
+            "name": watch.name,
+            "object": watch.object,
+            "conditions": list(watch.conditions),
+            "sources": list(watch.sources),
+            "cadence": watch.cadence,
+            "surface_rules": list(watch.surface_rules),
+            "suppression_rules": list(watch.suppression_rules),
+            "expiration": watch.expiration,
+            "preferred_output": watch.preferred_output,
+        }
+        for watch in CONFIGURED_WATCHES
+    ]
+
+
+def watch_id(name: str) -> str:
+    return (
+        "watch:"
+        + name.lower()
+        .replace("&", "and")
+        .replace("/", "-")
+        .replace(" ", "-")
+        .replace("_", "-")
+    )
+
+
+def watch_presets() -> list[dict]:
+    return [
+        {
+            "name": preset.name,
+            "creates_watch": preset.creates_watch,
+            "created_watch_id": watch_id(preset.creates_watch),
+            "default_sources": list(preset.default_sources),
+            "default_cadence": preset.default_cadence,
+            "editable_fields": list(preset.editable_fields),
+        }
+        for preset in WATCH_PRESETS
+    ]
+
+
+def realistic_source(source: str) -> bool:
+    source_lower = source.lower()
+    return any(
+        token in source_lower
+        for token in (
+            "advisory",
+            "billing",
+            "calendar",
+            "checklist",
+            "changelog",
+            "coingecko",
+            "course",
+            "developer",
+            "domain",
+            "docs",
+            "email",
+            "enterprise",
+            "feed",
+            "fed",
+            "folder",
+            "fred",
+            "github",
+            "import",
+            "index",
+            "jira",
+            "market",
+            "manufacturer",
+            "messages",
+            "notes",
+            "pharmacy",
+            "portal",
+            "pricing",
+            "project",
+            "queue",
+            "range",
+            "recommendation",
+            "rule",
+            "schedule",
+            "sector",
+            "slack",
+            "state",
+            "team",
+            "ticket",
+            "tooling",
+            "vet",
+            "watch",
+            "weather",
+        )
+    )
+
+
+def watch_quality_review_for(watch: dict) -> dict:
+    silent = (
+        f"{watch['object']} remains silent when {watch['conditions'][0]} is unchanged "
+        f"and no surface rule is met."
+    )
+    surface = (
+        f"Surface when {watch['surface_rules'][0]}: output as {watch['preferred_output']}."
+    )
+    suppress = (
+        f"Suppress when input is {watch['suppression_rules'][0]}."
+    )
+    criteria = {
+        "object_specific_enough": bool(watch["object"])
+        and watch["object"].lower() not in {"stuff", "things", "news", "updates"},
+        "sources_realistic": len(watch["sources"]) >= 2
+        and all(realistic_source(source) for source in watch["sources"]),
+        "cadence_appropriate": any(
+            token in watch["cadence"]
+            for token in ("daily", "weekly", "monthly", "workday", "event")
+        ),
+        "surface_rules_concrete": len(watch["surface_rules"]) >= 2,
+        "suppression_rules_aggressive": len(watch["suppression_rules"]) >= 2,
+        "expiration_makes_sense": bool(watch["expiration"]),
+        "helps_memory_not_noise": "generic" in " ".join(watch["suppression_rules"]).lower()
+        or "only" in watch["preferred_output"].lower()
+        or "small action" in watch["preferred_output"].lower()
+        or "decision" in watch["preferred_output"].lower()
+        or "posture" in watch["preferred_output"].lower(),
+        "has_silent_monitoring_example": bool(silent),
+        "has_useful_surface_example": bool(surface),
+        "has_explicit_suppression_example": bool(suppress),
+    }
+    return {
+        "watch_id": watch["id"],
+        "name": watch["name"],
+        "valid": all(criteria.values()),
+        "criteria": criteria,
+        "outcomes": {
+            "silent_monitoring": silent,
+            "useful_surface": surface,
+            "explicit_suppression": suppress,
+        },
+    }
+
+
+def watch_quality_reviews() -> list[dict]:
+    return [watch_quality_review_for(watch) for watch in configured_watches()]
+
+
+def preset_quality_reviews() -> list[dict]:
+    watch_ids = {watch["id"] for watch in configured_watches()}
+    reviews = []
+    for preset in watch_presets():
+        criteria = {
+            "creates_editable_watch": preset["created_watch_id"] in watch_ids,
+            "has_realistic_default_sources": len(preset["default_sources"]) >= 2,
+            "has_default_cadence": bool(preset["default_cadence"]),
+            "does_not_create_fixed_category": len(preset["editable_fields"]) >= 8,
+        }
+        reviews.append(
+            {
+                "preset": preset["name"],
+                "created_watch_id": preset["created_watch_id"],
+                "valid": all(criteria.values()),
+                "criteria": criteria,
+            }
+        )
+    return reviews
+
+
+def source_watch_ids_for_event(domain: str, subject: str) -> list[str]:
+    if domain == "Work":
+        return [watch_id("Work migrations")]
+    if domain == "Finance & Markets":
+        if subject == "Bitcoin":
+            return [watch_id("Bitcoin range")]
+        if subject == "UNH":
+            return [watch_id("UNH watch")]
+        if subject == "mortgage rates":
+            return [watch_id("Mortgage rates")]
+        return [watch_id("Market backdrop")]
+    if domain == "Technology & AI":
+        return [watch_id("WWDC and coding tools")]
+    if domain == "Personal & Family":
+        return [watch_id("Family dates")]
+    if domain == "Dog":
+        return [watch_id("Bogey care")]
+    if domain == "Sports & Golf":
+        return [watch_id("Yankees and Rutgers")]
+    if domain == "Golf Equipment":
+        return [watch_id("Golf weather and equipment")]
+    if domain == "Books & Entertainment":
+        return [watch_id("Media queue")]
+    if domain == "Health":
+        return [watch_id("Health admin")]
+    if domain == "Life Logistics":
+        return [watch_id("Life logistics")]
+    if domain == "Home Ownership":
+        return [watch_id("Home maintenance")]
+    if domain == "Travel":
+        return [watch_id("Travel logistics")]
+    if domain == "Side Projects":
+        return [watch_id("Side projects")]
+    raise ValueError(f"No configured watch lineage for domain {domain}")
+
+
+def triggered_surface_rule_for_event(event_class: str, evaluation: str) -> str:
+    if evaluation in {"Lead Story", "Surface"}:
+        if event_class == "Deadline":
+            return "deadline or expiration is inside the action window"
+        if event_class == "Opportunity":
+            return "configured decision window opened"
+        if event_class == "Context Change":
+            return "watched context changed enough to alter posture"
+        if event_class == "Maintenance":
+            return "configured upkeep window is due or deferred"
+        if event_class == "Monitoring":
+            return "watched condition changed enough to mention"
+    if evaluation == "Mention":
+        return "configured watch produced a current-day context note"
+    return ""
+
+
+def suppressed_by_for_event(evaluation: str, suppression_rules: list[str]) -> str | None:
+    if evaluation == "Ignore":
+        return suppression_rules[0] if suppression_rules else "did not meet surface rules"
+    if evaluation == "Monitor":
+        return "did not meet surface rules"
+    return None
+
+
+def briefing_output_for_event(event: dict) -> dict:
+    return {
+        "event_id": event["id"],
+        "title": event["title"],
+        "domain": event["domain"],
+        "evaluation": event["evaluation"],
+        "source_watch_ids": event["source_watch_ids"],
+        "triggered_surface_rule": event["triggered_surface_rule"],
+        "suppressed_by": None,
+        "why_today": event["why_today"],
+    }
+
+
+def planning_layers() -> dict:
+    return {
+        "Configured Watches": "User-authored attention configuration: what matters, what to check, where to check, cadence, surface rules, suppression rules, expiration, and preferred output.",
+        "Generated Events": "System observations produced from configured watches and other sources. These are candidates, not briefing items.",
+        "Briefing Outputs": "Only the filtered conclusions that changed, need attention now, or would otherwise be forgotten.",
     }
 
 
@@ -1172,6 +1736,17 @@ def select_best_domain_events(
     return selected[:count]
 
 
+def unique_events(events: Iterable[dict]) -> list[dict]:
+    seen: set[str] = set()
+    unique: list[dict] = []
+    for event in events:
+        if event["id"] in seen:
+            continue
+        seen.add(event["id"])
+        unique.append(event)
+    return unique
+
+
 def simulation_pattern(day_index: int) -> dict:
     return SIMULATION_PATTERNS[day_index % len(SIMULATION_PATTERNS)]
 
@@ -1198,10 +1773,11 @@ def build_simulation_day(events: list[dict], day_index: int) -> dict:
     if pattern["primary"] == "competing":
         candidate_events.extend(select_best_domain_events(events, "Personal & Family", 2, day_index))
         candidate_events.extend(select_best_domain_events(events, "Work", 2, day_index + 3))
+    candidate_events = unique_events(candidate_events)
 
     if pattern["primary"] is None:
         selected = [
-            event for event in candidate_events if event["evaluation"] in {"Mention", "Monitor"}
+            event for event in candidate_events if event["evaluation"] == "Mention"
         ][:4]
         primary_focus_id = None
     else:
@@ -1211,9 +1787,13 @@ def build_simulation_day(events: list[dict], day_index: int) -> dict:
         selected.extend(
             [event for event in candidate_events if event["evaluation"] == "Mention"][:2]
         )
+        selected = unique_events(selected)
+        lead_candidates = [
+            event for event in selected if event["evaluation"] == "Lead Story"
+        ]
         primary_focus_id = (
-            max(selected, key=lambda event: event["attention_score"])["id"]
-            if selected
+            max(lead_candidates, key=lambda event: event["attention_score"])["id"]
+            if lead_candidates
             else None
         )
 
@@ -1240,6 +1820,7 @@ def build_simulation_day(events: list[dict], day_index: int) -> dict:
         > 1,
         "candidate_event_ids": [event["id"] for event in candidate_events],
         "selected_event_ids": [event["id"] for event in selected],
+        "briefing_outputs": [briefing_output_for_event(event) for event in selected],
         "suppressed_event_ids": [event["id"] for event in suppressed],
         "outcome_counts": outcome_counts,
         "review_note": review_note(pattern["primary"]),
@@ -1272,29 +1853,70 @@ def classification_rules() -> dict:
 
 def watch_model() -> dict:
     return {
-        "definition": "A watch is object plus conditions plus expiration, not content.",
-        "required_fields": ["object", "conditions", "expiration", "surface_when"],
-        "default_behavior": "Monitor silently until a condition changes, a decision window opens, or expiration nears.",
+        "definition": "A watch is user-authored attention infrastructure, not a passive briefing artifact.",
+        "required_fields": [
+            "object",
+            "conditions",
+            "sources",
+            "cadence",
+            "surface_rules",
+            "suppression_rules",
+            "expiration",
+            "preferred_output",
+        ],
+        "default_behavior": "Evaluate on cadence, suppress unchanged or generic inputs, and emit briefing candidates only when surface rules are met.",
         "examples": {
             "Outdoor Concert": {
-                "object": "Concert",
+                "object": "outdoor concert",
                 "conditions": ["weather", "parking", "timing", "venue changes"],
-                "expiration": "event date",
+                "sources": ["calendar", "weather", "venue email", "parking feed"],
+                "cadence": "daily until 72 hours out, then morning and afternoon",
+                "surface_rules": [
+                    "rain risk > 35%",
+                    "parking changes materially",
+                    "event is within 48 hours",
+                    "venue sends an update",
+                ],
+                "suppression_rules": [
+                    "generic reminders",
+                    "unchanged weather",
+                    "concert is coming up filler",
+                ],
+                "expiration": "day after event",
+                "preferred_output": "brief only what changed or what needs a decision",
             },
             "WWDC": {
                 "object": "WWDC",
-                "conditions": ["reminder", "major announcements", "developer impact"],
+                "conditions": ["keynote date", "major announcements", "developer impact"],
+                "sources": ["Apple developer news", "calendar", "project notes"],
+                "cadence": "daily during event week",
+                "surface_rules": [
+                    "project assumption changes",
+                    "developer tooling impact is practical",
+                ],
+                "suppression_rules": ["generic launch coverage", "unchanged rumor recap"],
                 "expiration": "7 days after keynote",
+                "preferred_output": "project posture change",
             },
             "Vacation": {
                 "object": "Trip",
                 "conditions": ["flight", "weather", "travel advisories"],
+                "sources": ["calendar", "airline email", "weather"],
+                "cadence": "daily inside 7 days",
+                "surface_rules": ["departure is near", "weather changes packing or timing"],
+                "suppression_rules": ["generic countdowns", "unchanged itinerary"],
                 "expiration": "return date",
+                "preferred_output": "open travel loop",
             },
             "Mortgage Rate": {
                 "object": "Mortgage-rate watch",
                 "conditions": ["rate threshold", "Fed signal", "housing inventory"],
+                "sources": ["FRED", "mortgage rate feed", "housing watch"],
+                "cadence": "weekly, plus after Fed/CPI events",
+                "surface_rules": ["rate threshold crossed", "housing math changes materially"],
+                "suppression_rules": ["unchanged rates", "generic housing news"],
                 "expiration": "configured review window",
+                "preferred_output": "decision-window note",
             },
         },
     }
@@ -1309,12 +1931,97 @@ def render_rules_markdown(summary: dict) -> str:
         "## Corpus Summary",
         "",
         f"- Total events: {summary['total_events']}",
+        f"- Configured watches: {summary['configured_watch_count']}",
+        f"- Valid watches: {summary['valid_watch_count']}",
+        f"- Valid presets: {summary['valid_preset_count']}",
         f"- Unique titles: {summary['unique_title_count']}",
         f"- Lead-story candidates: {summary['evaluation_counts']['Lead Story']}",
         "",
-        "### Domains",
+        "## Planning Layers",
         "",
     ]
+    for name, description in planning_layers().items():
+        lines.append(f"- {name}: {description}")
+    lines.extend(
+        [
+            "",
+            "## Configured Watches",
+            "",
+            "Configured watches are the user's source-of-truth attention config. The daily briefing is downstream of this layer.",
+            "",
+        ]
+    )
+    for watch in configured_watches():
+        lines.extend(
+            [
+                f"### {watch['name']}",
+                "",
+                f"- Object: {watch['object']}",
+                f"- Conditions: {', '.join(watch['conditions'])}",
+                f"- Sources: {', '.join(watch['sources'])}",
+                f"- Cadence: {watch['cadence']}",
+                f"- Surface when: {'; '.join(watch['surface_rules'])}",
+                f"- Do not surface: {'; '.join(watch['suppression_rules'])}",
+                f"- Expire: {watch['expiration']}",
+                f"- Preferred output: {watch['preferred_output']}",
+                "",
+            ]
+        )
+    lines.extend(
+        [
+            "## Onboarding Presets",
+            "",
+            "Presets create editable watches. They are not fixed categories.",
+            "",
+        ]
+    )
+    for preset in watch_presets():
+        lines.extend(
+            [
+                f"- {preset['name']}: creates {preset['creates_watch']} ({preset['created_watch_id']})",
+            ]
+        )
+    lines.extend([""])
+    lines.extend(
+        [
+            "## Watch Quality Review",
+            "",
+            "Each configured watch must support silent monitoring, useful surface, and explicit suppression before UI work continues.",
+            "",
+        ]
+    )
+    for review in watch_quality_reviews():
+        outcomes = review["outcomes"]
+        lines.extend(
+            [
+                f"### {review['name']}",
+                "",
+                f"- Valid: {'yes' if review['valid'] else 'no'}",
+                f"- Silent: {outcomes['silent_monitoring']}",
+                f"- Surface: {outcomes['useful_surface']}",
+                f"- Suppress: {outcomes['explicit_suppression']}",
+                "",
+            ]
+        )
+    lines.extend(
+        [
+            "## Preset Quality Review",
+            "",
+        ]
+    )
+    for review in preset_quality_reviews():
+        lines.append(
+            f"- {review['preset']}: {'valid' if review['valid'] else 'needs work'}; creates {review['created_watch_id']}"
+        )
+    lines.extend([""])
+    lines.extend(
+        [
+            "## Generated Events Summary",
+            "",
+        "### Domains",
+        "",
+        ]
+    )
     for domain, count in summary["domain_counts"].items():
         lines.append(f"- {domain}: {count}")
     lines.extend(["", "### Event Classes", ""])
@@ -1325,10 +2032,13 @@ def render_rules_markdown(summary: dict) -> str:
             "",
             "## Generation Standard",
             "",
-            "- Keep the taxonomy, ranking model, and watch model.",
-            "- Generate around attention objects Mike actually thinks about: counts, expirations, thresholds, people, pets, travel, hobbies, and posture changes.",
+            "- Keep the taxonomy, ranking model, and watch admin model.",
+            "- Generate events downstream of configured watches and other sources.",
+            "- Keep configured watches, generated events, and briefing outputs separate.",
+            "- Generate around attention objects users actually care about: counts, expirations, thresholds, people, pets, travel, hobbies, and posture changes.",
             "- Do not treat project names, launch names, or generic categories as events by themselves.",
             "- Lead stories are intentionally rare: target 20-30 candidates in a 1500-event corpus.",
+            "- Briefing outputs must include source_watch_ids, triggered_surface_rule, suppressed_by, and why_today.",
             "",
             "## Promotion Model",
             "",
@@ -1344,13 +2054,13 @@ def render_rules_markdown(summary: dict) -> str:
             "- Suppress repeated items when nothing changed since the last evaluation.",
             "- Suppress any item whose value is merely informational and not context-restoring.",
             "",
-            "## Watch Model",
+            "## Watch Admin Model",
             "",
             json.dumps(watch_model(), indent=2),
             "",
             "## Simulation",
             "",
-            "The companion May-June 2026 simulation intentionally includes boring days, no-primary-focus days, competing-focus days, and Mike-specific work, finance, travel, dog, health, golf-equipment, and life-logistics days.",
+            "The companion May-June 2026 simulation intentionally includes boring days, no-primary-focus days, competing-focus days, and watch-driven outputs that land in real domains rather than a Watch Items domain.",
         ]
     )
     return "\n".join(lines) + "\n"
@@ -1404,17 +2114,33 @@ def write_artifacts(output_dir: Path) -> tuple[Path, Path, Path, Path]:
     corpus_payload = {
         "version": "mike-v2",
         "purpose": "Personal context restoration and attention management model validation.",
+        "planning_layers": planning_layers(),
+        "configured_watches": configured_watches(),
+        "watch_presets": watch_presets(),
+        "watch_quality_reviews": watch_quality_reviews(),
+        "preset_quality_reviews": preset_quality_reviews(),
         "summary": corpus_summary(events),
         "classification_rules": classification_rules(),
         "watch_model": watch_model(),
+        "generated_events": events,
         "events": events,
     }
     simulation_payload = {
         "version": "mike-v2",
+        "planning_layers": planning_layers(),
         "date_range": {
             "start": SIMULATION_START.isoformat(),
             "end": (SIMULATION_START + timedelta(days=SIMULATION_DAYS - 1)).isoformat(),
             "days": SIMULATION_DAYS,
+        },
+        "briefing_outputs": {
+            "definition": "Each day contains selected_event_ids, briefing_outputs, and an optional primary_focus_id. Non-selected generated events remain candidates only.",
+            "required_provenance_fields": [
+                "source_watch_ids",
+                "triggered_surface_rule",
+                "suppressed_by",
+                "why_today",
+            ],
         },
         "days": simulation,
     }

@@ -1,9 +1,23 @@
 {
   "version": "mike-v2",
+  "planning_layers": {
+    "Configured Watches": "User-authored attention configuration: what matters, what to check, where to check, cadence, surface rules, suppression rules, expiration, and preferred output.",
+    "Generated Events": "System observations produced from configured watches and other sources. These are candidates, not briefing items.",
+    "Briefing Outputs": "Only the filtered conclusions that changed, need attention now, or would otherwise be forgotten."
+  },
   "date_range": {
     "start": "2026-05-03",
     "end": "2026-06-21",
     "days": 50
+  },
+  "briefing_outputs": {
+    "definition": "Each day contains selected_event_ids, briefing_outputs, and an optional primary_focus_id. Non-selected generated events remain candidates only.",
+    "required_provenance_fields": [
+      "source_watch_ids",
+      "triggered_surface_rule",
+      "suppressed_by",
+      "why_today"
+    ]
   },
   "days": [
     {
@@ -15,599 +29,42 @@
       "allows_no_spotlight": true,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0243",
-        "mike-v2-0247",
-        "mike-v2-0782",
-        "mike-v2-0952",
-        "mike-v2-0462",
-        "mike-v2-1082"
-      ],
-      "selected_event_ids": [
-        "mike-v2-0243",
-        "mike-v2-0247",
-        "mike-v2-0462",
-        "mike-v2-1082"
-      ],
-      "suppressed_event_ids": [
-        "mike-v2-0782",
-        "mike-v2-0952"
-      ],
-      "outcome_counts": {
-        "Ignore": 2,
-        "Monitor": 2,
-        "Mention": 2,
-        "Surface": 0,
-        "Lead Story": 0
-      },
-      "review_note": "Nothing deserves the spotlight today; verify the system does not manufacture a hero."
-    },
-    {
-      "date": "2026-05-04",
-      "scenario": "namespace adoption count becomes urgent",
-      "dominant_domain": "Work",
-      "primary_focus_id": "mike-v2-0078",
-      "primary_focus_title": "Namespace adoption stalled at 52% with freeze inside 61 days; after the tracker refresh",
-      "allows_no_spotlight": false,
-      "multiple_competing_focuses": false,
-      "candidate_event_ids": [
-        "mike-v2-0247",
-        "mike-v2-0250",
-        "mike-v2-0784",
-        "mike-v2-0954",
-        "mike-v2-0463",
-        "mike-v2-1083",
-        "mike-v2-0078",
-        "mike-v2-0064",
-        "mike-v2-0085"
-      ],
-      "selected_event_ids": [
-        "mike-v2-0078",
-        "mike-v2-0064",
-        "mike-v2-0085",
-        "mike-v2-0463",
-        "mike-v2-1083"
-      ],
-      "suppressed_event_ids": [
-        "mike-v2-0784",
-        "mike-v2-0954"
-      ],
-      "outcome_counts": {
-        "Ignore": 2,
-        "Monitor": 2,
-        "Mention": 2,
-        "Surface": 2,
-        "Lead Story": 1
-      },
-      "review_note": "A dominant context exists; review whether it earns primary focus."
-    },
-    {
-      "date": "2026-05-05",
-      "scenario": "mortgage rate threshold watch",
-      "dominant_domain": "Finance & Markets",
-      "primary_focus_id": "mike-v2-0406",
-      "primary_focus_title": "Mortgage rates moved back below 6.2%; after the weekly move",
-      "allows_no_spotlight": false,
-      "multiple_competing_focuses": false,
-      "candidate_event_ids": [
-        "mike-v2-0250",
-        "mike-v2-0254",
-        "mike-v2-0786",
-        "mike-v2-0956",
-        "mike-v2-0465",
-        "mike-v2-1084",
-        "mike-v2-0406",
-        "mike-v2-0357",
-        "mike-v2-0385"
-      ],
-      "selected_event_ids": [
-        "mike-v2-0406",
-        "mike-v2-0357",
-        "mike-v2-0385",
-        "mike-v2-0465",
-        "mike-v2-1084"
-      ],
-      "suppressed_event_ids": [
-        "mike-v2-0786",
-        "mike-v2-0956"
-      ],
-      "outcome_counts": {
-        "Ignore": 2,
-        "Monitor": 2,
-        "Mention": 2,
-        "Surface": 2,
-        "Lead Story": 1
-      },
-      "review_note": "A dominant context exists; review whether it earns primary focus."
-    },
-    {
-      "date": "2026-05-06",
-      "scenario": "trip parking and packing open loops",
-      "dominant_domain": "Travel",
-      "primary_focus_id": "mike-v2-1280",
-      "primary_focus_title": "Flight departure is inside 7 days and parking is not confirmed; after airline email",
-      "allows_no_spotlight": false,
-      "multiple_competing_focuses": false,
-      "candidate_event_ids": [
-        "mike-v2-0254",
+        "mike-v2-0253",
         "mike-v2-0257",
-        "mike-v2-0788",
-        "mike-v2-0958",
-        "mike-v2-0466",
-        "mike-v2-1085",
-        "mike-v2-1280",
-        "mike-v2-1283",
-        "mike-v2-1286"
-      ],
-      "selected_event_ids": [
-        "mike-v2-1280",
-        "mike-v2-1283",
-        "mike-v2-1286",
-        "mike-v2-0466",
-        "mike-v2-1085"
-      ],
-      "suppressed_event_ids": [
-        "mike-v2-0788",
-        "mike-v2-0958"
-      ],
-      "outcome_counts": {
-        "Ignore": 2,
-        "Monitor": 2,
-        "Mention": 2,
-        "Surface": 3,
-        "Lead Story": 0
-      },
-      "review_note": "A dominant context exists; review whether it earns primary focus."
-    },
-    {
-      "date": "2026-05-07",
-      "scenario": "deck deadline competes with family date",
-      "dominant_domain": "Work",
-      "primary_focus_id": "mike-v2-0100",
-      "primary_focus_title": "Executive deck due Friday; adoption story is still missing; before Friday status",
-      "allows_no_spotlight": false,
-      "multiple_competing_focuses": true,
-      "candidate_event_ids": [
-        "mike-v2-0257",
-        "mike-v2-0261",
-        "mike-v2-0790",
-        "mike-v2-0960",
-        "mike-v2-0468",
-        "mike-v2-1088",
-        "mike-v2-0100",
-        "mike-v2-0142",
-        "mike-v2-0163",
-        "mike-v2-0633",
-        "mike-v2-0636",
-        "mike-v2-0177",
-        "mike-v2-0058"
-      ],
-      "selected_event_ids": [
-        "mike-v2-0100",
-        "mike-v2-0142",
-        "mike-v2-0163",
-        "mike-v2-0633",
-        "mike-v2-0468",
-        "mike-v2-1088"
-      ],
-      "suppressed_event_ids": [
-        "mike-v2-0790",
-        "mike-v2-0960"
-      ],
-      "outcome_counts": {
-        "Ignore": 2,
-        "Monitor": 2,
-        "Mention": 2,
-        "Surface": 5,
-        "Lead Story": 2
-      },
-      "review_note": "Multiple high-value contexts compete; review whether one truly dominates."
-    },
-    {
-      "date": "2026-05-08",
-      "scenario": "routine sports and market noise",
-      "dominant_domain": null,
-      "primary_focus_id": null,
-      "primary_focus_title": null,
-      "allows_no_spotlight": true,
-      "multiple_competing_focuses": false,
-      "candidate_event_ids": [
-        "mike-v2-0261",
-        "mike-v2-0264",
-        "mike-v2-0792",
-        "mike-v2-0962",
-        "mike-v2-0469",
-        "mike-v2-1089"
-      ],
-      "selected_event_ids": [
-        "mike-v2-0261",
-        "mike-v2-0264",
-        "mike-v2-0469",
-        "mike-v2-1089"
-      ],
-      "suppressed_event_ids": [
-        "mike-v2-0792",
-        "mike-v2-0962"
-      ],
-      "outcome_counts": {
-        "Ignore": 2,
-        "Monitor": 2,
-        "Mention": 2,
-        "Surface": 0,
-        "Lead Story": 0
-      },
-      "review_note": "Nothing deserves the spotlight today; verify the system does not manufacture a hero."
-    },
-    {
-      "date": "2026-05-09",
-      "scenario": "coding-agent workflow posture shift",
-      "dominant_domain": "Technology & AI",
-      "primary_focus_id": "mike-v2-0461",
-      "primary_focus_title": "Claude Code now beats Mike's current workflow on test repair; after WWDC follow-up",
-      "allows_no_spotlight": false,
-      "multiple_competing_focuses": false,
-      "candidate_event_ids": [
-        "mike-v2-0264",
-        "mike-v2-0268",
-        "mike-v2-0794",
-        "mike-v2-0964",
-        "mike-v2-0470",
-        "mike-v2-1090",
-        "mike-v2-0461",
-        "mike-v2-0557",
-        "mike-v2-0569"
-      ],
-      "selected_event_ids": [
-        "mike-v2-0461",
-        "mike-v2-0557",
-        "mike-v2-0569",
-        "mike-v2-0470",
-        "mike-v2-1090"
-      ],
-      "suppressed_event_ids": [
-        "mike-v2-0794",
-        "mike-v2-0964"
-      ],
-      "outcome_counts": {
-        "Ignore": 2,
-        "Monitor": 2,
-        "Mention": 2,
-        "Surface": 2,
-        "Lead Story": 1
-      },
-      "review_note": "A dominant context exists; review whether it earns primary focus."
-    },
-    {
-      "date": "2026-05-10",
-      "scenario": "Bogey care window",
-      "dominant_domain": "Dog",
-      "primary_focus_id": "mike-v2-0721",
-      "primary_focus_title": "Bogey grooming is overdue by 61 days; before the refill gap",
-      "allows_no_spotlight": false,
-      "multiple_competing_focuses": false,
-      "candidate_event_ids": [
-        "mike-v2-0268",
-        "mike-v2-0271",
-        "mike-v2-0796",
-        "mike-v2-0966",
-        "mike-v2-0471",
-        "mike-v2-1091",
-        "mike-v2-0711",
-        "mike-v2-0721",
-        "mike-v2-0731"
-      ],
-      "selected_event_ids": [
-        "mike-v2-0711",
-        "mike-v2-0721",
-        "mike-v2-0731",
-        "mike-v2-0471",
-        "mike-v2-1091"
-      ],
-      "suppressed_event_ids": [
-        "mike-v2-0796",
-        "mike-v2-0966"
-      ],
-      "outcome_counts": {
-        "Ignore": 2,
-        "Monitor": 2,
-        "Mention": 2,
-        "Surface": 3,
-        "Lead Story": 0
-      },
-      "review_note": "A dominant context exists; review whether it earns primary focus."
-    },
-    {
-      "date": "2026-05-11",
-      "scenario": "property tax paperwork window",
-      "dominant_domain": "Life Logistics",
-      "primary_focus_id": "mike-v2-1176",
-      "primary_focus_title": "Life-admin deadline is close enough to leave monitoring; before weekend errands",
-      "allows_no_spotlight": false,
-      "multiple_competing_focuses": false,
-      "candidate_event_ids": [
-        "mike-v2-0271",
-        "mike-v2-0275",
-        "mike-v2-0798",
-        "mike-v2-0968",
-        "mike-v2-0474",
-        "mike-v2-1092",
-        "mike-v2-1166",
-        "mike-v2-1176",
-        "mike-v2-1186"
-      ],
-      "selected_event_ids": [
-        "mike-v2-1166",
-        "mike-v2-1176",
-        "mike-v2-1186",
-        "mike-v2-0474",
-        "mike-v2-1092"
-      ],
-      "suppressed_event_ids": [
-        "mike-v2-0798",
-        "mike-v2-0968"
-      ],
-      "outcome_counts": {
-        "Ignore": 2,
-        "Monitor": 2,
-        "Mention": 2,
-        "Surface": 3,
-        "Lead Story": 0
-      },
-      "review_note": "A dominant context exists; review whether it earns primary focus."
-    },
-    {
-      "date": "2026-05-12",
-      "scenario": "watch object stays quiet",
-      "dominant_domain": "Watch Items",
-      "primary_focus_id": null,
-      "primary_focus_title": null,
-      "allows_no_spotlight": true,
-      "multiple_competing_focuses": false,
-      "candidate_event_ids": [
-        "mike-v2-0275",
-        "mike-v2-0278",
-        "mike-v2-0800",
-        "mike-v2-0970",
-        "mike-v2-0475",
-        "mike-v2-1094",
-        "mike-v2-1441",
-        "mike-v2-1448",
-        "mike-v2-1455"
-      ],
-      "selected_event_ids": [
-        "mike-v2-0275",
-        "mike-v2-0278",
-        "mike-v2-0475",
-        "mike-v2-1094"
-      ],
-      "suppressed_event_ids": [
-        "mike-v2-0800",
-        "mike-v2-0970"
-      ],
-      "outcome_counts": {
-        "Ignore": 2,
-        "Monitor": 2,
-        "Mention": 5,
-        "Surface": 0,
-        "Lead Story": 0
-      },
-      "review_note": "Nothing deserves the spotlight today; verify the system does not manufacture a hero."
-    },
-    {
-      "date": "2026-05-13",
-      "scenario": "KEV blast radius widened",
-      "dominant_domain": "Work",
-      "primary_focus_id": "mike-v2-0122",
-      "primary_focus_title": "21 services inherited the new KEV exposure; after the tracker refresh",
-      "allows_no_spotlight": false,
-      "multiple_competing_focuses": false,
-      "candidate_event_ids": [
-        "mike-v2-0278",
-        "mike-v2-0282",
-        "mike-v2-0802",
-        "mike-v2-0972",
-        "mike-v2-0477",
-        "mike-v2-1095",
-        "mike-v2-0122",
-        "mike-v2-0157",
-        "mike-v2-0031"
-      ],
-      "selected_event_ids": [
-        "mike-v2-0122",
-        "mike-v2-0157",
-        "mike-v2-0031",
-        "mike-v2-0477",
-        "mike-v2-1095"
-      ],
-      "suppressed_event_ids": [
-        "mike-v2-0802",
-        "mike-v2-0972"
-      ],
-      "outcome_counts": {
-        "Ignore": 2,
-        "Monitor": 2,
-        "Mention": 2,
-        "Surface": 2,
-        "Lead Story": 1
-      },
-      "review_note": "A dominant context exists; review whether it earns primary focus."
-    },
-    {
-      "date": "2026-05-14",
-      "scenario": "S&P breadth changed the backdrop",
-      "dominant_domain": "Finance & Markets",
-      "primary_focus_id": "mike-v2-0319",
-      "primary_focus_title": "S&P breadth improved to 48% above the 50-day average; with breadth diverging",
-      "allows_no_spotlight": false,
-      "multiple_competing_focuses": false,
-      "candidate_event_ids": [
-        "mike-v2-0282",
-        "mike-v2-0285",
-        "mike-v2-0804",
-        "mike-v2-0974",
-        "mike-v2-0478",
-        "mike-v2-1097",
-        "mike-v2-0319",
-        "mike-v2-0361",
-        "mike-v2-0403"
-      ],
-      "selected_event_ids": [
-        "mike-v2-0319",
-        "mike-v2-0361",
-        "mike-v2-0403",
-        "mike-v2-0478",
-        "mike-v2-1097"
-      ],
-      "suppressed_event_ids": [
-        "mike-v2-0804",
-        "mike-v2-0974"
-      ],
-      "outcome_counts": {
-        "Ignore": 2,
-        "Monitor": 2,
-        "Mention": 2,
-        "Surface": 3,
-        "Lead Story": 0
-      },
-      "review_note": "A dominant context exists; review whether it earns primary focus."
-    },
-    {
-      "date": "2026-05-15",
-      "scenario": "WWDC project assumptions changed",
-      "dominant_domain": "Technology & AI",
-      "primary_focus_id": "mike-v2-0483",
-      "primary_focus_title": "WWDC happened; three iOS changes matter to Mike's projects; before the next coding block",
-      "allows_no_spotlight": false,
-      "multiple_competing_focuses": false,
-      "candidate_event_ids": [
-        "mike-v2-0285",
-        "mike-v2-0289",
-        "mike-v2-0806",
-        "mike-v2-0976",
-        "mike-v2-0481",
-        "mike-v2-1098",
-        "mike-v2-0483",
-        "mike-v2-0479",
-        "mike-v2-0491"
-      ],
-      "selected_event_ids": [
-        "mike-v2-0483",
-        "mike-v2-0479",
-        "mike-v2-0491",
-        "mike-v2-0481",
-        "mike-v2-1098"
-      ],
-      "suppressed_event_ids": [
-        "mike-v2-0806",
-        "mike-v2-0976"
-      ],
-      "outcome_counts": {
-        "Ignore": 2,
-        "Monitor": 2,
-        "Mention": 2,
-        "Surface": 2,
-        "Lead Story": 1
-      },
-      "review_note": "A dominant context exists; review whether it earns primary focus."
-    },
-    {
-      "date": "2026-05-16",
-      "scenario": "home upkeep before weather shift",
-      "dominant_domain": "Home Ownership",
-      "primary_focus_id": "mike-v2-1256",
-      "primary_focus_title": "Dryer vent cleaning has been deferred twice; after seasonal checklist",
-      "allows_no_spotlight": false,
-      "multiple_competing_focuses": false,
-      "candidate_event_ids": [
-        "mike-v2-0289",
-        "mike-v2-0292",
-        "mike-v2-0808",
-        "mike-v2-0978",
-        "mike-v2-0482",
-        "mike-v2-1100",
-        "mike-v2-1256",
-        "mike-v2-1261",
-        "mike-v2-1266"
-      ],
-      "selected_event_ids": [
-        "mike-v2-1256",
-        "mike-v2-1261",
-        "mike-v2-1266",
-        "mike-v2-0482",
-        "mike-v2-1100"
-      ],
-      "suppressed_event_ids": [
-        "mike-v2-0808",
-        "mike-v2-0978"
-      ],
-      "outcome_counts": {
-        "Ignore": 2,
-        "Monitor": 2,
-        "Mention": 2,
-        "Surface": 3,
-        "Lead Story": 0
-      },
-      "review_note": "A dominant context exists; review whether it earns primary focus."
-    },
-    {
-      "date": "2026-05-17",
-      "scenario": "side project ship-or-stop posture",
-      "dominant_domain": "Side Projects",
-      "primary_focus_id": "mike-v2-1435",
-      "primary_focus_title": "Side project has gone 14 days without a user-facing step; before weekend coding time",
-      "allows_no_spotlight": false,
-      "multiple_competing_focuses": false,
-      "candidate_event_ids": [
-        "mike-v2-0292",
-        "mike-v2-0296",
-        "mike-v2-0810",
-        "mike-v2-0980",
-        "mike-v2-0486",
-        "mike-v2-1101",
-        "mike-v2-1435",
-        "mike-v2-1351",
-        "mike-v2-1357"
-      ],
-      "selected_event_ids": [
-        "mike-v2-1435",
-        "mike-v2-1351",
-        "mike-v2-1357",
-        "mike-v2-0486",
-        "mike-v2-1101"
-      ],
-      "suppressed_event_ids": [
-        "mike-v2-0810",
-        "mike-v2-0980"
-      ],
-      "outcome_counts": {
-        "Ignore": 2,
-        "Monitor": 2,
-        "Mention": 2,
-        "Surface": 3,
-        "Lead Story": 0
-      },
-      "review_note": "A dominant context exists; review whether it earns primary focus."
-    },
-    {
-      "date": "2026-05-18",
-      "scenario": "nothing clears the attention bar",
-      "dominant_domain": null,
-      "primary_focus_id": null,
-      "primary_focus_title": null,
-      "allows_no_spotlight": true,
-      "multiple_competing_focuses": false,
-      "candidate_event_ids": [
-        "mike-v2-0296",
-        "mike-v2-0299",
         "mike-v2-0812",
         "mike-v2-0982",
-        "mike-v2-0487",
-        "mike-v2-1102"
+        "mike-v2-0482",
+        "mike-v2-1117"
       ],
       "selected_event_ids": [
-        "mike-v2-0296",
-        "mike-v2-0299",
-        "mike-v2-0487",
-        "mike-v2-1102"
+        "mike-v2-0482",
+        "mike-v2-1117"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0482",
+          "title": "Cursor update finally removes a workflow tax; with side projects in mind",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Trying the update may save repeated project time."
+        },
+        {
+          "event_id": "mike-v2-1117",
+          "title": "Insurance document needs renewal before the mortgage file update; with travel optionality in view",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
       ],
       "suppressed_event_ids": [
         "mike-v2-0812",
@@ -623,30 +80,92 @@
       "review_note": "Nothing deserves the spotlight today; verify the system does not manufacture a hero."
     },
     {
-      "date": "2026-05-19",
-      "scenario": "golf fitting window opened",
-      "dominant_domain": "Golf Equipment",
-      "primary_focus_id": "mike-v2-0895",
-      "primary_focus_title": "Club fitting slot opened during Mike's range window; with spring setup in mind",
-      "allows_no_spotlight": false,
+      "date": "2026-05-04",
+      "scenario": "namespace adoption count becomes urgent",
+      "dominant_domain": "Work",
+      "primary_focus_id": null,
+      "primary_focus_title": null,
+      "allows_no_spotlight": true,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0299",
-        "mike-v2-0303",
+        "mike-v2-0257",
+        "mike-v2-0260",
         "mike-v2-0814",
         "mike-v2-0984",
-        "mike-v2-0489",
-        "mike-v2-1103",
-        "mike-v2-0895",
-        "mike-v2-0899",
-        "mike-v2-0903"
+        "mike-v2-0483",
+        "mike-v2-1118",
+        "mike-v2-0022",
+        "mike-v2-0043",
+        "mike-v2-0064"
       ],
       "selected_event_ids": [
-        "mike-v2-0895",
-        "mike-v2-0899",
-        "mike-v2-0903",
-        "mike-v2-0489",
-        "mike-v2-1103"
+        "mike-v2-0022",
+        "mike-v2-0043",
+        "mike-v2-0064",
+        "mike-v2-0483",
+        "mike-v2-1118"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0022",
+          "title": "28 repos still not migrated before namespace freeze; after the tracker refresh",
+          "domain": "Work",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:work-migrations"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "A small nudge can unblock teams before the deadline becomes an executive problem."
+        },
+        {
+          "event_id": "mike-v2-0043",
+          "title": "19 repos still not migrated before namespace freeze; after owner silence",
+          "domain": "Work",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:work-migrations"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "A small nudge can unblock teams before the deadline becomes an executive problem."
+        },
+        {
+          "event_id": "mike-v2-0064",
+          "title": "11 repos still not migrated before namespace freeze; before Friday status",
+          "domain": "Work",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:work-migrations"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "A small nudge can unblock teams before the deadline becomes an executive problem."
+        },
+        {
+          "event_id": "mike-v2-0483",
+          "title": "WWDC follow-up window closes before the weekend; after WWDC follow-up",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can update project direction before stale assumptions harden."
+        },
+        {
+          "event_id": "mike-v2-1118",
+          "title": "Car registration renewal is inside 6 days; after calendar audit",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        }
       ],
       "suppressed_event_ids": [
         "mike-v2-0814",
@@ -662,30 +181,92 @@
       "review_note": "A dominant context exists; review whether it earns primary focus."
     },
     {
-      "date": "2026-05-20",
-      "scenario": "passport and travel paperwork",
-      "dominant_domain": "Life Logistics",
-      "primary_focus_id": "mike-v2-1183",
-      "primary_focus_title": "Passport expires inside 3 days; after email scan",
+      "date": "2026-05-05",
+      "scenario": "mortgage rate threshold watch",
+      "dominant_domain": "Finance & Markets",
+      "primary_focus_id": "mike-v2-0290",
+      "primary_focus_title": "Mortgage rates moved back below 6.0%; before the Fed week",
       "allows_no_spotlight": false,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0303",
-        "mike-v2-0306",
+        "mike-v2-0260",
+        "mike-v2-0264",
         "mike-v2-0816",
         "mike-v2-0986",
-        "mike-v2-0490",
-        "mike-v2-1104",
-        "mike-v2-1183",
-        "mike-v2-1189",
-        "mike-v2-1081"
+        "mike-v2-0485",
+        "mike-v2-1119",
+        "mike-v2-0290",
+        "mike-v2-0339",
+        "mike-v2-0367"
       ],
       "selected_event_ids": [
-        "mike-v2-1183",
-        "mike-v2-1189",
-        "mike-v2-1081",
-        "mike-v2-0490",
-        "mike-v2-1104"
+        "mike-v2-0290",
+        "mike-v2-0339",
+        "mike-v2-0367",
+        "mike-v2-0485",
+        "mike-v2-1119"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0290",
+          "title": "Mortgage rates moved back below 6.0%; before the Fed week",
+          "domain": "Finance & Markets",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:mortgage-rates"
+          ],
+          "triggered_surface_rule": "configured decision window opened",
+          "suppressed_by": null,
+          "why_today": "The system can surface a rare decision window instead of daily rate noise."
+        },
+        {
+          "event_id": "mike-v2-0339",
+          "title": "Mortgage-rate watch crossed Mike's review threshold; after the weekly move",
+          "domain": "Finance & Markets",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:mortgage-rates"
+          ],
+          "triggered_surface_rule": "configured decision window opened",
+          "suppressed_by": null,
+          "why_today": "The system can surface a rare decision window instead of daily rate noise."
+        },
+        {
+          "event_id": "mike-v2-0367",
+          "title": "Rate drop changes the housing math for the first time this month; after the weekly move",
+          "domain": "Finance & Markets",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:mortgage-rates"
+          ],
+          "triggered_surface_rule": "configured decision window opened",
+          "suppressed_by": null,
+          "why_today": "The system can surface a rare decision window instead of daily rate noise."
+        },
+        {
+          "event_id": "mike-v2-0485",
+          "title": "Coding-agent workflow crossed from interesting to usable; before the next coding block",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can decide whether the tool deserves more real work, not just curiosity."
+        },
+        {
+          "event_id": "mike-v2-1119",
+          "title": "Property taxes are due inside 10 days; before paperwork friction",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
       ],
       "suppressed_event_ids": [
         "mike-v2-0816",
@@ -695,36 +276,98 @@
         "Ignore": 2,
         "Monitor": 2,
         "Mention": 2,
-        "Surface": 3,
-        "Lead Story": 0
+        "Surface": 2,
+        "Lead Story": 1
       },
       "review_note": "A dominant context exists; review whether it earns primary focus."
     },
     {
-      "date": "2026-05-21",
-      "scenario": "UNH drawdown changed context",
-      "dominant_domain": "Finance & Markets",
-      "primary_focus_id": "mike-v2-0307",
-      "primary_focus_title": "UNH is down another 11.5% while healthcare lag widens; with breadth diverging",
+      "date": "2026-05-06",
+      "scenario": "trip parking and packing open loops",
+      "dominant_domain": "Travel",
+      "primary_focus_id": "mike-v2-1375",
+      "primary_focus_title": "Flight departure is inside 3 days and parking is not confirmed; after airline email",
       "allows_no_spotlight": false,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0306",
-        "mike-v2-0310",
+        "mike-v2-0264",
+        "mike-v2-0267",
         "mike-v2-0818",
         "mike-v2-0988",
-        "mike-v2-0493",
-        "mike-v2-1107",
-        "mike-v2-0307",
-        "mike-v2-0433",
-        "mike-v2-0265"
+        "mike-v2-0486",
+        "mike-v2-1120",
+        "mike-v2-1375",
+        "mike-v2-1333",
+        "mike-v2-1336"
       ],
       "selected_event_ids": [
-        "mike-v2-0307",
-        "mike-v2-0433",
-        "mike-v2-0265",
-        "mike-v2-0493",
-        "mike-v2-1107"
+        "mike-v2-1375",
+        "mike-v2-1333",
+        "mike-v2-1336",
+        "mike-v2-0486",
+        "mike-v2-1120"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-1375",
+          "title": "Flight departure is inside 3 days and parking is not confirmed; after airline email",
+          "domain": "Travel",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:travel-logistics"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "He can close parking, packing, or return details while there is time."
+        },
+        {
+          "event_id": "mike-v2-1333",
+          "title": "Flight departure is inside 3 days and parking is not confirmed; before departure week",
+          "domain": "Travel",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:travel-logistics"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "He can close parking, packing, or return details while there is time."
+        },
+        {
+          "event_id": "mike-v2-1336",
+          "title": "Flight departure is inside 14 days and parking is not confirmed; after weather refresh",
+          "domain": "Travel",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:travel-logistics"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "He can close parking, packing, or return details while there is time."
+        },
+        {
+          "event_id": "mike-v2-0486",
+          "title": "Editor change matters because it fixes the exact loop Mike avoids; with side projects in mind",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Trying the update may save repeated project time."
+        },
+        {
+          "event_id": "mike-v2-1120",
+          "title": "TSA PreCheck renewal window opened; with travel optionality in view",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        }
       ],
       "suppressed_event_ids": [
         "mike-v2-0818",
@@ -740,34 +383,1502 @@
       "review_note": "A dominant context exists; review whether it earns primary focus."
     },
     {
-      "date": "2026-05-22",
-      "scenario": "health admin scheduling window",
-      "dominant_domain": "Health",
-      "primary_focus_id": "mike-v2-1046",
-      "primary_focus_title": "Eye exam is due this month; after provider reminder",
+      "date": "2026-05-07",
+      "scenario": "deck deadline competes with family date",
+      "dominant_domain": "Work",
+      "primary_focus_id": "mike-v2-0072",
+      "primary_focus_title": "Leadership review moved up with 61 days to reconcile metrics; before Friday status",
       "allows_no_spotlight": false,
-      "multiple_competing_focuses": false,
+      "multiple_competing_focuses": true,
       "candidate_event_ids": [
-        "mike-v2-0310",
-        "mike-v2-0313",
+        "mike-v2-0267",
+        "mike-v2-0271",
         "mike-v2-0820",
         "mike-v2-0990",
-        "mike-v2-0495",
-        "mike-v2-1108",
-        "mike-v2-1036",
-        "mike-v2-1041",
-        "mike-v2-1046"
+        "mike-v2-0488",
+        "mike-v2-1123",
+        "mike-v2-0072",
+        "mike-v2-0121",
+        "mike-v2-0142",
+        "mike-v2-0692",
+        "mike-v2-0664",
+        "mike-v2-0143",
+        "mike-v2-0049"
       ],
       "selected_event_ids": [
-        "mike-v2-1036",
-        "mike-v2-1041",
-        "mike-v2-1046",
-        "mike-v2-0495",
-        "mike-v2-1108"
+        "mike-v2-0072",
+        "mike-v2-0121",
+        "mike-v2-0142",
+        "mike-v2-0692",
+        "mike-v2-0488",
+        "mike-v2-1123"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0072",
+          "title": "Leadership review moved up with 61 days to reconcile metrics; before Friday status",
+          "domain": "Work",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:work-migrations"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "Catching it early preserves time to turn scattered status into a clear ask."
+        },
+        {
+          "event_id": "mike-v2-0121",
+          "title": "Executive deck due Tuesday; adoption story is still missing; before staff review",
+          "domain": "Work",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:work-migrations"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "Catching it early preserves time to turn scattered status into a clear ask."
+        },
+        {
+          "event_id": "mike-v2-0142",
+          "title": "Executive deck due Thursday; adoption story is still missing; after the tracker refresh",
+          "domain": "Work",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:work-migrations"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "Catching it early preserves time to turn scattered status into a clear ask."
+        },
+        {
+          "event_id": "mike-v2-0692",
+          "title": "family visit needs a gift or plan before the week fills up; before gift timing gets tight",
+          "domain": "Personal & Family",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:family-dates"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "A small early action prevents an avoidable scramble."
+        },
+        {
+          "event_id": "mike-v2-0488",
+          "title": "Model cost moved enough to keep side-project economics on watch; before workflow reset",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can avoid reacting to every pricing page change."
+        },
+        {
+          "event_id": "mike-v2-1123",
+          "title": "Insurance document needs renewal before the mortgage file update; with travel optionality in view",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
       ],
       "suppressed_event_ids": [
         "mike-v2-0820",
         "mike-v2-0990"
+      ],
+      "outcome_counts": {
+        "Ignore": 2,
+        "Monitor": 2,
+        "Mention": 2,
+        "Surface": 4,
+        "Lead Story": 3
+      },
+      "review_note": "Multiple high-value contexts compete; review whether one truly dominates."
+    },
+    {
+      "date": "2026-05-08",
+      "scenario": "routine sports and market noise",
+      "dominant_domain": null,
+      "primary_focus_id": null,
+      "primary_focus_title": null,
+      "allows_no_spotlight": true,
+      "multiple_competing_focuses": false,
+      "candidate_event_ids": [
+        "mike-v2-0271",
+        "mike-v2-0274",
+        "mike-v2-0822",
+        "mike-v2-0992",
+        "mike-v2-0489",
+        "mike-v2-1124"
+      ],
+      "selected_event_ids": [
+        "mike-v2-0489",
+        "mike-v2-1124"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0489",
+          "title": "Agent benchmark matters because it changes the default coding loop; before the next coding block",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can decide whether the tool deserves more real work, not just curiosity."
+        },
+        {
+          "event_id": "mike-v2-1124",
+          "title": "Car registration renewal is inside 6 days; after calendar audit",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        }
+      ],
+      "suppressed_event_ids": [
+        "mike-v2-0822",
+        "mike-v2-0992"
+      ],
+      "outcome_counts": {
+        "Ignore": 2,
+        "Monitor": 2,
+        "Mention": 2,
+        "Surface": 0,
+        "Lead Story": 0
+      },
+      "review_note": "Nothing deserves the spotlight today; verify the system does not manufacture a hero."
+    },
+    {
+      "date": "2026-05-09",
+      "scenario": "coding-agent workflow posture shift",
+      "dominant_domain": "Technology & AI",
+      "primary_focus_id": null,
+      "primary_focus_title": null,
+      "allows_no_spotlight": true,
+      "multiple_competing_focuses": false,
+      "candidate_event_ids": [
+        "mike-v2-0274",
+        "mike-v2-0278",
+        "mike-v2-0824",
+        "mike-v2-0994",
+        "mike-v2-0490",
+        "mike-v2-1125",
+        "mike-v2-0553",
+        "mike-v2-0565",
+        "mike-v2-0577"
+      ],
+      "selected_event_ids": [
+        "mike-v2-0553",
+        "mike-v2-0565",
+        "mike-v2-0577",
+        "mike-v2-0490",
+        "mike-v2-1125"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0553",
+          "title": "Claude Code now beats Mike's current workflow on test repair; before the next coding block",
+          "domain": "Technology & AI",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "He can decide whether the tool deserves more real work, not just curiosity."
+        },
+        {
+          "event_id": "mike-v2-0565",
+          "title": "Claude Code now beats Mike's current workflow on test repair; before the next coding block",
+          "domain": "Technology & AI",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "He can decide whether the tool deserves more real work, not just curiosity."
+        },
+        {
+          "event_id": "mike-v2-0577",
+          "title": "Claude Code now beats Mike's current workflow on test repair; before the next coding block",
+          "domain": "Technology & AI",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "He can decide whether the tool deserves more real work, not just curiosity."
+        },
+        {
+          "event_id": "mike-v2-0490",
+          "title": "Cursor fixed the multi-file edit friction Mike keeps working around; with side projects in mind",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Trying the update may save repeated project time."
+        },
+        {
+          "event_id": "mike-v2-1125",
+          "title": "Property taxes are due inside 10 days; before paperwork friction",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
+      ],
+      "suppressed_event_ids": [
+        "mike-v2-0824",
+        "mike-v2-0994"
+      ],
+      "outcome_counts": {
+        "Ignore": 2,
+        "Monitor": 2,
+        "Mention": 2,
+        "Surface": 3,
+        "Lead Story": 0
+      },
+      "review_note": "A dominant context exists; review whether it earns primary focus."
+    },
+    {
+      "date": "2026-05-10",
+      "scenario": "Bogey care window",
+      "dominant_domain": "Dog",
+      "primary_focus_id": null,
+      "primary_focus_title": null,
+      "allows_no_spotlight": true,
+      "multiple_competing_focuses": false,
+      "candidate_event_ids": [
+        "mike-v2-0278",
+        "mike-v2-0281",
+        "mike-v2-0826",
+        "mike-v2-0996",
+        "mike-v2-0491",
+        "mike-v2-1126",
+        "mike-v2-0806",
+        "mike-v2-0736",
+        "mike-v2-0746"
+      ],
+      "selected_event_ids": [
+        "mike-v2-0806",
+        "mike-v2-0736",
+        "mike-v2-0746",
+        "mike-v2-0491",
+        "mike-v2-1126"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0806",
+          "title": "Bogey grooming is overdue by 2 days; before the trip window",
+          "domain": "Dog",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:bogey-care"
+          ],
+          "triggered_surface_rule": "configured upkeep window is due or deferred",
+          "suppressed_by": null,
+          "why_today": "The system can surface care windows before they become urgent."
+        },
+        {
+          "event_id": "mike-v2-0736",
+          "title": "Bogey's heartworm refill is due in 6 days; after the vet reminder",
+          "domain": "Dog",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:bogey-care"
+          ],
+          "triggered_surface_rule": "configured upkeep window is due or deferred",
+          "suppressed_by": null,
+          "why_today": "The system can surface care windows before they become urgent."
+        },
+        {
+          "event_id": "mike-v2-0746",
+          "title": "Bogey grooming is overdue by 2 days; before the trip window",
+          "domain": "Dog",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:bogey-care"
+          ],
+          "triggered_surface_rule": "configured upkeep window is due or deferred",
+          "suppressed_by": null,
+          "why_today": "The system can surface care windows before they become urgent."
+        },
+        {
+          "event_id": "mike-v2-0491",
+          "title": "WWDC happened; three iOS changes matter to Mike's projects; after WWDC follow-up",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can update project direction before stale assumptions harden."
+        },
+        {
+          "event_id": "mike-v2-1126",
+          "title": "TSA PreCheck renewal window opened; with travel optionality in view",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        }
+      ],
+      "suppressed_event_ids": [
+        "mike-v2-0826",
+        "mike-v2-0996"
+      ],
+      "outcome_counts": {
+        "Ignore": 2,
+        "Monitor": 2,
+        "Mention": 2,
+        "Surface": 3,
+        "Lead Story": 0
+      },
+      "review_note": "A dominant context exists; review whether it earns primary focus."
+    },
+    {
+      "date": "2026-05-11",
+      "scenario": "property tax paperwork window",
+      "dominant_domain": "Life Logistics",
+      "primary_focus_id": "mike-v2-1195",
+      "primary_focus_title": "Insurance document needs renewal before the mortgage file update; with travel optionality in view",
+      "allows_no_spotlight": false,
+      "multiple_competing_focuses": false,
+      "candidate_event_ids": [
+        "mike-v2-0281",
+        "mike-v2-0285",
+        "mike-v2-0828",
+        "mike-v2-0998",
+        "mike-v2-0494",
+        "mike-v2-1127",
+        "mike-v2-1195",
+        "mike-v2-1211",
+        "mike-v2-1221"
+      ],
+      "selected_event_ids": [
+        "mike-v2-1195",
+        "mike-v2-1211",
+        "mike-v2-1221",
+        "mike-v2-0494",
+        "mike-v2-1127"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-1195",
+          "title": "Insurance document needs renewal before the mortgage file update; with travel optionality in view",
+          "domain": "Life Logistics",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured upkeep window is due or deferred",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        },
+        {
+          "event_id": "mike-v2-1211",
+          "title": "Life-admin deadline is close enough to leave monitoring; after calendar audit",
+          "domain": "Life Logistics",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured upkeep window is due or deferred",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        },
+        {
+          "event_id": "mike-v2-1221",
+          "title": "Property taxes are due inside 10 days; before paperwork friction",
+          "domain": "Life Logistics",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured upkeep window is due or deferred",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        },
+        {
+          "event_id": "mike-v2-0494",
+          "title": "Cursor update finally removes a workflow tax; with side projects in mind",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Trying the update may save repeated project time."
+        },
+        {
+          "event_id": "mike-v2-1127",
+          "title": "Life-admin deadline is close enough to leave monitoring; after calendar audit",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
+      ],
+      "suppressed_event_ids": [
+        "mike-v2-0828",
+        "mike-v2-0998"
+      ],
+      "outcome_counts": {
+        "Ignore": 2,
+        "Monitor": 2,
+        "Mention": 2,
+        "Surface": 2,
+        "Lead Story": 1
+      },
+      "review_note": "A dominant context exists; review whether it earns primary focus."
+    },
+    {
+      "date": "2026-05-12",
+      "scenario": "configured watch stays quiet",
+      "dominant_domain": null,
+      "primary_focus_id": null,
+      "primary_focus_title": null,
+      "allows_no_spotlight": true,
+      "multiple_competing_focuses": false,
+      "candidate_event_ids": [
+        "mike-v2-0285",
+        "mike-v2-0288",
+        "mike-v2-0830",
+        "mike-v2-1000",
+        "mike-v2-0495",
+        "mike-v2-1129"
+      ],
+      "selected_event_ids": [
+        "mike-v2-0495",
+        "mike-v2-1129"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0495",
+          "title": "WWDC follow-up window closes before the weekend; after WWDC follow-up",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can update project direction before stale assumptions harden."
+        },
+        {
+          "event_id": "mike-v2-1129",
+          "title": "Insurance document needs renewal before the mortgage file update; with travel optionality in view",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
+      ],
+      "suppressed_event_ids": [
+        "mike-v2-0830",
+        "mike-v2-1000"
+      ],
+      "outcome_counts": {
+        "Ignore": 2,
+        "Monitor": 2,
+        "Mention": 2,
+        "Surface": 0,
+        "Lead Story": 0
+      },
+      "review_note": "Nothing deserves the spotlight today; verify the system does not manufacture a hero."
+    },
+    {
+      "date": "2026-05-13",
+      "scenario": "KEV blast radius widened",
+      "dominant_domain": "Work",
+      "primary_focus_id": "mike-v2-0143",
+      "primary_focus_title": "21 services inherited the new KEV exposure; after owner silence",
+      "allows_no_spotlight": false,
+      "multiple_competing_focuses": false,
+      "candidate_event_ids": [
+        "mike-v2-0288",
+        "mike-v2-0292",
+        "mike-v2-0832",
+        "mike-v2-1002",
+        "mike-v2-0497",
+        "mike-v2-1130",
+        "mike-v2-0143",
+        "mike-v2-0241",
+        "mike-v2-0031"
+      ],
+      "selected_event_ids": [
+        "mike-v2-0143",
+        "mike-v2-0241",
+        "mike-v2-0031",
+        "mike-v2-0497",
+        "mike-v2-1130"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0143",
+          "title": "21 services inherited the new KEV exposure; after owner silence",
+          "domain": "Work",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:work-migrations"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "Mike can separate true escalation risk from generic vulnerability noise."
+        },
+        {
+          "event_id": "mike-v2-0241",
+          "title": "Critical KEV now maps to 9 services; before staff review",
+          "domain": "Work",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:work-migrations"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "Mike can separate true escalation risk from generic vulnerability noise."
+        },
+        {
+          "event_id": "mike-v2-0031",
+          "title": "Critical KEV now maps to 9 services; after owner silence",
+          "domain": "Work",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:work-migrations"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "Mike can separate true escalation risk from generic vulnerability noise."
+        },
+        {
+          "event_id": "mike-v2-0497",
+          "title": "Coding-agent workflow crossed from interesting to usable; before the next coding block",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can decide whether the tool deserves more real work, not just curiosity."
+        },
+        {
+          "event_id": "mike-v2-1130",
+          "title": "Car registration renewal is inside 6 days; after calendar audit",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        }
+      ],
+      "suppressed_event_ids": [
+        "mike-v2-0832",
+        "mike-v2-1002"
+      ],
+      "outcome_counts": {
+        "Ignore": 2,
+        "Monitor": 2,
+        "Mention": 2,
+        "Surface": 2,
+        "Lead Story": 1
+      },
+      "review_note": "A dominant context exists; review whether it earns primary focus."
+    },
+    {
+      "date": "2026-05-14",
+      "scenario": "S&P breadth changed the backdrop",
+      "dominant_domain": "Finance & Markets",
+      "primary_focus_id": null,
+      "primary_focus_title": null,
+      "allows_no_spotlight": true,
+      "multiple_competing_focuses": false,
+      "candidate_event_ids": [
+        "mike-v2-0292",
+        "mike-v2-0295",
+        "mike-v2-0834",
+        "mike-v2-1004",
+        "mike-v2-0501",
+        "mike-v2-1133",
+        "mike-v2-0329",
+        "mike-v2-0371",
+        "mike-v2-0413"
+      ],
+      "selected_event_ids": [
+        "mike-v2-0329",
+        "mike-v2-0371",
+        "mike-v2-0413",
+        "mike-v2-0501",
+        "mike-v2-1133"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0329",
+          "title": "S&P breadth improved to 52% above the 50-day average; with risk appetite cooling",
+          "domain": "Finance & Markets",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:market-backdrop"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "He can understand whether index strength is broadening or still narrow."
+        },
+        {
+          "event_id": "mike-v2-0371",
+          "title": "S&P breadth improved to 68% above the 50-day average; after the weekly move",
+          "domain": "Finance & Markets",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:market-backdrop"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "He can understand whether index strength is broadening or still narrow."
+        },
+        {
+          "event_id": "mike-v2-0413",
+          "title": "S&P breadth improved to 83% above the 50-day average; with risk appetite cooling",
+          "domain": "Finance & Markets",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:market-backdrop"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "He can understand whether index strength is broadening or still narrow."
+        },
+        {
+          "event_id": "mike-v2-0501",
+          "title": "Agent benchmark matters because it changes the default coding loop; before the next coding block",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can decide whether the tool deserves more real work, not just curiosity."
+        },
+        {
+          "event_id": "mike-v2-1133",
+          "title": "Life-admin deadline is close enough to leave monitoring; after calendar audit",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
+      ],
+      "suppressed_event_ids": [
+        "mike-v2-0834",
+        "mike-v2-1004"
+      ],
+      "outcome_counts": {
+        "Ignore": 2,
+        "Monitor": 2,
+        "Mention": 2,
+        "Surface": 3,
+        "Lead Story": 0
+      },
+      "review_note": "A dominant context exists; review whether it earns primary focus."
+    },
+    {
+      "date": "2026-05-15",
+      "scenario": "WWDC project assumptions changed",
+      "dominant_domain": "Technology & AI",
+      "primary_focus_id": "mike-v2-0539",
+      "primary_focus_title": "WWDC happened; three iOS changes matter to Mike's projects; after WWDC follow-up",
+      "allows_no_spotlight": false,
+      "multiple_competing_focuses": false,
+      "candidate_event_ids": [
+        "mike-v2-0295",
+        "mike-v2-0299",
+        "mike-v2-0836",
+        "mike-v2-1006",
+        "mike-v2-0502",
+        "mike-v2-1135",
+        "mike-v2-0539",
+        "mike-v2-0643",
+        "mike-v2-0487"
+      ],
+      "selected_event_ids": [
+        "mike-v2-0539",
+        "mike-v2-0643",
+        "mike-v2-0487",
+        "mike-v2-0502",
+        "mike-v2-1135"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0539",
+          "title": "WWDC happened; three iOS changes matter to Mike's projects; after WWDC follow-up",
+          "domain": "Technology & AI",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "He can update project direction before stale assumptions harden."
+        },
+        {
+          "event_id": "mike-v2-0643",
+          "title": "WWDC keynote is tomorrow; three project assumptions may change; after WWDC follow-up",
+          "domain": "Technology & AI",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "He can update project direction before stale assumptions harden."
+        },
+        {
+          "event_id": "mike-v2-0487",
+          "title": "WWDC keynote is tomorrow; three project assumptions may change; after WWDC follow-up",
+          "domain": "Technology & AI",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "He can update project direction before stale assumptions harden."
+        },
+        {
+          "event_id": "mike-v2-0502",
+          "title": "Cursor fixed the multi-file edit friction Mike keeps working around; with side projects in mind",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Trying the update may save repeated project time."
+        },
+        {
+          "event_id": "mike-v2-1135",
+          "title": "Insurance document needs renewal before the mortgage file update; with travel optionality in view",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
+      ],
+      "suppressed_event_ids": [
+        "mike-v2-0836",
+        "mike-v2-1006"
+      ],
+      "outcome_counts": {
+        "Ignore": 2,
+        "Monitor": 2,
+        "Mention": 2,
+        "Surface": 2,
+        "Lead Story": 1
+      },
+      "review_note": "A dominant context exists; review whether it earns primary focus."
+    },
+    {
+      "date": "2026-05-16",
+      "scenario": "home upkeep before weather shift",
+      "dominant_domain": "Home Ownership",
+      "primary_focus_id": null,
+      "primary_focus_title": null,
+      "allows_no_spotlight": true,
+      "multiple_competing_focuses": false,
+      "candidate_event_ids": [
+        "mike-v2-0299",
+        "mike-v2-0302",
+        "mike-v2-0838",
+        "mike-v2-1008",
+        "mike-v2-0503",
+        "mike-v2-1136",
+        "mike-v2-1301",
+        "mike-v2-1306",
+        "mike-v2-1311"
+      ],
+      "selected_event_ids": [
+        "mike-v2-1301",
+        "mike-v2-1306",
+        "mike-v2-1311",
+        "mike-v2-0503",
+        "mike-v2-1136"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-1301",
+          "title": "Dryer vent cleaning has been deferred twice; after seasonal checklist",
+          "domain": "Home Ownership",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:home-maintenance"
+          ],
+          "triggered_surface_rule": "configured upkeep window is due or deferred",
+          "suppressed_by": null,
+          "why_today": "Small maintenance prevents bigger cost or stress."
+        },
+        {
+          "event_id": "mike-v2-1306",
+          "title": "Air filters are overdue by 21 days; after seasonal checklist",
+          "domain": "Home Ownership",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:home-maintenance"
+          ],
+          "triggered_surface_rule": "configured upkeep window is due or deferred",
+          "suppressed_by": null,
+          "why_today": "Small maintenance prevents bigger cost or stress."
+        },
+        {
+          "event_id": "mike-v2-1311",
+          "title": "HVAC service window is filling before the heat stretch; after seasonal checklist",
+          "domain": "Home Ownership",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:home-maintenance"
+          ],
+          "triggered_surface_rule": "configured upkeep window is due or deferred",
+          "suppressed_by": null,
+          "why_today": "Small maintenance prevents bigger cost or stress."
+        },
+        {
+          "event_id": "mike-v2-0503",
+          "title": "WWDC happened; three iOS changes matter to Mike's projects; after WWDC follow-up",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can update project direction before stale assumptions harden."
+        },
+        {
+          "event_id": "mike-v2-1136",
+          "title": "Car registration renewal is inside 6 days; after calendar audit",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        }
+      ],
+      "suppressed_event_ids": [
+        "mike-v2-0838",
+        "mike-v2-1008"
+      ],
+      "outcome_counts": {
+        "Ignore": 2,
+        "Monitor": 2,
+        "Mention": 2,
+        "Surface": 3,
+        "Lead Story": 0
+      },
+      "review_note": "A dominant context exists; review whether it earns primary focus."
+    },
+    {
+      "date": "2026-05-17",
+      "scenario": "side project ship-or-stop posture",
+      "dominant_domain": "Side Projects",
+      "primary_focus_id": "mike-v2-1469",
+      "primary_focus_title": "Side project has gone 21 days without a user-facing step; with spend rising",
+      "allows_no_spotlight": false,
+      "multiple_competing_focuses": false,
+      "candidate_event_ids": [
+        "mike-v2-0302",
+        "mike-v2-0306",
+        "mike-v2-0840",
+        "mike-v2-1010",
+        "mike-v2-0506",
+        "mike-v2-1137",
+        "mike-v2-1469",
+        "mike-v2-1412",
+        "mike-v2-1418"
+      ],
+      "selected_event_ids": [
+        "mike-v2-1469",
+        "mike-v2-1412",
+        "mike-v2-1418",
+        "mike-v2-0506",
+        "mike-v2-1137"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-1469",
+          "title": "Side project has gone 21 days without a user-facing step; with spend rising",
+          "domain": "Side Projects",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:side-projects"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "He can stop, ship, or narrow the next step with better context."
+        },
+        {
+          "event_id": "mike-v2-1412",
+          "title": "Side project has gone 4 days without a user-facing step; after validation notes",
+          "domain": "Side Projects",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:side-projects"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "He can stop, ship, or narrow the next step with better context."
+        },
+        {
+          "event_id": "mike-v2-1418",
+          "title": "Side project has gone 4 days without a user-facing step; after repo review",
+          "domain": "Side Projects",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:side-projects"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "He can stop, ship, or narrow the next step with better context."
+        },
+        {
+          "event_id": "mike-v2-0506",
+          "title": "Cursor update finally removes a workflow tax; with side projects in mind",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Trying the update may save repeated project time."
+        },
+        {
+          "event_id": "mike-v2-1137",
+          "title": "Property taxes are due inside 10 days; before paperwork friction",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
+      ],
+      "suppressed_event_ids": [
+        "mike-v2-0840",
+        "mike-v2-1010"
+      ],
+      "outcome_counts": {
+        "Ignore": 2,
+        "Monitor": 2,
+        "Mention": 2,
+        "Surface": 2,
+        "Lead Story": 1
+      },
+      "review_note": "A dominant context exists; review whether it earns primary focus."
+    },
+    {
+      "date": "2026-05-18",
+      "scenario": "nothing clears the attention bar",
+      "dominant_domain": null,
+      "primary_focus_id": null,
+      "primary_focus_title": null,
+      "allows_no_spotlight": true,
+      "multiple_competing_focuses": false,
+      "candidate_event_ids": [
+        "mike-v2-0306",
+        "mike-v2-0309",
+        "mike-v2-0842",
+        "mike-v2-1012",
+        "mike-v2-0507",
+        "mike-v2-1138"
+      ],
+      "selected_event_ids": [
+        "mike-v2-0507",
+        "mike-v2-1138"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0507",
+          "title": "WWDC follow-up window closes before the weekend; after WWDC follow-up",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can update project direction before stale assumptions harden."
+        },
+        {
+          "event_id": "mike-v2-1138",
+          "title": "TSA PreCheck renewal window opened; with travel optionality in view",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        }
+      ],
+      "suppressed_event_ids": [
+        "mike-v2-0842",
+        "mike-v2-1012"
+      ],
+      "outcome_counts": {
+        "Ignore": 2,
+        "Monitor": 2,
+        "Mention": 2,
+        "Surface": 0,
+        "Lead Story": 0
+      },
+      "review_note": "Nothing deserves the spotlight today; verify the system does not manufacture a hero."
+    },
+    {
+      "date": "2026-05-19",
+      "scenario": "golf fitting window opened",
+      "dominant_domain": "Golf Equipment",
+      "primary_focus_id": "mike-v2-0934",
+      "primary_focus_title": "Club fitting slot opened during Mike's range window; with spring setup in mind",
+      "allows_no_spotlight": false,
+      "multiple_competing_focuses": false,
+      "candidate_event_ids": [
+        "mike-v2-0309",
+        "mike-v2-0313",
+        "mike-v2-0844",
+        "mike-v2-1014",
+        "mike-v2-0509",
+        "mike-v2-1139",
+        "mike-v2-0934",
+        "mike-v2-0929",
+        "mike-v2-0933"
+      ],
+      "selected_event_ids": [
+        "mike-v2-0934",
+        "mike-v2-0929",
+        "mike-v2-0933",
+        "mike-v2-0509",
+        "mike-v2-1139"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0934",
+          "title": "Club fitting slot opened during Mike's range window; with spring setup in mind",
+          "domain": "Golf Equipment",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:golf-weather-and-equipment"
+          ],
+          "triggered_surface_rule": "configured decision window opened",
+          "suppressed_by": null,
+          "why_today": "He can catch useful fitting or renewal windows without browsing."
+        },
+        {
+          "event_id": "mike-v2-0929",
+          "title": "Range pass renewal is inside 3 days; after the release note",
+          "domain": "Golf Equipment",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:golf-weather-and-equipment"
+          ],
+          "triggered_surface_rule": "configured decision window opened",
+          "suppressed_by": null,
+          "why_today": "He can catch useful fitting or renewal windows without browsing."
+        },
+        {
+          "event_id": "mike-v2-0933",
+          "title": "Ping release creates a G430 replacement question; before renewal pricing changes",
+          "domain": "Golf Equipment",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:golf-weather-and-equipment"
+          ],
+          "triggered_surface_rule": "configured decision window opened",
+          "suppressed_by": null,
+          "why_today": "He can catch useful fitting or renewal windows without browsing."
+        },
+        {
+          "event_id": "mike-v2-0509",
+          "title": "Coding-agent workflow crossed from interesting to usable; before the next coding block",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can decide whether the tool deserves more real work, not just curiosity."
+        },
+        {
+          "event_id": "mike-v2-1139",
+          "title": "Life-admin deadline is close enough to leave monitoring; after calendar audit",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
+      ],
+      "suppressed_event_ids": [
+        "mike-v2-0844",
+        "mike-v2-1014"
+      ],
+      "outcome_counts": {
+        "Ignore": 2,
+        "Monitor": 2,
+        "Mention": 2,
+        "Surface": 2,
+        "Lead Story": 1
+      },
+      "review_note": "A dominant context exists; review whether it earns primary focus."
+    },
+    {
+      "date": "2026-05-20",
+      "scenario": "passport and travel paperwork",
+      "dominant_domain": "Life Logistics",
+      "primary_focus_id": "mike-v2-1164",
+      "primary_focus_title": "Passport expires inside 2 days; before paperwork friction",
+      "allows_no_spotlight": false,
+      "multiple_competing_focuses": false,
+      "candidate_event_ids": [
+        "mike-v2-0313",
+        "mike-v2-0316",
+        "mike-v2-0846",
+        "mike-v2-1016",
+        "mike-v2-0510",
+        "mike-v2-1142",
+        "mike-v2-1164",
+        "mike-v2-1230",
+        "mike-v2-1116"
+      ],
+      "selected_event_ids": [
+        "mike-v2-1164",
+        "mike-v2-1230",
+        "mike-v2-1116",
+        "mike-v2-0510",
+        "mike-v2-1142"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-1164",
+          "title": "Passport expires inside 2 days; before paperwork friction",
+          "domain": "Life Logistics",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        },
+        {
+          "event_id": "mike-v2-1230",
+          "title": "Passport expires inside 2 days; before paperwork friction",
+          "domain": "Life Logistics",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        },
+        {
+          "event_id": "mike-v2-1116",
+          "title": "Passport expires inside 2 days; before paperwork friction",
+          "domain": "Life Logistics",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        },
+        {
+          "event_id": "mike-v2-0510",
+          "title": "Editor change matters because it fixes the exact loop Mike avoids; with side projects in mind",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Trying the update may save repeated project time."
+        },
+        {
+          "event_id": "mike-v2-1142",
+          "title": "Car registration renewal is inside 6 days; after calendar audit",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        }
+      ],
+      "suppressed_event_ids": [
+        "mike-v2-0846",
+        "mike-v2-1016"
+      ],
+      "outcome_counts": {
+        "Ignore": 2,
+        "Monitor": 2,
+        "Mention": 2,
+        "Surface": 2,
+        "Lead Story": 1
+      },
+      "review_note": "A dominant context exists; review whether it earns primary focus."
+    },
+    {
+      "date": "2026-05-21",
+      "scenario": "UNH drawdown changed context",
+      "dominant_domain": "Finance & Markets",
+      "primary_focus_id": "mike-v2-0366",
+      "primary_focus_title": "UNH drawdown changed the portfolio context again; before the Fed week",
+      "allows_no_spotlight": false,
+      "multiple_competing_focuses": false,
+      "candidate_event_ids": [
+        "mike-v2-0316",
+        "mike-v2-0320",
+        "mike-v2-0848",
+        "mike-v2-1018",
+        "mike-v2-0513",
+        "mike-v2-1143",
+        "mike-v2-0366",
+        "mike-v2-0443",
+        "mike-v2-0275"
+      ],
+      "selected_event_ids": [
+        "mike-v2-0366",
+        "mike-v2-0443",
+        "mike-v2-0275",
+        "mike-v2-0513",
+        "mike-v2-1143"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0366",
+          "title": "UNH drawdown changed the portfolio context again; before the Fed week",
+          "domain": "Finance & Markets",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:unh-watch"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "He can notice when the move becomes context, not just price noise."
+        },
+        {
+          "event_id": "mike-v2-0443",
+          "title": "UNH is down another 7.6% while healthcare lag widens; after the weekly move",
+          "domain": "Finance & Markets",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:unh-watch"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "He can notice when the move becomes context, not just price noise."
+        },
+        {
+          "event_id": "mike-v2-0275",
+          "title": "UNH is down another 7.6% while healthcare lag widens; after the weekly move",
+          "domain": "Finance & Markets",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:unh-watch"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "He can notice when the move becomes context, not just price noise."
+        },
+        {
+          "event_id": "mike-v2-0513",
+          "title": "Agent benchmark matters because it changes the default coding loop; before the next coding block",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can decide whether the tool deserves more real work, not just curiosity."
+        },
+        {
+          "event_id": "mike-v2-1143",
+          "title": "Property taxes are due inside 10 days; before paperwork friction",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
+      ],
+      "suppressed_event_ids": [
+        "mike-v2-0848",
+        "mike-v2-1018"
+      ],
+      "outcome_counts": {
+        "Ignore": 2,
+        "Monitor": 2,
+        "Mention": 2,
+        "Surface": 2,
+        "Lead Story": 1
+      },
+      "review_note": "A dominant context exists; review whether it earns primary focus."
+    },
+    {
+      "date": "2026-05-22",
+      "scenario": "health admin scheduling window",
+      "dominant_domain": "Health",
+      "primary_focus_id": null,
+      "primary_focus_title": null,
+      "allows_no_spotlight": true,
+      "multiple_competing_focuses": false,
+      "candidate_event_ids": [
+        "mike-v2-0320",
+        "mike-v2-0323",
+        "mike-v2-0850",
+        "mike-v2-1020",
+        "mike-v2-0514",
+        "mike-v2-1144",
+        "mike-v2-1061",
+        "mike-v2-1066",
+        "mike-v2-1071"
+      ],
+      "selected_event_ids": [
+        "mike-v2-1061",
+        "mike-v2-1066",
+        "mike-v2-1071",
+        "mike-v2-0514",
+        "mike-v2-1144"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-1061",
+          "title": "Eye exam is due this month; after provider reminder",
+          "domain": "Health",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:health-admin"
+          ],
+          "triggered_surface_rule": "configured upkeep window is due or deferred",
+          "suppressed_by": null,
+          "why_today": "Mike can schedule routine care before it becomes annoying."
+        },
+        {
+          "event_id": "mike-v2-1066",
+          "title": "Annual physical scheduling window is open; after provider reminder",
+          "domain": "Health",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:health-admin"
+          ],
+          "triggered_surface_rule": "configured upkeep window is due or deferred",
+          "suppressed_by": null,
+          "why_today": "Mike can schedule routine care before it becomes annoying."
+        },
+        {
+          "event_id": "mike-v2-1071",
+          "title": "Prescription refill window opens in 29 days; after provider reminder",
+          "domain": "Health",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:health-admin"
+          ],
+          "triggered_surface_rule": "configured upkeep window is due or deferred",
+          "suppressed_by": null,
+          "why_today": "Mike can schedule routine care before it becomes annoying."
+        },
+        {
+          "event_id": "mike-v2-0514",
+          "title": "Cursor fixed the multi-file edit friction Mike keeps working around; with side projects in mind",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Trying the update may save repeated project time."
+        },
+        {
+          "event_id": "mike-v2-1144",
+          "title": "TSA PreCheck renewal window opened; with travel optionality in view",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        }
+      ],
+      "suppressed_event_ids": [
+        "mike-v2-0850",
+        "mike-v2-1020"
       ],
       "outcome_counts": {
         "Ignore": 2,
@@ -782,25 +1893,51 @@
       "date": "2026-05-23",
       "scenario": "team silence is the blocker",
       "dominant_domain": "Work",
-      "primary_focus_id": "mike-v2-1109",
-      "primary_focus_title": "TSA PreCheck renewal window opened; before renewal window closes",
-      "allows_no_spotlight": false,
+      "primary_focus_id": null,
+      "primary_focus_title": null,
+      "allows_no_spotlight": true,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0313",
-        "mike-v2-0317",
-        "mike-v2-0822",
-        "mike-v2-0992",
-        "mike-v2-0496",
-        "mike-v2-1109"
+        "mike-v2-0323",
+        "mike-v2-0327",
+        "mike-v2-0852",
+        "mike-v2-1022",
+        "mike-v2-0515",
+        "mike-v2-1145"
       ],
       "selected_event_ids": [
-        "mike-v2-0496",
-        "mike-v2-1109"
+        "mike-v2-0515",
+        "mike-v2-1145"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0515",
+          "title": "WWDC happened; three iOS changes matter to Mike's projects; after WWDC follow-up",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can update project direction before stale assumptions harden."
+        },
+        {
+          "event_id": "mike-v2-1145",
+          "title": "Life-admin deadline is close enough to leave monitoring; after calendar audit",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0822",
-        "mike-v2-0992"
+        "mike-v2-0852",
+        "mike-v2-1022"
       ],
       "outcome_counts": {
         "Ignore": 2,
@@ -820,22 +1957,46 @@
       "allows_no_spotlight": true,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0317",
-        "mike-v2-0320",
-        "mike-v2-0824",
-        "mike-v2-0994",
-        "mike-v2-0498",
-        "mike-v2-1110"
+        "mike-v2-0327",
+        "mike-v2-0330",
+        "mike-v2-0854",
+        "mike-v2-1024",
+        "mike-v2-0516",
+        "mike-v2-1147"
       ],
       "selected_event_ids": [
-        "mike-v2-0317",
-        "mike-v2-0320",
-        "mike-v2-0498",
-        "mike-v2-1110"
+        "mike-v2-0516",
+        "mike-v2-1147"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0516",
+          "title": "Pricing change is real but still below the workflow threshold; before workflow reset",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can avoid reacting to every pricing page change."
+        },
+        {
+          "event_id": "mike-v2-1147",
+          "title": "Insurance document needs renewal before the mortgage file update; with travel optionality in view",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0824",
-        "mike-v2-0994"
+        "mike-v2-0854",
+        "mike-v2-1024"
       ],
       "outcome_counts": {
         "Ignore": 2,
@@ -850,38 +2011,100 @@
       "date": "2026-05-25",
       "scenario": "club release but no same-day decision",
       "dominant_domain": "Golf Equipment",
-      "primary_focus_id": "mike-v2-0919",
+      "primary_focus_id": "mike-v2-0934",
       "primary_focus_title": "Club fitting slot opened during Mike's range window; with spring setup in mind",
       "allows_no_spotlight": false,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0320",
-        "mike-v2-0324",
-        "mike-v2-0826",
-        "mike-v2-0996",
-        "mike-v2-0499",
-        "mike-v2-1112",
-        "mike-v2-0919",
-        "mike-v2-0923",
-        "mike-v2-0927"
+        "mike-v2-0330",
+        "mike-v2-0334",
+        "mike-v2-0856",
+        "mike-v2-1026",
+        "mike-v2-0518",
+        "mike-v2-1148",
+        "mike-v2-0934",
+        "mike-v2-0953",
+        "mike-v2-0957"
       ],
       "selected_event_ids": [
-        "mike-v2-0919",
-        "mike-v2-0923",
-        "mike-v2-0927",
-        "mike-v2-0499",
-        "mike-v2-1112"
+        "mike-v2-0934",
+        "mike-v2-0953",
+        "mike-v2-0957",
+        "mike-v2-0518",
+        "mike-v2-1148"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0934",
+          "title": "Club fitting slot opened during Mike's range window; with spring setup in mind",
+          "domain": "Golf Equipment",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:golf-weather-and-equipment"
+          ],
+          "triggered_surface_rule": "configured decision window opened",
+          "suppressed_by": null,
+          "why_today": "He can catch useful fitting or renewal windows without browsing."
+        },
+        {
+          "event_id": "mike-v2-0953",
+          "title": "Range pass renewal is inside 3 days; after the release note",
+          "domain": "Golf Equipment",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:golf-weather-and-equipment"
+          ],
+          "triggered_surface_rule": "configured decision window opened",
+          "suppressed_by": null,
+          "why_today": "He can catch useful fitting or renewal windows without browsing."
+        },
+        {
+          "event_id": "mike-v2-0957",
+          "title": "Ping release creates a G430 replacement question; before renewal pricing changes",
+          "domain": "Golf Equipment",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:golf-weather-and-equipment"
+          ],
+          "triggered_surface_rule": "configured decision window opened",
+          "suppressed_by": null,
+          "why_today": "He can catch useful fitting or renewal windows without browsing."
+        },
+        {
+          "event_id": "mike-v2-0518",
+          "title": "Cursor update finally removes a workflow tax; with side projects in mind",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Trying the update may save repeated project time."
+        },
+        {
+          "event_id": "mike-v2-1148",
+          "title": "Car registration renewal is inside 6 days; after calendar audit",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0826",
-        "mike-v2-0996"
+        "mike-v2-0856",
+        "mike-v2-1026"
       ],
       "outcome_counts": {
         "Ignore": 2,
         "Monitor": 2,
         "Mention": 2,
-        "Surface": 3,
-        "Lead Story": 0
+        "Surface": 2,
+        "Lead Story": 1
       },
       "review_note": "A dominant context exists; review whether it earns primary focus."
     },
@@ -889,38 +2112,100 @@
       "date": "2026-05-26",
       "scenario": "return travel detail still open",
       "dominant_domain": "Travel",
-      "primary_focus_id": "mike-v2-1340",
-      "primary_focus_title": "Flight departure is inside 7 days and parking is not confirmed; after airline email",
+      "primary_focus_id": "mike-v2-1375",
+      "primary_focus_title": "Flight departure is inside 3 days and parking is not confirmed; after airline email",
       "allows_no_spotlight": false,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0324",
-        "mike-v2-0327",
-        "mike-v2-0828",
-        "mike-v2-0998",
-        "mike-v2-0501",
-        "mike-v2-1113",
-        "mike-v2-1340",
-        "mike-v2-1343",
-        "mike-v2-1346"
+        "mike-v2-0334",
+        "mike-v2-0337",
+        "mike-v2-0858",
+        "mike-v2-1028",
+        "mike-v2-0519",
+        "mike-v2-1149",
+        "mike-v2-1375",
+        "mike-v2-1396",
+        "mike-v2-1399"
       ],
       "selected_event_ids": [
-        "mike-v2-1340",
-        "mike-v2-1343",
-        "mike-v2-1346",
-        "mike-v2-0501",
-        "mike-v2-1113"
+        "mike-v2-1375",
+        "mike-v2-1396",
+        "mike-v2-1399",
+        "mike-v2-0519",
+        "mike-v2-1149"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-1375",
+          "title": "Flight departure is inside 3 days and parking is not confirmed; after airline email",
+          "domain": "Travel",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:travel-logistics"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "He can close parking, packing, or return details while there is time."
+        },
+        {
+          "event_id": "mike-v2-1396",
+          "title": "Flight departure is inside 14 days and parking is not confirmed; after weather refresh",
+          "domain": "Travel",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:travel-logistics"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "He can close parking, packing, or return details while there is time."
+        },
+        {
+          "event_id": "mike-v2-1399",
+          "title": "Flight departure is inside 3 days and parking is not confirmed; before parking fills",
+          "domain": "Travel",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:travel-logistics"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "He can close parking, packing, or return details while there is time."
+        },
+        {
+          "event_id": "mike-v2-0519",
+          "title": "WWDC follow-up window closes before the weekend; after WWDC follow-up",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can update project direction before stale assumptions harden."
+        },
+        {
+          "event_id": "mike-v2-1149",
+          "title": "Property taxes are due inside 10 days; before paperwork friction",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0828",
-        "mike-v2-0998"
+        "mike-v2-0858",
+        "mike-v2-1028"
       ],
       "outcome_counts": {
         "Ignore": 2,
         "Monitor": 2,
         "Mention": 2,
-        "Surface": 3,
-        "Lead Story": 0
+        "Surface": 2,
+        "Lead Story": 1
       },
       "review_note": "A dominant context exists; review whether it earns primary focus."
     },
@@ -928,31 +2213,93 @@
       "date": "2026-05-27",
       "scenario": "macro data changed rate path",
       "dominant_domain": "Finance & Markets",
-      "primary_focus_id": "mike-v2-0421",
-      "primary_focus_title": "Fed path shifted after CPI cooled to 4.8%; before the Fed week",
-      "allows_no_spotlight": false,
+      "primary_focus_id": null,
+      "primary_focus_title": null,
+      "allows_no_spotlight": true,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0327",
-        "mike-v2-0331",
-        "mike-v2-0830",
-        "mike-v2-1000",
-        "mike-v2-0502",
-        "mike-v2-1114",
-        "mike-v2-0421",
-        "mike-v2-0253",
-        "mike-v2-0295"
+        "mike-v2-0337",
+        "mike-v2-0341",
+        "mike-v2-0860",
+        "mike-v2-1030",
+        "mike-v2-0521",
+        "mike-v2-1150",
+        "mike-v2-0263",
+        "mike-v2-0305",
+        "mike-v2-0347"
       ],
       "selected_event_ids": [
-        "mike-v2-0421",
-        "mike-v2-0253",
-        "mike-v2-0295",
-        "mike-v2-0502",
-        "mike-v2-1114"
+        "mike-v2-0263",
+        "mike-v2-0305",
+        "mike-v2-0347",
+        "mike-v2-0521",
+        "mike-v2-1150"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0263",
+          "title": "Fed path shifted after CPI cooled to 7.6%; after the weekly move",
+          "domain": "Finance & Markets",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:market-backdrop"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "He gets the practical posture change without reading generic Fed coverage."
+        },
+        {
+          "event_id": "mike-v2-0305",
+          "title": "Fed path shifted after CPI cooled to 18.2%; with risk appetite cooling",
+          "domain": "Finance & Markets",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:market-backdrop"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "He gets the practical posture change without reading generic Fed coverage."
+        },
+        {
+          "event_id": "mike-v2-0347",
+          "title": "Fed path shifted after CPI cooled to 7.6%; after the weekly move",
+          "domain": "Finance & Markets",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:market-backdrop"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "He gets the practical posture change without reading generic Fed coverage."
+        },
+        {
+          "event_id": "mike-v2-0521",
+          "title": "Coding-agent workflow crossed from interesting to usable; before the next coding block",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can decide whether the tool deserves more real work, not just curiosity."
+        },
+        {
+          "event_id": "mike-v2-1150",
+          "title": "TSA PreCheck renewal window opened; with travel optionality in view",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0830",
-        "mike-v2-1000"
+        "mike-v2-0860",
+        "mike-v2-1030"
       ],
       "outcome_counts": {
         "Ignore": 2,
@@ -967,17 +2314,17 @@
       "date": "2026-05-28",
       "scenario": "duplicate-method cluster is leverage",
       "dominant_domain": "Work",
-      "primary_focus_id": "mike-v2-0061",
-      "primary_focus_title": "One namespace has 73 duplicate methods; before staff review",
-      "allows_no_spotlight": false,
+      "primary_focus_id": null,
+      "primary_focus_title": null,
+      "allows_no_spotlight": true,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0331",
-        "mike-v2-0334",
-        "mike-v2-0832",
-        "mike-v2-1002",
-        "mike-v2-0506",
-        "mike-v2-1115",
+        "mike-v2-0341",
+        "mike-v2-0344",
+        "mike-v2-0862",
+        "mike-v2-1032",
+        "mike-v2-0522",
+        "mike-v2-1153",
         "mike-v2-0061",
         "mike-v2-0103",
         "mike-v2-0145"
@@ -986,12 +2333,74 @@
         "mike-v2-0061",
         "mike-v2-0103",
         "mike-v2-0145",
-        "mike-v2-0506",
-        "mike-v2-1115"
+        "mike-v2-0522",
+        "mike-v2-1153"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0061",
+          "title": "One namespace has 73 duplicate methods; before staff review",
+          "domain": "Work",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:work-migrations"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "A focused cleanup target can replace scattered low-value review."
+        },
+        {
+          "event_id": "mike-v2-0103",
+          "title": "One namespace has 73 duplicate methods; after owner silence",
+          "domain": "Work",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:work-migrations"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "A focused cleanup target can replace scattered low-value review."
+        },
+        {
+          "event_id": "mike-v2-0145",
+          "title": "One namespace has 73 duplicate methods; before staff review",
+          "domain": "Work",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:work-migrations"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "A focused cleanup target can replace scattered low-value review."
+        },
+        {
+          "event_id": "mike-v2-0522",
+          "title": "Editor change matters because it fixes the exact loop Mike avoids; with side projects in mind",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Trying the update may save repeated project time."
+        },
+        {
+          "event_id": "mike-v2-1153",
+          "title": "Insurance document needs renewal before the mortgage file update; with travel optionality in view",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0832",
-        "mike-v2-1002"
+        "mike-v2-0862",
+        "mike-v2-1032"
       ],
       "outcome_counts": {
         "Ignore": 2,
@@ -1011,22 +2420,46 @@
       "allows_no_spotlight": true,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0334",
-        "mike-v2-0338",
-        "mike-v2-0834",
-        "mike-v2-1004",
-        "mike-v2-0507",
-        "mike-v2-1118"
+        "mike-v2-0344",
+        "mike-v2-0348",
+        "mike-v2-0864",
+        "mike-v2-1034",
+        "mike-v2-0525",
+        "mike-v2-1154"
       ],
       "selected_event_ids": [
-        "mike-v2-0334",
-        "mike-v2-0338",
-        "mike-v2-0507",
-        "mike-v2-1118"
+        "mike-v2-0525",
+        "mike-v2-1154"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0525",
+          "title": "Agent benchmark matters because it changes the default coding loop; before the next coding block",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can decide whether the tool deserves more real work, not just curiosity."
+        },
+        {
+          "event_id": "mike-v2-1154",
+          "title": "Car registration renewal is inside 6 days; after calendar audit",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0834",
-        "mike-v2-1004"
+        "mike-v2-0864",
+        "mike-v2-1034"
       ],
       "outcome_counts": {
         "Ignore": 2,
@@ -1041,38 +2474,100 @@
       "date": "2026-05-30",
       "scenario": "Bogey trip coverage blocks confidence",
       "dominant_domain": "Dog",
-      "primary_focus_id": "mike-v2-0732",
-      "primary_focus_title": "Bogey boarding is not booked for the trip in 29 days; with boarding options narrowing",
+      "primary_focus_id": "mike-v2-0775",
+      "primary_focus_title": "Bogey boarding is not booked for the trip in 43 days; after the vet reminder",
       "allows_no_spotlight": false,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0338",
-        "mike-v2-0341",
-        "mike-v2-0836",
-        "mike-v2-1006",
-        "mike-v2-0510",
-        "mike-v2-1119",
-        "mike-v2-0732",
-        "mike-v2-0738",
-        "mike-v2-0744"
+        "mike-v2-0348",
+        "mike-v2-0351",
+        "mike-v2-0866",
+        "mike-v2-1036",
+        "mike-v2-0526",
+        "mike-v2-1155",
+        "mike-v2-0775",
+        "mike-v2-0781",
+        "mike-v2-0787"
       ],
       "selected_event_ids": [
-        "mike-v2-0732",
-        "mike-v2-0738",
-        "mike-v2-0744",
-        "mike-v2-0510",
-        "mike-v2-1119"
+        "mike-v2-0775",
+        "mike-v2-0781",
+        "mike-v2-0787",
+        "mike-v2-0526",
+        "mike-v2-1155"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0775",
+          "title": "Bogey boarding is not booked for the trip in 43 days; after the vet reminder",
+          "domain": "Dog",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:bogey-care"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "Mike can close the loop while there are still options."
+        },
+        {
+          "event_id": "mike-v2-0781",
+          "title": "Bogey boarding is not booked for the trip in 43 days; after the vet reminder",
+          "domain": "Dog",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:bogey-care"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "Mike can close the loop while there are still options."
+        },
+        {
+          "event_id": "mike-v2-0787",
+          "title": "Bogey boarding is not booked for the trip in 43 days; after the vet reminder",
+          "domain": "Dog",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:bogey-care"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "Mike can close the loop while there are still options."
+        },
+        {
+          "event_id": "mike-v2-0526",
+          "title": "Cursor fixed the multi-file edit friction Mike keeps working around; with side projects in mind",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Trying the update may save repeated project time."
+        },
+        {
+          "event_id": "mike-v2-1155",
+          "title": "Property taxes are due inside 10 days; before paperwork friction",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0836",
-        "mike-v2-1006"
+        "mike-v2-0866",
+        "mike-v2-1036"
       ],
       "outcome_counts": {
         "Ignore": 2,
         "Monitor": 2,
         "Mention": 2,
-        "Surface": 3,
-        "Lead Story": 0
+        "Surface": 2,
+        "Lead Story": 1
       },
       "review_note": "A dominant context exists; review whether it earns primary focus."
     },
@@ -1080,38 +2575,100 @@
       "date": "2026-05-31",
       "scenario": "side-project cost without progress",
       "dominant_domain": "Side Projects",
-      "primary_focus_id": "mike-v2-1429",
-      "primary_focus_title": "Side project has gone 14 days without a user-facing step; with spend rising",
+      "primary_focus_id": "mike-v2-1406",
+      "primary_focus_title": "Side project has gone 4 days without a user-facing step; before another build cycle",
       "allows_no_spotlight": false,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0341",
-        "mike-v2-0345",
-        "mike-v2-0838",
-        "mike-v2-1008",
-        "mike-v2-0511",
-        "mike-v2-1120",
-        "mike-v2-1429",
-        "mike-v2-1435",
-        "mike-v2-1351"
+        "mike-v2-0351",
+        "mike-v2-0355",
+        "mike-v2-0868",
+        "mike-v2-1038",
+        "mike-v2-0527",
+        "mike-v2-1156",
+        "mike-v2-1406",
+        "mike-v2-1496",
+        "mike-v2-1412"
       ],
       "selected_event_ids": [
-        "mike-v2-1429",
-        "mike-v2-1435",
-        "mike-v2-1351",
-        "mike-v2-0511",
-        "mike-v2-1120"
+        "mike-v2-1406",
+        "mike-v2-1496",
+        "mike-v2-1412",
+        "mike-v2-0527",
+        "mike-v2-1156"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-1406",
+          "title": "Side project has gone 4 days without a user-facing step; before another build cycle",
+          "domain": "Side Projects",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:side-projects"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "He can stop, ship, or narrow the next step with better context."
+        },
+        {
+          "event_id": "mike-v2-1496",
+          "title": "Side project has gone 4 days without a user-facing step; before another build cycle",
+          "domain": "Side Projects",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:side-projects"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "He can stop, ship, or narrow the next step with better context."
+        },
+        {
+          "event_id": "mike-v2-1412",
+          "title": "Side project has gone 4 days without a user-facing step; after validation notes",
+          "domain": "Side Projects",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:side-projects"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "He can stop, ship, or narrow the next step with better context."
+        },
+        {
+          "event_id": "mike-v2-0527",
+          "title": "WWDC happened; three iOS changes matter to Mike's projects; after WWDC follow-up",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can update project direction before stale assumptions harden."
+        },
+        {
+          "event_id": "mike-v2-1156",
+          "title": "TSA PreCheck renewal window opened; with travel optionality in view",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0838",
-        "mike-v2-1008"
+        "mike-v2-0868",
+        "mike-v2-1038"
       ],
       "outcome_counts": {
         "Ignore": 2,
         "Monitor": 2,
         "Mention": 2,
-        "Surface": 3,
-        "Lead Story": 0
+        "Surface": 2,
+        "Lead Story": 1
       },
       "review_note": "A dominant context exists; review whether it earns primary focus."
     },
@@ -1119,43 +2676,115 @@
       "date": "2026-06-01",
       "scenario": "home and family both need small actions",
       "dominant_domain": "Personal & Family",
-      "primary_focus_id": "mike-v2-0708",
-      "primary_focus_title": "birthday dinner is inside 5 days; with work likely to crowd it out",
+      "primary_focus_id": "mike-v2-0723",
+      "primary_focus_title": "Family commitment moved from background to calendar risk; before the week fills",
       "allows_no_spotlight": false,
       "multiple_competing_focuses": true,
       "candidate_event_ids": [
-        "mike-v2-0345",
-        "mike-v2-0348",
-        "mike-v2-0840",
-        "mike-v2-1010",
-        "mike-v2-0513",
-        "mike-v2-1121",
-        "mike-v2-0708",
-        "mike-v2-0621",
-        "mike-v2-0624",
-        "mike-v2-0708",
-        "mike-v2-0621",
-        "mike-v2-0045",
-        "mike-v2-0217"
+        "mike-v2-0355",
+        "mike-v2-0358",
+        "mike-v2-0870",
+        "mike-v2-1040",
+        "mike-v2-0530",
+        "mike-v2-1157",
+        "mike-v2-0723",
+        "mike-v2-0649",
+        "mike-v2-0652",
+        "mike-v2-0219",
+        "mike-v2-0199"
       ],
       "selected_event_ids": [
-        "mike-v2-0708",
-        "mike-v2-0621",
-        "mike-v2-0624",
-        "mike-v2-0708",
-        "mike-v2-0513",
-        "mike-v2-1121"
+        "mike-v2-0723",
+        "mike-v2-0649",
+        "mike-v2-0652",
+        "mike-v2-0219",
+        "mike-v2-0530",
+        "mike-v2-1157"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0723",
+          "title": "Family commitment moved from background to calendar risk; before the week fills",
+          "domain": "Personal & Family",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:family-dates"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "A small early action prevents an avoidable scramble."
+        },
+        {
+          "event_id": "mike-v2-0649",
+          "title": "Father's Day is inside 6 days; before the week fills",
+          "domain": "Personal & Family",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:family-dates"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "A small early action prevents an avoidable scramble."
+        },
+        {
+          "event_id": "mike-v2-0652",
+          "title": "family visit is inside 43 days; before gift timing gets tight",
+          "domain": "Personal & Family",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:family-dates"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "A small early action prevents an avoidable scramble."
+        },
+        {
+          "event_id": "mike-v2-0219",
+          "title": "Leadership review moved up with 7 days to reconcile metrics; after owner silence",
+          "domain": "Work",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:work-migrations"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "Catching it early preserves time to turn scattered status into a clear ask."
+        },
+        {
+          "event_id": "mike-v2-0530",
+          "title": "Cursor update finally removes a workflow tax; with side projects in mind",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Trying the update may save repeated project time."
+        },
+        {
+          "event_id": "mike-v2-1157",
+          "title": "Life-admin deadline is close enough to leave monitoring; after calendar audit",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0840",
-        "mike-v2-1010"
+        "mike-v2-0870",
+        "mike-v2-1040"
       ],
       "outcome_counts": {
         "Ignore": 2,
         "Monitor": 2,
         "Mention": 2,
-        "Surface": 6,
-        "Lead Story": 1
+        "Surface": 3,
+        "Lead Story": 2
       },
       "review_note": "Multiple high-value contexts compete; review whether one truly dominates."
     },
@@ -1168,22 +2797,46 @@
       "allows_no_spotlight": true,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0348",
-        "mike-v2-0352",
-        "mike-v2-0842",
-        "mike-v2-0952",
-        "mike-v2-0514",
-        "mike-v2-1122"
+        "mike-v2-0358",
+        "mike-v2-0362",
+        "mike-v2-0872",
+        "mike-v2-0982",
+        "mike-v2-0531",
+        "mike-v2-1159"
       ],
       "selected_event_ids": [
-        "mike-v2-0348",
-        "mike-v2-0352",
-        "mike-v2-0514",
-        "mike-v2-1122"
+        "mike-v2-0531",
+        "mike-v2-1159"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0531",
+          "title": "WWDC follow-up window closes before the weekend; after WWDC follow-up",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can update project direction before stale assumptions harden."
+        },
+        {
+          "event_id": "mike-v2-1159",
+          "title": "Insurance document needs renewal before the mortgage file update; with travel optionality in view",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0842",
-        "mike-v2-0952"
+        "mike-v2-0872",
+        "mike-v2-0982"
       ],
       "outcome_counts": {
         "Ignore": 2,
@@ -1198,31 +2851,93 @@
       "date": "2026-06-03",
       "scenario": "executive packet needs decision story",
       "dominant_domain": "Work",
-      "primary_focus_id": "mike-v2-0100",
-      "primary_focus_title": "Executive deck due Friday; adoption story is still missing; before Friday status",
+      "primary_focus_id": "mike-v2-0219",
+      "primary_focus_title": "Leadership review moved up with 7 days to reconcile metrics; after owner silence",
       "allows_no_spotlight": false,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0352",
-        "mike-v2-0355",
-        "mike-v2-0844",
-        "mike-v2-0954",
-        "mike-v2-0517",
-        "mike-v2-1124",
-        "mike-v2-0100",
-        "mike-v2-0058",
-        "mike-v2-0079"
+        "mike-v2-0362",
+        "mike-v2-0365",
+        "mike-v2-0874",
+        "mike-v2-0984",
+        "mike-v2-0533",
+        "mike-v2-1160",
+        "mike-v2-0219",
+        "mike-v2-0184",
+        "mike-v2-0205"
       ],
       "selected_event_ids": [
-        "mike-v2-0100",
-        "mike-v2-0058",
-        "mike-v2-0079",
-        "mike-v2-0517",
-        "mike-v2-1124"
+        "mike-v2-0219",
+        "mike-v2-0184",
+        "mike-v2-0205",
+        "mike-v2-0533",
+        "mike-v2-1160"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0219",
+          "title": "Leadership review moved up with 7 days to reconcile metrics; after owner silence",
+          "domain": "Work",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:work-migrations"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "Catching it early preserves time to turn scattered status into a clear ask."
+        },
+        {
+          "event_id": "mike-v2-0184",
+          "title": "Executive deck due Wednesday; adoption story is still missing; before Friday status",
+          "domain": "Work",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:work-migrations"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "Catching it early preserves time to turn scattered status into a clear ask."
+        },
+        {
+          "event_id": "mike-v2-0205",
+          "title": "Executive deck due Friday; adoption story is still missing; before staff review",
+          "domain": "Work",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:work-migrations"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "Catching it early preserves time to turn scattered status into a clear ask."
+        },
+        {
+          "event_id": "mike-v2-0533",
+          "title": "Coding-agent workflow crossed from interesting to usable; before the next coding block",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can decide whether the tool deserves more real work, not just curiosity."
+        },
+        {
+          "event_id": "mike-v2-1160",
+          "title": "Car registration renewal is inside 6 days; after calendar audit",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0844",
-        "mike-v2-0954"
+        "mike-v2-0874",
+        "mike-v2-0984"
       ],
       "outcome_counts": {
         "Ignore": 2,
@@ -1237,66 +2952,155 @@
       "date": "2026-06-04",
       "scenario": "Bitcoin range nears but does not cross",
       "dominant_domain": "Finance & Markets",
-      "primary_focus_id": "mike-v2-0395",
-      "primary_focus_title": "Bitcoin moved 11.5% this week but still has no decision hook; with breadth diverging",
-      "allows_no_spotlight": false,
+      "primary_focus_id": null,
+      "primary_focus_title": null,
+      "allows_no_spotlight": true,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0355",
-        "mike-v2-0359",
-        "mike-v2-0846",
-        "mike-v2-0956",
-        "mike-v2-0518",
-        "mike-v2-1125",
-        "mike-v2-0395",
-        "mike-v2-0276",
-        "mike-v2-0283"
+        "mike-v2-0365",
+        "mike-v2-0369",
+        "mike-v2-0876",
+        "mike-v2-0986",
+        "mike-v2-0534",
+        "mike-v2-1162",
+        "mike-v2-0475",
+        "mike-v2-0251",
+        "mike-v2-0258"
       ],
       "selected_event_ids": [
-        "mike-v2-0395",
-        "mike-v2-0518",
-        "mike-v2-1125"
+        "mike-v2-0534",
+        "mike-v2-1162",
+        "mike-v2-0475",
+        "mike-v2-0251"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0534",
+          "title": "Editor change matters because it fixes the exact loop Mike avoids; with side projects in mind",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Trying the update may save repeated project time."
+        },
+        {
+          "event_id": "mike-v2-1162",
+          "title": "TSA PreCheck renewal window opened; with travel optionality in view",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        },
+        {
+          "event_id": "mike-v2-0475",
+          "title": "Bitcoin pullback is close enough to keep quiet watch active; after the weekly move",
+          "domain": "Finance & Markets",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:bitcoin-range"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "The system can monitor the range without forcing a portfolio decision."
+        },
+        {
+          "event_id": "mike-v2-0251",
+          "title": "Bitcoin is 7.6% from Mike's accumulation range; after the weekly move",
+          "domain": "Finance & Markets",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:bitcoin-range"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "The system can monitor the range without forcing a portfolio decision."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0846",
-        "mike-v2-0956"
+        "mike-v2-0876",
+        "mike-v2-0986"
       ],
       "outcome_counts": {
         "Ignore": 2,
         "Monitor": 2,
-        "Mention": 4,
+        "Mention": 5,
         "Surface": 0,
-        "Lead Story": 1
+        "Lead Story": 0
       },
-      "review_note": "A dominant context exists; review whether it earns primary focus."
+      "review_note": "Nothing deserves the spotlight today; verify the system does not manufacture a hero."
     },
     {
       "date": "2026-06-05",
       "scenario": "Cursor removed recurring edit friction",
       "dominant_domain": "Technology & AI",
-      "primary_focus_id": "mike-v2-0538",
-      "primary_focus_title": "Editor change matters because it fixes the exact loop Mike avoids; before workflow reset",
+      "primary_focus_id": "mike-v2-0582",
+      "primary_focus_title": "Editor change matters because it fixes the exact loop Mike avoids; with side projects in mind",
       "allows_no_spotlight": false,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0359",
-        "mike-v2-0362",
-        "mike-v2-0848",
-        "mike-v2-0958",
-        "mike-v2-0519",
-        "mike-v2-1127",
-        "mike-v2-0538",
-        "mike-v2-0606",
-        "mike-v2-0610"
+        "mike-v2-0369",
+        "mike-v2-0372",
+        "mike-v2-0878",
+        "mike-v2-0988",
+        "mike-v2-0537",
+        "mike-v2-1163",
+        "mike-v2-0582",
+        "mike-v2-0626",
+        "mike-v2-0630"
       ],
       "selected_event_ids": [
-        "mike-v2-0538",
-        "mike-v2-0519",
-        "mike-v2-1127"
+        "mike-v2-0582",
+        "mike-v2-0537",
+        "mike-v2-1163"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0582",
+          "title": "Editor change matters because it fixes the exact loop Mike avoids; with side projects in mind",
+          "domain": "Technology & AI",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured decision window opened",
+          "suppressed_by": null,
+          "why_today": "Trying the update may save repeated project time."
+        },
+        {
+          "event_id": "mike-v2-0537",
+          "title": "Agent benchmark matters because it changes the default coding loop; before the next coding block",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can decide whether the tool deserves more real work, not just curiosity."
+        },
+        {
+          "event_id": "mike-v2-1163",
+          "title": "Life-admin deadline is close enough to leave monitoring; after calendar audit",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0848",
-        "mike-v2-0958"
+        "mike-v2-0878",
+        "mike-v2-0988"
       ],
       "outcome_counts": {
         "Ignore": 2,
@@ -1311,38 +3115,100 @@
       "date": "2026-06-06",
       "scenario": "car registration renewal surfaced",
       "dominant_domain": "Life Logistics",
-      "primary_focus_id": "mike-v2-1171",
-      "primary_focus_title": "Passport expires inside 3 days; after email scan",
+      "primary_focus_id": "mike-v2-1132",
+      "primary_focus_title": "TSA PreCheck renewal window opened; with travel optionality in view",
       "allows_no_spotlight": false,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0362",
-        "mike-v2-0366",
-        "mike-v2-0850",
-        "mike-v2-0960",
-        "mike-v2-0522",
-        "mike-v2-1128",
-        "mike-v2-1171",
-        "mike-v2-1177",
-        "mike-v2-1183"
+        "mike-v2-0372",
+        "mike-v2-0376",
+        "mike-v2-0880",
+        "mike-v2-0990",
+        "mike-v2-0538",
+        "mike-v2-1165",
+        "mike-v2-1132",
+        "mike-v2-1218",
+        "mike-v2-1224"
       ],
       "selected_event_ids": [
-        "mike-v2-1171",
-        "mike-v2-1177",
-        "mike-v2-1183",
-        "mike-v2-0522",
-        "mike-v2-1128"
+        "mike-v2-1132",
+        "mike-v2-1218",
+        "mike-v2-1224",
+        "mike-v2-0538",
+        "mike-v2-1165"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-1132",
+          "title": "TSA PreCheck renewal window opened; with travel optionality in view",
+          "domain": "Life Logistics",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        },
+        {
+          "event_id": "mike-v2-1218",
+          "title": "Passport expires inside 2 days; before paperwork friction",
+          "domain": "Life Logistics",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        },
+        {
+          "event_id": "mike-v2-1224",
+          "title": "Passport expires inside 2 days; before paperwork friction",
+          "domain": "Life Logistics",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        },
+        {
+          "event_id": "mike-v2-0538",
+          "title": "Cursor fixed the multi-file edit friction Mike keeps working around; with side projects in mind",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Trying the update may save repeated project time."
+        },
+        {
+          "event_id": "mike-v2-1165",
+          "title": "Insurance document needs renewal before the mortgage file update; with travel optionality in view",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0850",
-        "mike-v2-0960"
+        "mike-v2-0880",
+        "mike-v2-0990"
       ],
       "outcome_counts": {
         "Ignore": 2,
         "Monitor": 2,
         "Mention": 2,
-        "Surface": 3,
-        "Lead Story": 0
+        "Surface": 2,
+        "Lead Story": 1
       },
       "review_note": "A dominant context exists; review whether it earns primary focus."
     },
@@ -1355,22 +3221,46 @@
       "allows_no_spotlight": true,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0366",
-        "mike-v2-0369",
-        "mike-v2-0852",
-        "mike-v2-0962",
-        "mike-v2-0523",
-        "mike-v2-1130"
+        "mike-v2-0376",
+        "mike-v2-0379",
+        "mike-v2-0882",
+        "mike-v2-0992",
+        "mike-v2-0542",
+        "mike-v2-1166"
       ],
       "selected_event_ids": [
-        "mike-v2-0366",
-        "mike-v2-0369",
-        "mike-v2-0523",
-        "mike-v2-1130"
+        "mike-v2-0542",
+        "mike-v2-1166"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0542",
+          "title": "Cursor update finally removes a workflow tax; with side projects in mind",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Trying the update may save repeated project time."
+        },
+        {
+          "event_id": "mike-v2-1166",
+          "title": "Car registration renewal is inside 6 days; after calendar audit",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0852",
-        "mike-v2-0962"
+        "mike-v2-0882",
+        "mike-v2-0992"
       ],
       "outcome_counts": {
         "Ignore": 2,
@@ -1385,38 +3275,100 @@
       "date": "2026-06-08",
       "scenario": "travel weather changed packing",
       "dominant_domain": "Travel",
-      "primary_focus_id": "mike-v2-1298",
-      "primary_focus_title": "Flight departure is inside 7 days and parking is not confirmed; before departure week",
+      "primary_focus_id": "mike-v2-1343",
+      "primary_focus_title": "Vacation weather changed the packing plan; before departure week",
       "allows_no_spotlight": false,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0369",
-        "mike-v2-0373",
-        "mike-v2-0854",
-        "mike-v2-0964",
-        "mike-v2-0524",
-        "mike-v2-1131",
-        "mike-v2-1298",
-        "mike-v2-1301",
-        "mike-v2-1304"
+        "mike-v2-0379",
+        "mike-v2-0383",
+        "mike-v2-0884",
+        "mike-v2-0994",
+        "mike-v2-0543",
+        "mike-v2-1167",
+        "mike-v2-1343",
+        "mike-v2-1348",
+        "mike-v2-1351"
       ],
       "selected_event_ids": [
-        "mike-v2-1298",
-        "mike-v2-1301",
-        "mike-v2-1304",
-        "mike-v2-0524",
-        "mike-v2-1131"
+        "mike-v2-1343",
+        "mike-v2-1348",
+        "mike-v2-1351",
+        "mike-v2-0543",
+        "mike-v2-1167"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-1343",
+          "title": "Vacation weather changed the packing plan; before departure week",
+          "domain": "Travel",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:travel-logistics"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "He can close parking, packing, or return details while there is time."
+        },
+        {
+          "event_id": "mike-v2-1348",
+          "title": "Flight departure is inside 14 days and parking is not confirmed; before departure week",
+          "domain": "Travel",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:travel-logistics"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "He can close parking, packing, or return details while there is time."
+        },
+        {
+          "event_id": "mike-v2-1351",
+          "title": "Flight departure is inside 3 days and parking is not confirmed; after weather refresh",
+          "domain": "Travel",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:travel-logistics"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "He can close parking, packing, or return details while there is time."
+        },
+        {
+          "event_id": "mike-v2-0543",
+          "title": "WWDC follow-up window closes before the weekend; after WWDC follow-up",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can update project direction before stale assumptions harden."
+        },
+        {
+          "event_id": "mike-v2-1167",
+          "title": "Property taxes are due inside 10 days; before paperwork friction",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0854",
-        "mike-v2-0964"
+        "mike-v2-0884",
+        "mike-v2-0994"
       ],
       "outcome_counts": {
         "Ignore": 2,
         "Monitor": 2,
         "Mention": 2,
-        "Surface": 3,
-        "Lead Story": 0
+        "Surface": 2,
+        "Lead Story": 1
       },
       "review_note": "A dominant context exists; review whether it earns primary focus."
     },
@@ -1424,31 +3376,93 @@
       "date": "2026-06-09",
       "scenario": "annual physical scheduling window",
       "dominant_domain": "Health",
-      "primary_focus_id": "mike-v2-1056",
-      "primary_focus_title": "Prescription refill window opens in 29 days; after provider reminder",
-      "allows_no_spotlight": false,
+      "primary_focus_id": null,
+      "primary_focus_title": null,
+      "allows_no_spotlight": true,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0373",
-        "mike-v2-0376",
-        "mike-v2-0856",
-        "mike-v2-0966",
-        "mike-v2-0525",
-        "mike-v2-1132",
-        "mike-v2-1056",
-        "mike-v2-1061",
-        "mike-v2-1066"
+        "mike-v2-0383",
+        "mike-v2-0386",
+        "mike-v2-0886",
+        "mike-v2-0996",
+        "mike-v2-0544",
+        "mike-v2-1168",
+        "mike-v2-1076",
+        "mike-v2-1081",
+        "mike-v2-1086"
       ],
       "selected_event_ids": [
-        "mike-v2-1056",
-        "mike-v2-1061",
-        "mike-v2-1066",
-        "mike-v2-0525",
-        "mike-v2-1132"
+        "mike-v2-1076",
+        "mike-v2-1081",
+        "mike-v2-1086",
+        "mike-v2-0544",
+        "mike-v2-1168"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-1076",
+          "title": "Eye exam is due this month; after provider reminder",
+          "domain": "Health",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:health-admin"
+          ],
+          "triggered_surface_rule": "configured upkeep window is due or deferred",
+          "suppressed_by": null,
+          "why_today": "Mike can schedule routine care before it becomes annoying."
+        },
+        {
+          "event_id": "mike-v2-1081",
+          "title": "Annual physical scheduling window is open; after provider reminder",
+          "domain": "Health",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:health-admin"
+          ],
+          "triggered_surface_rule": "configured upkeep window is due or deferred",
+          "suppressed_by": null,
+          "why_today": "Mike can schedule routine care before it becomes annoying."
+        },
+        {
+          "event_id": "mike-v2-1086",
+          "title": "Prescription refill window opens in 5 days; after provider reminder",
+          "domain": "Health",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:health-admin"
+          ],
+          "triggered_surface_rule": "configured upkeep window is due or deferred",
+          "suppressed_by": null,
+          "why_today": "Mike can schedule routine care before it becomes annoying."
+        },
+        {
+          "event_id": "mike-v2-0544",
+          "title": "AI pricing shifted but does not change Mike's default yet; before workflow reset",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can avoid reacting to every pricing page change."
+        },
+        {
+          "event_id": "mike-v2-1168",
+          "title": "TSA PreCheck renewal window opened; with travel optionality in view",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0856",
-        "mike-v2-0966"
+        "mike-v2-0886",
+        "mike-v2-0996"
       ],
       "outcome_counts": {
         "Ignore": 2,
@@ -1463,17 +3477,17 @@
       "date": "2026-06-10",
       "scenario": "repo consolidation long tail slowed",
       "dominant_domain": "Work",
-      "primary_focus_id": "mike-v2-0091",
-      "primary_focus_title": "Repo consolidation slowed to 37 merges this week; after owner silence",
-      "allows_no_spotlight": false,
+      "primary_focus_id": null,
+      "primary_focus_title": null,
+      "allows_no_spotlight": true,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0376",
-        "mike-v2-0380",
-        "mike-v2-0858",
-        "mike-v2-0968",
-        "mike-v2-0526",
-        "mike-v2-1133",
+        "mike-v2-0386",
+        "mike-v2-0390",
+        "mike-v2-0888",
+        "mike-v2-0998",
+        "mike-v2-0545",
+        "mike-v2-1169",
         "mike-v2-0091",
         "mike-v2-0133",
         "mike-v2-0175"
@@ -1482,12 +3496,74 @@
         "mike-v2-0091",
         "mike-v2-0133",
         "mike-v2-0175",
-        "mike-v2-0526",
-        "mike-v2-1133"
+        "mike-v2-0545",
+        "mike-v2-1169"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0091",
+          "title": "Repo consolidation slowed to 37 merges this week; after owner silence",
+          "domain": "Work",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:work-migrations"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "The briefing can distinguish temporary noise from a stuck consolidation plan."
+        },
+        {
+          "event_id": "mike-v2-0133",
+          "title": "Repo consolidation slowed to 19 merges this week; before staff review",
+          "domain": "Work",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:work-migrations"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "The briefing can distinguish temporary noise from a stuck consolidation plan."
+        },
+        {
+          "event_id": "mike-v2-0175",
+          "title": "Repo consolidation slowed to 5 merges this week; after owner silence",
+          "domain": "Work",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:work-migrations"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "The briefing can distinguish temporary noise from a stuck consolidation plan."
+        },
+        {
+          "event_id": "mike-v2-0545",
+          "title": "Coding-agent workflow crossed from interesting to usable; before the next coding block",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can decide whether the tool deserves more real work, not just curiosity."
+        },
+        {
+          "event_id": "mike-v2-1169",
+          "title": "Life-admin deadline is close enough to leave monitoring; after calendar audit",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0858",
-        "mike-v2-0968"
+        "mike-v2-0888",
+        "mike-v2-0998"
       ],
       "outcome_counts": {
         "Ignore": 2,
@@ -1507,22 +3583,46 @@
       "allows_no_spotlight": true,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0380",
-        "mike-v2-0383",
-        "mike-v2-0860",
-        "mike-v2-0970",
-        "mike-v2-0529",
-        "mike-v2-1134"
+        "mike-v2-0390",
+        "mike-v2-0393",
+        "mike-v2-0890",
+        "mike-v2-1000",
+        "mike-v2-0546",
+        "mike-v2-1172"
       ],
       "selected_event_ids": [
-        "mike-v2-0380",
-        "mike-v2-0383",
-        "mike-v2-0529",
-        "mike-v2-1134"
+        "mike-v2-0546",
+        "mike-v2-1172"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0546",
+          "title": "Editor change matters because it fixes the exact loop Mike avoids; with side projects in mind",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Trying the update may save repeated project time."
+        },
+        {
+          "event_id": "mike-v2-1172",
+          "title": "Car registration renewal is inside 6 days; after calendar audit",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0860",
-        "mike-v2-0970"
+        "mike-v2-0890",
+        "mike-v2-1000"
       ],
       "outcome_counts": {
         "Ignore": 2,
@@ -1537,38 +3637,100 @@
       "date": "2026-06-12",
       "scenario": "family date has real timing risk",
       "dominant_domain": "Personal & Family",
-      "primary_focus_id": "mike-v2-0654",
-      "primary_focus_title": "birthday dinner is inside 5 days; with work likely to crowd it out",
+      "primary_focus_id": "mike-v2-0692",
+      "primary_focus_title": "family visit needs a gift or plan before the week fills up; before gift timing gets tight",
       "allows_no_spotlight": false,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0383",
-        "mike-v2-0387",
-        "mike-v2-0862",
-        "mike-v2-0972",
-        "mike-v2-0530",
-        "mike-v2-1137",
-        "mike-v2-0651",
-        "mike-v2-0654",
-        "mike-v2-0657"
+        "mike-v2-0393",
+        "mike-v2-0397",
+        "mike-v2-0892",
+        "mike-v2-1002",
+        "mike-v2-0549",
+        "mike-v2-1173",
+        "mike-v2-0692",
+        "mike-v2-0685",
+        "mike-v2-0688"
       ],
       "selected_event_ids": [
-        "mike-v2-0651",
-        "mike-v2-0654",
-        "mike-v2-0657",
-        "mike-v2-0530",
-        "mike-v2-1137"
+        "mike-v2-0692",
+        "mike-v2-0685",
+        "mike-v2-0688",
+        "mike-v2-0549",
+        "mike-v2-1173"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0692",
+          "title": "family visit needs a gift or plan before the week fills up; before gift timing gets tight",
+          "domain": "Personal & Family",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:family-dates"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "A small early action prevents an avoidable scramble."
+        },
+        {
+          "event_id": "mike-v2-0685",
+          "title": "Father's Day is inside 6 days; before the week fills",
+          "domain": "Personal & Family",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:family-dates"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "A small early action prevents an avoidable scramble."
+        },
+        {
+          "event_id": "mike-v2-0688",
+          "title": "family visit is inside 43 days; before gift timing gets tight",
+          "domain": "Personal & Family",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:family-dates"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "A small early action prevents an avoidable scramble."
+        },
+        {
+          "event_id": "mike-v2-0549",
+          "title": "Agent benchmark matters because it changes the default coding loop; before the next coding block",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can decide whether the tool deserves more real work, not just curiosity."
+        },
+        {
+          "event_id": "mike-v2-1173",
+          "title": "Property taxes are due inside 10 days; before paperwork friction",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0862",
-        "mike-v2-0972"
+        "mike-v2-0892",
+        "mike-v2-1002"
       ],
       "outcome_counts": {
         "Ignore": 2,
         "Monitor": 2,
         "Mention": 2,
-        "Surface": 3,
-        "Lead Story": 0
+        "Surface": 2,
+        "Lead Story": 1
       },
       "review_note": "A dominant context exists; review whether it earns primary focus."
     },
@@ -1576,38 +3738,100 @@
       "date": "2026-06-13",
       "scenario": "range pass renewal window",
       "dominant_domain": "Golf Equipment",
-      "primary_focus_id": "mike-v2-0943",
-      "primary_focus_title": "Club fitting slot opened during Mike's range window; with spring setup in mind",
+      "primary_focus_id": "mike-v2-0966",
+      "primary_focus_title": "Ping release creates a G430 replacement question; before renewal pricing changes",
       "allows_no_spotlight": false,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0387",
-        "mike-v2-0390",
-        "mike-v2-0864",
-        "mike-v2-0974",
-        "mike-v2-0531",
-        "mike-v2-1138",
-        "mike-v2-0935",
-        "mike-v2-0939",
-        "mike-v2-0943"
+        "mike-v2-0397",
+        "mike-v2-0400",
+        "mike-v2-0894",
+        "mike-v2-1004",
+        "mike-v2-0550",
+        "mike-v2-1174",
+        "mike-v2-0966",
+        "mike-v2-0969",
+        "mike-v2-0973"
       ],
       "selected_event_ids": [
-        "mike-v2-0935",
-        "mike-v2-0939",
-        "mike-v2-0943",
-        "mike-v2-0531",
-        "mike-v2-1138"
+        "mike-v2-0966",
+        "mike-v2-0969",
+        "mike-v2-0973",
+        "mike-v2-0550",
+        "mike-v2-1174"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0966",
+          "title": "Ping release creates a G430 replacement question; before renewal pricing changes",
+          "domain": "Golf Equipment",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:golf-weather-and-equipment"
+          ],
+          "triggered_surface_rule": "configured decision window opened",
+          "suppressed_by": null,
+          "why_today": "He can catch useful fitting or renewal windows without browsing."
+        },
+        {
+          "event_id": "mike-v2-0969",
+          "title": "Ping release creates a G430 replacement question; before renewal pricing changes",
+          "domain": "Golf Equipment",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:golf-weather-and-equipment"
+          ],
+          "triggered_surface_rule": "configured decision window opened",
+          "suppressed_by": null,
+          "why_today": "He can catch useful fitting or renewal windows without browsing."
+        },
+        {
+          "event_id": "mike-v2-0973",
+          "title": "Club fitting slot opened during Mike's range window; with spring setup in mind",
+          "domain": "Golf Equipment",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:golf-weather-and-equipment"
+          ],
+          "triggered_surface_rule": "configured decision window opened",
+          "suppressed_by": null,
+          "why_today": "He can catch useful fitting or renewal windows without browsing."
+        },
+        {
+          "event_id": "mike-v2-0550",
+          "title": "Cursor fixed the multi-file edit friction Mike keeps working around; with side projects in mind",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Trying the update may save repeated project time."
+        },
+        {
+          "event_id": "mike-v2-1174",
+          "title": "TSA PreCheck renewal window opened; with travel optionality in view",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0864",
-        "mike-v2-0974"
+        "mike-v2-0894",
+        "mike-v2-1004"
       ],
       "outcome_counts": {
         "Ignore": 2,
         "Monitor": 2,
         "Mention": 2,
-        "Surface": 3,
-        "Lead Story": 0
+        "Surface": 2,
+        "Lead Story": 1
       },
       "review_note": "A dominant context exists; review whether it earns primary focus."
     },
@@ -1615,74 +3839,201 @@
       "date": "2026-06-14",
       "scenario": "household finance due date",
       "dominant_domain": "Life Logistics",
-      "primary_focus_id": "mike-v2-1176",
-      "primary_focus_title": "Life-admin deadline is close enough to leave monitoring; before weekend errands",
+      "primary_focus_id": "mike-v2-1195",
+      "primary_focus_title": "Insurance document needs renewal before the mortgage file update; with travel optionality in view",
       "allows_no_spotlight": false,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0390",
-        "mike-v2-0394",
-        "mike-v2-0866",
-        "mike-v2-0976",
-        "mike-v2-0534",
-        "mike-v2-1139",
-        "mike-v2-1176",
-        "mike-v2-1186",
-        "mike-v2-1086"
+        "mike-v2-0400",
+        "mike-v2-0404",
+        "mike-v2-0896",
+        "mike-v2-1006",
+        "mike-v2-0551",
+        "mike-v2-1175",
+        "mike-v2-1195",
+        "mike-v2-1191",
+        "mike-v2-1201"
       ],
       "selected_event_ids": [
-        "mike-v2-1176",
-        "mike-v2-1186",
-        "mike-v2-1086",
-        "mike-v2-0534",
-        "mike-v2-1139"
+        "mike-v2-1195",
+        "mike-v2-1191",
+        "mike-v2-1201",
+        "mike-v2-0551",
+        "mike-v2-1175"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-1195",
+          "title": "Insurance document needs renewal before the mortgage file update; with travel optionality in view",
+          "domain": "Life Logistics",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured upkeep window is due or deferred",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        },
+        {
+          "event_id": "mike-v2-1191",
+          "title": "Property taxes are due inside 10 days; before paperwork friction",
+          "domain": "Life Logistics",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured upkeep window is due or deferred",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        },
+        {
+          "event_id": "mike-v2-1201",
+          "title": "Insurance document needs renewal before the mortgage file update; with travel optionality in view",
+          "domain": "Life Logistics",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured upkeep window is due or deferred",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        },
+        {
+          "event_id": "mike-v2-0551",
+          "title": "WWDC happened; three iOS changes matter to Mike's projects; after WWDC follow-up",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can update project direction before stale assumptions harden."
+        },
+        {
+          "event_id": "mike-v2-1175",
+          "title": "Life-admin deadline is close enough to leave monitoring; after calendar audit",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0866",
-        "mike-v2-0976"
+        "mike-v2-0896",
+        "mike-v2-1006"
       ],
       "outcome_counts": {
         "Ignore": 2,
         "Monitor": 2,
         "Mention": 2,
-        "Surface": 3,
-        "Lead Story": 0
+        "Surface": 2,
+        "Lead Story": 1
       },
       "review_note": "A dominant context exists; review whether it earns primary focus."
     },
     {
       "date": "2026-06-15",
-      "scenario": "watch expiration is near",
-      "dominant_domain": "Watch Items",
-      "primary_focus_id": "mike-v2-1140",
-      "primary_focus_title": "Life-admin deadline is close enough to leave monitoring; before weekend errands",
+      "scenario": "configured watch expiration is near",
+      "dominant_domain": "Travel",
+      "primary_focus_id": "mike-v2-1375",
+      "primary_focus_title": "Flight departure is inside 3 days and parking is not confirmed; after airline email",
       "allows_no_spotlight": false,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0394",
-        "mike-v2-0397",
-        "mike-v2-0868",
-        "mike-v2-0978",
-        "mike-v2-0535",
-        "mike-v2-1140",
-        "mike-v2-1490",
-        "mike-v2-1497",
-        "mike-v2-1441"
+        "mike-v2-0404",
+        "mike-v2-0407",
+        "mike-v2-0898",
+        "mike-v2-1008",
+        "mike-v2-0554",
+        "mike-v2-1177",
+        "mike-v2-1375",
+        "mike-v2-1369",
+        "mike-v2-1372"
       ],
       "selected_event_ids": [
-        "mike-v2-0535",
-        "mike-v2-1140"
+        "mike-v2-1375",
+        "mike-v2-1369",
+        "mike-v2-1372",
+        "mike-v2-0554",
+        "mike-v2-1177"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-1375",
+          "title": "Flight departure is inside 3 days and parking is not confirmed; after airline email",
+          "domain": "Travel",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:travel-logistics"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "He can close parking, packing, or return details while there is time."
+        },
+        {
+          "event_id": "mike-v2-1369",
+          "title": "Flight departure is inside 3 days and parking is not confirmed; before parking fills",
+          "domain": "Travel",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:travel-logistics"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "He can close parking, packing, or return details while there is time."
+        },
+        {
+          "event_id": "mike-v2-1372",
+          "title": "Flight departure is inside 14 days and parking is not confirmed; with return plan still open",
+          "domain": "Travel",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:travel-logistics"
+          ],
+          "triggered_surface_rule": "deadline or expiration is inside the action window",
+          "suppressed_by": null,
+          "why_today": "He can close parking, packing, or return details while there is time."
+        },
+        {
+          "event_id": "mike-v2-0554",
+          "title": "Cursor update finally removes a workflow tax; with side projects in mind",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Trying the update may save repeated project time."
+        },
+        {
+          "event_id": "mike-v2-1177",
+          "title": "Insurance document needs renewal before the mortgage file update; with travel optionality in view",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0868",
-        "mike-v2-0978"
+        "mike-v2-0898",
+        "mike-v2-1008"
       ],
       "outcome_counts": {
         "Ignore": 2,
         "Monitor": 2,
-        "Mention": 5,
-        "Surface": 0,
-        "Lead Story": 0
+        "Mention": 2,
+        "Surface": 2,
+        "Lead Story": 1
       },
       "review_note": "A dominant context exists; review whether it earns primary focus."
     },
@@ -1690,25 +4041,51 @@
       "date": "2026-06-16",
       "scenario": "Sonar adoption remains below target",
       "dominant_domain": "Work",
-      "primary_focus_id": "mike-v2-0537",
-      "primary_focus_title": "Coding-agent workflow crossed from interesting to usable; after WWDC follow-up",
-      "allows_no_spotlight": false,
+      "primary_focus_id": null,
+      "primary_focus_title": null,
+      "allows_no_spotlight": true,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0397",
-        "mike-v2-0401",
-        "mike-v2-0870",
-        "mike-v2-0980",
-        "mike-v2-0537",
-        "mike-v2-1142"
+        "mike-v2-0407",
+        "mike-v2-0411",
+        "mike-v2-0900",
+        "mike-v2-1010",
+        "mike-v2-0555",
+        "mike-v2-1178"
       ],
       "selected_event_ids": [
-        "mike-v2-0537",
-        "mike-v2-1142"
+        "mike-v2-0555",
+        "mike-v2-1178"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0555",
+          "title": "WWDC follow-up window closes before the weekend; after WWDC follow-up",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can update project direction before stale assumptions harden."
+        },
+        {
+          "event_id": "mike-v2-1178",
+          "title": "Car registration renewal is inside 6 days; after calendar audit",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0870",
-        "mike-v2-0980"
+        "mike-v2-0900",
+        "mike-v2-1010"
       ],
       "outcome_counts": {
         "Ignore": 2,
@@ -1728,22 +4105,46 @@
       "allows_no_spotlight": true,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0401",
-        "mike-v2-0404",
-        "mike-v2-0872",
-        "mike-v2-0982",
-        "mike-v2-0541",
-        "mike-v2-1143"
+        "mike-v2-0411",
+        "mike-v2-0414",
+        "mike-v2-0902",
+        "mike-v2-1012",
+        "mike-v2-0557",
+        "mike-v2-1179"
       ],
       "selected_event_ids": [
-        "mike-v2-0401",
-        "mike-v2-0404",
-        "mike-v2-0541",
-        "mike-v2-1143"
+        "mike-v2-0557",
+        "mike-v2-1179"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0557",
+          "title": "Coding-agent workflow crossed from interesting to usable; before the next coding block",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can decide whether the tool deserves more real work, not just curiosity."
+        },
+        {
+          "event_id": "mike-v2-1179",
+          "title": "Property taxes are due inside 10 days; before paperwork friction",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0872",
-        "mike-v2-0982"
+        "mike-v2-0902",
+        "mike-v2-1012"
       ],
       "outcome_counts": {
         "Ignore": 2,
@@ -1758,31 +4159,93 @@
       "date": "2026-06-18",
       "scenario": "Fed path affects housing math",
       "dominant_domain": "Finance & Markets",
-      "primary_focus_id": "mike-v2-0295",
-      "primary_focus_title": "Fed path shifted after CPI cooled to 11.5%; with breadth diverging",
-      "allows_no_spotlight": false,
+      "primary_focus_id": null,
+      "primary_focus_title": null,
+      "allows_no_spotlight": true,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0404",
-        "mike-v2-0408",
-        "mike-v2-0874",
-        "mike-v2-0984",
-        "mike-v2-0542",
-        "mike-v2-1144",
-        "mike-v2-0295",
-        "mike-v2-0337",
-        "mike-v2-0379"
+        "mike-v2-0414",
+        "mike-v2-0418",
+        "mike-v2-0904",
+        "mike-v2-1014",
+        "mike-v2-0558",
+        "mike-v2-1180",
+        "mike-v2-0431",
+        "mike-v2-0473",
+        "mike-v2-0263"
       ],
       "selected_event_ids": [
-        "mike-v2-0295",
-        "mike-v2-0337",
-        "mike-v2-0379",
-        "mike-v2-0542",
-        "mike-v2-1144"
+        "mike-v2-0431",
+        "mike-v2-0473",
+        "mike-v2-0263",
+        "mike-v2-0558",
+        "mike-v2-1180"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0431",
+          "title": "Fed path shifted after CPI cooled to 7.6%; after the weekly move",
+          "domain": "Finance & Markets",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:market-backdrop"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "He gets the practical posture change without reading generic Fed coverage."
+        },
+        {
+          "event_id": "mike-v2-0473",
+          "title": "Fed path shifted after CPI cooled to 18.2%; with risk appetite cooling",
+          "domain": "Finance & Markets",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:market-backdrop"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "He gets the practical posture change without reading generic Fed coverage."
+        },
+        {
+          "event_id": "mike-v2-0263",
+          "title": "Fed path shifted after CPI cooled to 7.6%; after the weekly move",
+          "domain": "Finance & Markets",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:market-backdrop"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "He gets the practical posture change without reading generic Fed coverage."
+        },
+        {
+          "event_id": "mike-v2-0558",
+          "title": "Editor change matters because it fixes the exact loop Mike avoids; with side projects in mind",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Trying the update may save repeated project time."
+        },
+        {
+          "event_id": "mike-v2-1180",
+          "title": "TSA PreCheck renewal window opened; with travel optionality in view",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0874",
-        "mike-v2-0984"
+        "mike-v2-0904",
+        "mike-v2-1014"
       ],
       "outcome_counts": {
         "Ignore": 2,
@@ -1797,31 +4260,93 @@
       "date": "2026-06-19",
       "scenario": "dryer vent task became risk",
       "dominant_domain": "Home Ownership",
-      "primary_focus_id": "mike-v2-1196",
-      "primary_focus_title": "Dryer vent cleaning has been deferred twice; after seasonal checklist",
-      "allows_no_spotlight": false,
+      "primary_focus_id": null,
+      "primary_focus_title": null,
+      "allows_no_spotlight": true,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0408",
-        "mike-v2-0411",
-        "mike-v2-0876",
-        "mike-v2-0986",
-        "mike-v2-0543",
-        "mike-v2-1145",
-        "mike-v2-1266",
-        "mike-v2-1191",
-        "mike-v2-1196"
+        "mike-v2-0418",
+        "mike-v2-0421",
+        "mike-v2-0906",
+        "mike-v2-1016",
+        "mike-v2-0561",
+        "mike-v2-1183",
+        "mike-v2-1301",
+        "mike-v2-1306",
+        "mike-v2-1311"
       ],
       "selected_event_ids": [
-        "mike-v2-1266",
-        "mike-v2-1191",
-        "mike-v2-1196",
-        "mike-v2-0543",
-        "mike-v2-1145"
+        "mike-v2-1301",
+        "mike-v2-1306",
+        "mike-v2-1311",
+        "mike-v2-0561",
+        "mike-v2-1183"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-1301",
+          "title": "Dryer vent cleaning has been deferred twice; after seasonal checklist",
+          "domain": "Home Ownership",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:home-maintenance"
+          ],
+          "triggered_surface_rule": "configured upkeep window is due or deferred",
+          "suppressed_by": null,
+          "why_today": "Small maintenance prevents bigger cost or stress."
+        },
+        {
+          "event_id": "mike-v2-1306",
+          "title": "Air filters are overdue by 21 days; after seasonal checklist",
+          "domain": "Home Ownership",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:home-maintenance"
+          ],
+          "triggered_surface_rule": "configured upkeep window is due or deferred",
+          "suppressed_by": null,
+          "why_today": "Small maintenance prevents bigger cost or stress."
+        },
+        {
+          "event_id": "mike-v2-1311",
+          "title": "HVAC service window is filling before the heat stretch; after seasonal checklist",
+          "domain": "Home Ownership",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:home-maintenance"
+          ],
+          "triggered_surface_rule": "configured upkeep window is due or deferred",
+          "suppressed_by": null,
+          "why_today": "Small maintenance prevents bigger cost or stress."
+        },
+        {
+          "event_id": "mike-v2-0561",
+          "title": "Agent benchmark matters because it changes the default coding loop; before the next coding block",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can decide whether the tool deserves more real work, not just curiosity."
+        },
+        {
+          "event_id": "mike-v2-1183",
+          "title": "Insurance document needs renewal before the mortgage file update; with travel optionality in view",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0876",
-        "mike-v2-0986"
+        "mike-v2-0906",
+        "mike-v2-1016"
       ],
       "outcome_counts": {
         "Ignore": 2,
@@ -1836,38 +4361,100 @@
       "date": "2026-06-20",
       "scenario": "project validation changed direction",
       "dominant_domain": "Side Projects",
-      "primary_focus_id": "mike-v2-1369",
-      "primary_focus_title": "Side project has gone 14 days without a user-facing step; with spend rising",
+      "primary_focus_id": "mike-v2-1406",
+      "primary_focus_title": "Side project has gone 4 days without a user-facing step; before another build cycle",
       "allows_no_spotlight": false,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0411",
-        "mike-v2-0415",
-        "mike-v2-0878",
-        "mike-v2-0988",
-        "mike-v2-0546",
-        "mike-v2-1148",
-        "mike-v2-1369",
-        "mike-v2-1375",
-        "mike-v2-1381"
+        "mike-v2-0421",
+        "mike-v2-0425",
+        "mike-v2-0908",
+        "mike-v2-1018",
+        "mike-v2-0562",
+        "mike-v2-1184",
+        "mike-v2-1406",
+        "mike-v2-1436",
+        "mike-v2-1442"
       ],
       "selected_event_ids": [
-        "mike-v2-1369",
-        "mike-v2-1375",
-        "mike-v2-1381",
-        "mike-v2-0546",
-        "mike-v2-1148"
+        "mike-v2-1406",
+        "mike-v2-1436",
+        "mike-v2-1442",
+        "mike-v2-0562",
+        "mike-v2-1184"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-1406",
+          "title": "Side project has gone 4 days without a user-facing step; before another build cycle",
+          "domain": "Side Projects",
+          "evaluation": "Lead Story",
+          "source_watch_ids": [
+            "watch:side-projects"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "He can stop, ship, or narrow the next step with better context."
+        },
+        {
+          "event_id": "mike-v2-1436",
+          "title": "Side project has gone 4 days without a user-facing step; before another build cycle",
+          "domain": "Side Projects",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:side-projects"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "He can stop, ship, or narrow the next step with better context."
+        },
+        {
+          "event_id": "mike-v2-1442",
+          "title": "Side project has gone 4 days without a user-facing step; after validation notes",
+          "domain": "Side Projects",
+          "evaluation": "Surface",
+          "source_watch_ids": [
+            "watch:side-projects"
+          ],
+          "triggered_surface_rule": "watched context changed enough to alter posture",
+          "suppressed_by": null,
+          "why_today": "He can stop, ship, or narrow the next step with better context."
+        },
+        {
+          "event_id": "mike-v2-0562",
+          "title": "Cursor fixed the multi-file edit friction Mike keeps working around; with side projects in mind",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Trying the update may save repeated project time."
+        },
+        {
+          "event_id": "mike-v2-1184",
+          "title": "Car registration renewal is inside 6 days; after calendar audit",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "A small timely action prevents future travel or paperwork friction."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0878",
-        "mike-v2-0988"
+        "mike-v2-0908",
+        "mike-v2-1018"
       ],
       "outcome_counts": {
         "Ignore": 2,
         "Monitor": 2,
         "Mention": 2,
-        "Surface": 3,
-        "Lead Story": 0
+        "Surface": 2,
+        "Lead Story": 1
       },
       "review_note": "A dominant context exists; review whether it earns primary focus."
     },
@@ -1880,22 +4467,46 @@
       "allows_no_spotlight": true,
       "multiple_competing_focuses": false,
       "candidate_event_ids": [
-        "mike-v2-0415",
-        "mike-v2-0418",
-        "mike-v2-0880",
-        "mike-v2-0990",
-        "mike-v2-0547",
-        "mike-v2-1149"
+        "mike-v2-0425",
+        "mike-v2-0428",
+        "mike-v2-0910",
+        "mike-v2-1020",
+        "mike-v2-0563",
+        "mike-v2-1185"
       ],
       "selected_event_ids": [
-        "mike-v2-0415",
-        "mike-v2-0418",
-        "mike-v2-0547",
-        "mike-v2-1149"
+        "mike-v2-0563",
+        "mike-v2-1185"
+      ],
+      "briefing_outputs": [
+        {
+          "event_id": "mike-v2-0563",
+          "title": "WWDC happened; three iOS changes matter to Mike's projects; after WWDC follow-up",
+          "domain": "Technology & AI",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:wwdc-and-coding-tools"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "He can update project direction before stale assumptions harden."
+        },
+        {
+          "event_id": "mike-v2-1185",
+          "title": "Property taxes are due inside 10 days; before paperwork friction",
+          "domain": "Life Logistics",
+          "evaluation": "Mention",
+          "source_watch_ids": [
+            "watch:life-logistics"
+          ],
+          "triggered_surface_rule": "configured watch produced a current-day context note",
+          "suppressed_by": null,
+          "why_today": "Mike can handle it before it becomes a weekend tax."
+        }
       ],
       "suppressed_event_ids": [
-        "mike-v2-0880",
-        "mike-v2-0990"
+        "mike-v2-0910",
+        "mike-v2-1020"
       ],
       "outcome_counts": {
         "Ignore": 2,

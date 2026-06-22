@@ -16,7 +16,22 @@ DEFAULT_SURFACE_WHEN = [
     "decision deadline is near",
     "summary would save user effort",
 ]
+DEFAULT_SUPPRESS_WHEN = [
+    "generic reminders",
+    "unchanged source data",
+    "filler that only says the watched object is coming up",
+]
 DEFAULT_WATCH_FOR = ["timing", "schedule changes"]
+SOURCE_HINTS = {
+    "weather": "weather",
+    "parking": "parking feed",
+    "traffic": "maps or transit",
+    "timing": "calendar",
+    "schedule changes": "calendar or venue/source update",
+    "summary": "post-event sources",
+    "developer tooling": "developer docs",
+    "ai": "vendor changelog",
+}
 WATCH_KEYWORDS = {
     "weather": {"weather", "rain", "temperature", "forecast"},
     "parking": {"parking", "drive"},
@@ -97,6 +112,23 @@ def watch_domain(title: str, watch_for: Iterable[str]) -> str:
     if dimensions.intersection({"weather", "parking", "traffic"}):
         return "Life"
     return "Watchlist"
+
+
+def source_inputs_for(watch_for: Iterable[str]) -> list[str]:
+    sources = [
+        SOURCE_HINTS[dimension]
+        for dimension in watch_for
+        if dimension in SOURCE_HINTS
+    ]
+    return list(dict.fromkeys(sources or ["user-provided watch config"]))
+
+
+def suppression_rules_for(row: WatchItem) -> list[str]:
+    rules = list(DEFAULT_SUPPRESS_WHEN)
+    surface_rules = row.surface_when or []
+    if surface_rules:
+        rules.append("inputs that do not meet configured surface rules")
+    return rules
 
 
 def parse_watch_item(text: str, today: date | None = None) -> dict:
@@ -203,6 +235,8 @@ def watch_counts(db: Session) -> dict:
 
 
 def serialize_watch_item(row: WatchItem, latest: WatchEvaluation | None = None) -> dict:
+    watch_for = row.watch_for or []
+    surface_when = row.surface_when or []
     return {
         "id": row.id,
         "title": row.title,
@@ -210,9 +244,15 @@ def serialize_watch_item(row: WatchItem, latest: WatchEvaluation | None = None) 
         "event_date": row.event_date.isoformat() if row.event_date else None,
         "expires_at": row.expires_at.isoformat() if row.expires_at else None,
         "check_frequency": row.check_frequency,
-        "watch_for": row.watch_for or [],
-        "surface_when": row.surface_when or [],
+        "watch_for": watch_for,
+        "conditions": watch_for,
+        "source_inputs": source_inputs_for(watch_for),
+        "cadence": row.check_frequency,
+        "surface_when": surface_when,
+        "surface_rules": surface_when,
+        "suppression_rules": suppression_rules_for(row),
         "briefing_posture": row.briefing_posture,
+        "preferred_output": row.briefing_posture,
         "status": row.status,
         "last_evaluated_on": (
             row.last_evaluated_on.isoformat() if row.last_evaluated_on else None
@@ -514,6 +554,10 @@ def watch_attention_items(evaluations: Iterable[WatchEvaluation]) -> list[dict]:
                     "situation": row.title,
                     "why_it_matters": row.trigger_reason,
                     "what_changed": row.trigger_reason,
+                    "source_watch_ids": [f"watch:{row.watch_item_id}"],
+                    "triggered_surface_rule": row.trigger_reason,
+                    "suppressed_by": None,
+                    "why_today": row.summary,
                 },
                 category=row.category,
                 importance_score=row.importance_score,

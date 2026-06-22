@@ -1,61 +1,123 @@
-import { Archive, Check, Pencil, Plus, RefreshCw, Save, Trash2, Upload, X } from "lucide-react";
+import { Archive, Check, ClipboardList, FileText, ListChecks, Pencil, Plus, RefreshCw, Save, Trash2, Upload, X } from "lucide-react";
 import { ChangeEvent, ReactNode, useEffect, useMemo, useState } from "react";
 
 import { requestJson, sourceFromFile } from "./api";
-import type { AssistantBriefing, AssistantBriefingItem, Briefing, RecommendationDetail, WatchItem, WatchListResponse, WatchStatus } from "./types";
+import type { AssistantBriefing, AssistantBriefingItem, Briefing, RecommendationDetail, WatchItem, WatchListResponse } from "./types";
+
+type AppView = "briefing" | "archive" | "watch-admin" | "appendix";
+
+type WatchPreset = {
+  label: string;
+  text: string;
+};
+
+type Provenance = {
+  source_watch_ids: string[];
+  triggered_surface_rule: string;
+  suppressed_by: string | null;
+  why_today: string;
+};
+
+const WATCH_PRESETS: WatchPreset[] = [
+  {
+    label: "Markets",
+    text: "Bitcoin range\nWatch price moves, threshold breaks, and material market context."
+  },
+  {
+    label: "Sports",
+    text: "Yankees and Rutgers\nWatch game timing, schedule changes, injuries, and results worth remembering."
+  },
+  {
+    label: "Travel",
+    text: "Upcoming travel\nWatch weather, airport timing, parking, hotel changes, and itinerary updates."
+  },
+  {
+    label: "Family",
+    text: "Family date\nWatch timing, location changes, gift deadlines, and planning blockers."
+  },
+  {
+    label: "Home",
+    text: "Home maintenance\nWatch due dates, weather risk, contractor timing, and small tasks becoming expensive."
+  },
+  {
+    label: "Pets",
+    text: "Bogey care\nWatch appointments, food, boarding, medication, and coverage gaps."
+  },
+  {
+    label: "Health",
+    text: "Health admin\nWatch appointment windows, insurance paperwork, refills, and scheduling deadlines."
+  },
+  {
+    label: "Work",
+    text: "Work migration\nWatch blocked teams, deadline movement, adoption gaps, and decisions needed this week."
+  },
+  {
+    label: "Projects",
+    text: "Side project\nWatch validation, costs, progress stalls, and ship-or-stop signals."
+  },
+  {
+    label: "Tech",
+    text: "WWDC and coding tools\nWatch developer tooling, API changes, pricing, and workflow changes."
+  }
+];
 
 function BriefingHeader({
+  activeView,
   briefingDate,
   attentionCount,
+  onViewChange,
   onRefresh,
   onImport,
-  onPreviousDay,
-  onToday,
-  onNextDay,
   loading,
   importing,
-  isToday,
   readOnly
 }: {
+  activeView: AppView;
   briefingDate: string;
   attentionCount: number | null;
+  onViewChange: (view: AppView) => void;
   onRefresh: () => void;
   onImport: (event: ChangeEvent<HTMLInputElement>) => void;
-  onPreviousDay: () => void;
-  onToday: () => void;
-  onNextDay: () => void;
   loading: boolean;
   importing: boolean;
-  isToday: boolean;
   readOnly: boolean;
 }) {
   return (
     <header className="masthead">
       <div>
         <p className="brand">FocusOS</p>
-        <h1>Morning Briefing</h1>
+        <h1>{activeView === "watch-admin" ? "Watch Admin" : activeView === "archive" ? "Archive" : activeView === "appendix" ? "Appendix" : "Morning Briefing"}</h1>
         <p className="briefingMeta">
           {briefingDate}
-          {attentionCount !== null ? ` · ${attentionCount} items` : ""}
-          {readOnly ? " · archived snapshot" : ""}
+          {attentionCount !== null && activeView === "briefing" ? ` · ${attentionCount} outputs` : ""}
+          {readOnly && activeView === "archive" ? " · archived snapshot" : ""}
         </p>
-        <nav className="dateNav" aria-label="Briefing timeline">
-          <button type="button" onClick={onPreviousDay} disabled={loading}>
-            ← Previous Day
+        <nav className="viewNav" aria-label="FocusOS sections">
+          <button type="button" className={activeView === "briefing" ? "selected" : ""} onClick={() => onViewChange("briefing")}>
+            <ListChecks size={16} />
+            Briefing
           </button>
-          <button type="button" onClick={onToday} disabled={loading || isToday}>
-            Today
+          <button type="button" className={activeView === "archive" ? "selected" : ""} onClick={() => onViewChange("archive")}>
+            <Archive size={16} />
+            Archive
           </button>
-          <button type="button" onClick={onNextDay} disabled={loading || isToday}>
-            Next Day →
+          <button type="button" className={activeView === "watch-admin" ? "selected" : ""} onClick={() => onViewChange("watch-admin")}>
+            <ClipboardList size={16} />
+            Watch Admin
+          </button>
+          <button type="button" className={activeView === "appendix" ? "selected" : ""} onClick={() => onViewChange("appendix")}>
+            <FileText size={16} />
+            Appendix
           </button>
         </nav>
       </div>
       <div className="actions">
-        <label className="iconButton" title="Import CSV">
-          <Upload size={18} />
-          <input type="file" accept=".csv,text/csv" onChange={onImport} disabled={importing || readOnly} />
-        </label>
+        {activeView === "briefing" && (
+          <label className="iconButton" title="Import CSV">
+            <Upload size={18} />
+            <input type="file" accept=".csv,text/csv" onChange={onImport} disabled={importing || readOnly} />
+          </label>
+        )}
         <button className="iconButton" type="button" onClick={onRefresh} disabled={loading} title="Refresh">
           <RefreshCw size={18} />
         </button>
@@ -66,11 +128,11 @@ function BriefingHeader({
 
 function AssistantItemButton({
   item,
-  onDetail,
+  onAppendix,
   className = ""
 }: {
   item: AssistantBriefingItem;
-  onDetail: (detailId: string) => void;
+  onAppendix: (item: AssistantBriefingItem) => void;
   className?: string;
 }) {
   const itemClass = `assistantItem ${className}`;
@@ -84,166 +146,52 @@ function AssistantItemButton({
   }
 
   return (
-    <button className={itemClass} type="button" onClick={() => onDetail(item.detail_id)}>
+    <button className={itemClass} type="button" onClick={() => onAppendix(item)}>
       <h3>{item.title}</h3>
       <p>{item.summary}</p>
     </button>
   );
 }
 
-function WatchStatusList({ items, onDetail }: { items: WatchStatus[]; onDetail: (detailId: string) => void }) {
-  if (items.length === 0) {
-    return <p className="quietLine">Nothing user-created is close enough to need attention.</p>;
-  }
-  return (
-    <div className="watchStatusList">
-      {items.map((item) => {
-        const content = (
-          <>
-            <h3>{item.title}</h3>
-            <p>{item.summary}</p>
-          </>
-        );
-        return item.detail_id ? (
-          <button className="watchStatusItem" type="button" key={item.id} onClick={() => onDetail(item.detail_id)}>
-            {content}
-          </button>
-        ) : (
-          <article className="watchStatusItem staticItem" key={item.id}>
-            {content}
-          </article>
-        );
-      })}
-    </div>
-  );
-}
-
-function WatchManager({
-  watches,
-  activeCount,
-  draft,
-  editingId,
-  busy,
-  readOnly,
-  onDraftChange,
-  onSubmit,
-  onEdit,
-  onCancelEdit,
-  onComplete,
-  onArchive,
-  onDelete
-}: {
-  watches: WatchItem[];
-  activeCount: number;
-  draft: string;
-  editingId: number | null;
-  busy: boolean;
-  readOnly: boolean;
-  onDraftChange: (value: string) => void;
-  onSubmit: () => void;
-  onEdit: (watch: WatchItem) => void;
-  onCancelEdit: () => void;
-  onComplete: (watchId: number) => void;
-  onArchive: (watchId: number) => void;
-  onDelete: (watchId: number) => void;
-}) {
-  const visible = watches.filter((watch) => watch.status !== "archived").slice(0, 6);
-  return (
-    <div className="watchOwnerPanel">
-      <div className="watchOwnerHeader">
-        <span>{activeCount} active</span>
-        {editingId && (
-          <button className="miniIconButton" type="button" onClick={onCancelEdit} disabled={busy} title="Cancel edit">
-            <X size={15} />
-          </button>
-        )}
-      </div>
-      {!readOnly && (
-        <div className="watchComposer">
-          <textarea
-            value={draft}
-            onChange={(event) => onDraftChange(event.target.value)}
-            placeholder="Outdoor concert Friday&#10;Watch weather, parking, timing, and venue changes."
-            rows={3}
-            disabled={busy}
-          />
-          <button className="iconButton" type="button" onClick={onSubmit} disabled={busy || !draft.trim()} title={editingId ? "Save watch" : "Add watch"}>
-            {editingId ? <Save size={17} /> : <Plus size={17} />}
-          </button>
-        </div>
-      )}
-      {visible.length > 0 && (
-        <div className="ownedWatchList">
-          {visible.map((watch) => (
-            <article className="ownedWatchItem" key={watch.id}>
-              <div>
-                <h3>{watch.title}</h3>
-                <p>{watch.why_today || watch.latest_evaluation?.summary || watch.original_text}</p>
-                <span>{watch.status}</span>
-              </div>
-              {!readOnly && (
-                <div className="watchItemActions">
-                  <button className="miniIconButton" type="button" onClick={() => onEdit(watch)} disabled={busy} title="Edit watch">
-                    <Pencil size={15} />
-                  </button>
-                  {watch.status === "active" && (
-                    <button className="miniIconButton" type="button" onClick={() => onComplete(watch.id)} disabled={busy} title="Complete watch">
-                      <Check size={15} />
-                    </button>
-                  )}
-                  <button className="miniIconButton" type="button" onClick={() => onArchive(watch.id)} disabled={busy} title="Archive watch">
-                    <Archive size={15} />
-                  </button>
-                  <button className="miniIconButton dangerButton" type="button" onClick={() => onDelete(watch.id)} disabled={busy} title="Remove watch">
-                    <Trash2 size={15} />
-                  </button>
-                </div>
-              )}
-            </article>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
 function AssistantBriefingView({
   briefing,
-  onDetail,
-  watchManager
+  onAppendix
 }: {
   briefing: AssistantBriefing;
-  onDetail: (detailId: string) => void;
-  watchManager: ReactNode;
+  onAppendix: (item: AssistantBriefingItem) => void;
 }) {
+  const hasPrimaryFocus = briefing.mode === "focused" && Boolean(briefing.primary_focus.detail_id);
+  const notes = briefing.secondary_notes.filter((item) => item.detail_id || item.summary);
+
   return (
-    <section className={`assistantBriefing ${briefing.mode === "quiet" ? "quietBriefing" : "focusedBriefing"}`}>
+    <section className={`assistantBriefing ${hasPrimaryFocus ? "focusedBriefing" : "quietBriefing"}`}>
       <header className="assistantGreeting">
         <h2>{briefing.greeting}</h2>
       </header>
 
-      <section className="primaryFocus">
-        <p className="sectionKicker">{briefing.mode === "quiet" ? "Nothing needs the spotlight" : "One thing worth paying attention to"}</p>
-        <AssistantItemButton item={briefing.primary_focus} onDetail={onDetail} className="primaryAssistantItem" />
-      </section>
+      {hasPrimaryFocus ? (
+        <section className="primaryFocus">
+          <p className="sectionKicker">Primary focus</p>
+          <AssistantItemButton item={briefing.primary_focus} onAppendix={onAppendix} className="primaryAssistantItem" />
+        </section>
+      ) : (
+        <section className="quietSpotlight">
+          <p className="sectionKicker">No spotlight</p>
+          <p>Nothing deserves the spotlight today.</p>
+        </section>
+      )}
 
       <section className="secondaryNotes">
-        <p className="sectionKicker">A few other things</p>
-        {briefing.secondary_notes.length > 0 ? (
+        <p className="sectionKicker">Briefing outputs</p>
+        {notes.length > 0 ? (
           <div className="noteList">
-            {briefing.secondary_notes.map((item) => (
-              <AssistantItemButton item={item} key={`${item.title}-${item.domain}`} onDetail={onDetail} className="noteItem" />
+            {notes.map((item) => (
+              <AssistantItemButton item={item} key={`${item.detail_id}-${item.title}`} onAppendix={onAppendix} className="noteItem" />
             ))}
           </div>
         ) : (
-          <p className="quietLine">No other notes need attention.</p>
+          <p className="quietLine">No other outputs need attention.</p>
         )}
-      </section>
-
-      <section className="watchStatus">
-        <p className="sectionKicker">Watching</p>
-        <WatchStatusList items={briefing.watch_status} onDetail={onDetail} />
-        {watchManager}
       </section>
     </section>
   );
@@ -350,6 +298,22 @@ function supportingFacts(detail: RecommendationDetail) {
   return facts.length > 0 ? facts : generated;
 }
 
+function recordValue(data: unknown, key: string): unknown {
+  if (!data || typeof data !== "object" || Array.isArray(data)) return undefined;
+  return (data as Record<string, unknown>)[key];
+}
+
+function extractProvenance(item: AssistantBriefingItem | null, detail: RecommendationDetail | null): Provenance {
+  const rawProvenance = recordValue(detail?.raw_data, "provenance");
+  const sourceWatchIds = recordValue(rawProvenance, "source_watch_ids");
+  return {
+    source_watch_ids: item?.source_watch_ids.length ? item.source_watch_ids : Array.isArray(sourceWatchIds) ? sourceWatchIds.map(String) : [],
+    triggered_surface_rule: item?.triggered_surface_rule || String(recordValue(rawProvenance, "triggered_surface_rule") || ""),
+    suppressed_by: item?.suppressed_by ?? (recordValue(rawProvenance, "suppressed_by") as string | null | undefined) ?? null,
+    why_today: item?.why_today || String(recordValue(rawProvenance, "why_today") || "")
+  };
+}
+
 function todayIso() {
   const now = new Date();
   const year = now.getFullYear();
@@ -363,8 +327,8 @@ function addDays(dateText: string, days: number) {
   next.setDate(next.getDate() + days);
   const year = next.getFullYear();
   const month = String(next.getMonth() + 1).padStart(2, "0");
-  const day = String(next.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+  const correctedDay = String(next.getDate()).padStart(2, "0");
+  return `${year}-${month}-${correctedDay}`;
 }
 
 function formatBriefingDate(dateText: string) {
@@ -376,13 +340,285 @@ function formatBriefingDate(dateText: string) {
   });
 }
 
+function listText(values: string[]) {
+  return values.length ? values.join(", ") : "None configured";
+}
+
+function WatchConfigRows({ watch }: { watch: WatchItem }) {
+  const rows: Array<[string, string]> = [
+    ["Conditions", listText(watch.conditions)],
+    ["Sources", listText(watch.source_inputs)],
+    ["Cadence", watch.cadence],
+    ["Surface rules", listText(watch.surface_rules)],
+    ["Suppression rules", listText(watch.suppression_rules)],
+    ["Expiration", watch.expires_at || "No expiration"],
+    ["Preferred output", watch.preferred_output]
+  ];
+  return (
+    <dl className="watchConfigRows">
+      {rows.map(([label, value]) => (
+        <div key={label}>
+          <dt>{label}</dt>
+          <dd>{value}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+function WatchAdminView({
+  watches,
+  activeCount,
+  draft,
+  editingId,
+  busy,
+  onDraftChange,
+  onSubmit,
+  onEdit,
+  onCancelEdit,
+  onComplete,
+  onArchive,
+  onDelete,
+  onUsePreset
+}: {
+  watches: WatchItem[];
+  activeCount: number;
+  draft: string;
+  editingId: number | null;
+  busy: boolean;
+  onDraftChange: (value: string) => void;
+  onSubmit: () => void;
+  onEdit: (watch: WatchItem) => void;
+  onCancelEdit: () => void;
+  onComplete: (watchId: number) => void;
+  onArchive: (watchId: number) => void;
+  onDelete: (watchId: number) => void;
+  onUsePreset: (preset: WatchPreset) => void;
+}) {
+  return (
+    <section className="watchAdmin">
+      <div className="adminSummary">
+        <span>{activeCount} active</span>
+        <span>{watches.length} total</span>
+      </div>
+
+      <section className="presetPanel">
+        <p className="sectionKicker">Presets</p>
+        <div className="presetGrid">
+          {WATCH_PRESETS.map((preset) => (
+            <button type="button" key={preset.label} onClick={() => onUsePreset(preset)} disabled={busy}>
+              <Plus size={15} />
+              {preset.label}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="watchComposerPanel">
+        <div className="watchOwnerHeader">
+          <span>{editingId ? "Editing watch" : "New watch"}</span>
+          {editingId && (
+            <button className="miniIconButton" type="button" onClick={onCancelEdit} disabled={busy} title="Cancel edit">
+              <X size={15} />
+            </button>
+          )}
+        </div>
+        <div className="watchComposer">
+          <textarea
+            value={draft}
+            onChange={(event) => onDraftChange(event.target.value)}
+            placeholder="Outdoor concert Friday&#10;Watch weather, parking, timing, and venue changes."
+            rows={4}
+            disabled={busy}
+          />
+          <button className="iconButton" type="button" onClick={onSubmit} disabled={busy || !draft.trim()} title={editingId ? "Save watch" : "Add watch"}>
+            {editingId ? <Save size={17} /> : <Plus size={17} />}
+          </button>
+        </div>
+      </section>
+
+      <section className="ownedWatchList">
+        {watches.map((watch) => (
+          <article className="ownedWatchItem" key={watch.id}>
+            <div>
+              <div className="watchItemTitleRow">
+                <h3>{watch.title}</h3>
+                <span>{watch.status}</span>
+              </div>
+              <p>{watch.why_today || watch.latest_evaluation?.summary || watch.original_text}</p>
+              <WatchConfigRows watch={watch} />
+            </div>
+            <div className="watchItemActions">
+              <button className="miniIconButton" type="button" onClick={() => onEdit(watch)} disabled={busy} title="Edit watch">
+                <Pencil size={15} />
+              </button>
+              {watch.status === "active" && (
+                <button className="miniIconButton" type="button" onClick={() => onComplete(watch.id)} disabled={busy} title="Complete watch">
+                  <Check size={15} />
+                </button>
+              )}
+              <button className="miniIconButton" type="button" onClick={() => onArchive(watch.id)} disabled={busy} title="Archive watch">
+                <Archive size={15} />
+              </button>
+              <button className="miniIconButton dangerButton" type="button" onClick={() => onDelete(watch.id)} disabled={busy} title="Remove watch">
+                <Trash2 size={15} />
+              </button>
+            </div>
+          </article>
+        ))}
+        {watches.length === 0 && <p className="quietLine">No watches configured.</p>}
+      </section>
+    </section>
+  );
+}
+
+function ArchiveView({
+  briefing,
+  selectedDate,
+  currentDate,
+  loading,
+  onPreviousDay,
+  onToday,
+  onNextDay,
+  onAppendix
+}: {
+  briefing: Briefing | null;
+  selectedDate: string;
+  currentDate: string;
+  loading: boolean;
+  onPreviousDay: () => void;
+  onToday: () => void;
+  onNextDay: () => void;
+  onAppendix: (item: AssistantBriefingItem) => void;
+}) {
+  const isToday = selectedDate === currentDate;
+  return (
+    <section className="archiveView">
+      <nav className="dateNav" aria-label="Briefing archive">
+        <button type="button" onClick={onPreviousDay} disabled={loading}>
+          Previous Day
+        </button>
+        <button type="button" onClick={onToday} disabled={loading || isToday}>
+          Today
+        </button>
+        <button type="button" onClick={onNextDay} disabled={loading || isToday}>
+          Next Day
+        </button>
+      </nav>
+
+      {briefing?.archive_review && (
+        <section className="archiveReview">
+          <p className="sectionKicker">Simulation</p>
+          <h2>{briefing.archive_review.scenario}</h2>
+          <p>{briefing.archive_review.notes}</p>
+        </section>
+      )}
+
+      {briefing ? <AssistantBriefingView briefing={briefing.assistant_briefing} onAppendix={onAppendix} /> : <p className="emptyState">No archived briefing loaded.</p>}
+    </section>
+  );
+}
+
+function AppendixView({
+  item,
+  detail,
+  detailLoading,
+  watches
+}: {
+  item: AssistantBriefingItem | null;
+  detail: RecommendationDetail | null;
+  detailLoading: boolean;
+  watches: WatchItem[];
+}) {
+  const provenance = extractProvenance(item, detail);
+  const watchNameById = new Map(watches.map((watch) => [`watch:${watch.id}`, watch.title]));
+  const sourceWatches = provenance.source_watch_ids.map((id) => watchNameById.get(id) || id);
+
+  return (
+    <section className="appendixView">
+      <div className="detailPanel inlineDetailPanel">
+        <div className="detailHeader">
+          <div>
+            <p className="eyebrow">Decision Appendix</p>
+            <h2>{detailLoading ? "Loading" : detail?.title || item?.title || "Select a briefing output"}</h2>
+          </div>
+        </div>
+
+        <div className="detailBody">
+          <DetailSection title="Provenance">
+            <dl className="provenanceRows">
+              <div>
+                <dt>Source watch</dt>
+                <dd>{sourceWatches.length ? sourceWatches.join(", ") : "No watch lineage supplied"}</dd>
+              </div>
+              <div>
+                <dt>Triggered rule</dt>
+                <dd>{provenance.triggered_surface_rule || "No triggered rule supplied"}</dd>
+              </div>
+              <div>
+                <dt>Suppressed rule</dt>
+                <dd>{provenance.suppressed_by || "No suppression rule applied"}</dd>
+              </div>
+              <div>
+                <dt>Why today</dt>
+                <dd>{provenance.why_today || "No current-day reason supplied"}</dd>
+              </div>
+            </dl>
+          </DetailSection>
+
+          {detail && (
+            <>
+              <DetailSection title="Why you received this">
+                <p>{detail.summary}</p>
+              </DetailSection>
+
+              <DetailSection title="What triggered it">
+                {supportingFacts(detail).length > 0 ? (
+                  <ul>
+                    {supportingFacts(detail).slice(0, 6).map((fact) => (
+                      <li key={fact}>{fact}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No additional supporting facts available.</p>
+                )}
+              </DetailSection>
+
+              {detail.action && (
+                <DetailSection title="Action implied">
+                  <p>{detail.action}</p>
+                </DetailSection>
+              )}
+
+              <DetailSection title="Sources">
+                <SourceList data={detail.source_data} />
+              </DetailSection>
+
+              <DetailSection title="Underlying data">
+                <ReadableDataTable data={detail.raw_data} />
+                <RawDataTable data={detail.raw_data} />
+              </DetailSection>
+
+              <AIProcessingPanel data={detail.ai_processing} />
+
+              <SuppressedItemsPanel items={detail.suppressed_signals} />
+            </>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function App() {
   const currentDate = useMemo(() => todayIso(), []);
+  const [activeView, setActiveView] = useState<AppView>("briefing");
   const [selectedDate, setSelectedDate] = useState(currentDate);
   const [briefing, setBriefing] = useState<Briefing | null>(null);
   const [loading, setLoading] = useState(true);
   const [importing, setImporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [appendixItem, setAppendixItem] = useState<AssistantBriefingItem | null>(null);
   const [detail, setDetail] = useState<RecommendationDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [watchItems, setWatchItems] = useState<WatchItem[]>([]);
@@ -392,7 +628,7 @@ export default function App() {
   const [watchBusy, setWatchBusy] = useState(false);
 
   async function loadWatchItems() {
-    const response = await requestJson<WatchListResponse>("/api/watch-items", undefined, "Watchlist unavailable");
+    const response = await requestJson<WatchListResponse>("/api/watch-items", undefined, "Watch Admin unavailable");
     setWatchItems(response.watch_items);
     setActiveWatchCount(response.active_count);
   }
@@ -404,9 +640,7 @@ export default function App() {
     try {
       const nextBriefing = await requestJson<Briefing>(`/api/briefing?date=${encodeURIComponent(dateText)}`, undefined, "Briefing unavailable");
       setBriefing(nextBriefing);
-      if (!nextBriefing.read_only) {
-        await loadWatchItems();
-      }
+      await loadWatchItems();
     } catch (err) {
       console.error("briefing_load_failed", err);
       setError(err instanceof Error ? err.message : "Briefing unavailable");
@@ -469,6 +703,11 @@ export default function App() {
     setWatchDraft("");
   }
 
+  function usePreset(preset: WatchPreset) {
+    setEditingWatchId(null);
+    setWatchDraft(preset.text);
+  }
+
   async function mutateWatch(path: string, method: "POST" | "DELETE", fallback: string) {
     setWatchBusy(true);
     setError(null);
@@ -514,18 +753,39 @@ export default function App() {
     }
   }
 
-  async function openDetail(detailId: string) {
-    if (!detailId) return;
+  async function openAppendix(item: AssistantBriefingItem) {
+    setAppendixItem(item);
+    setActiveView("appendix");
+    if (!item.detail_id) return;
     setDetailLoading(true);
+    setDetail(null);
     setError(null);
     try {
-      setDetail(await requestJson<RecommendationDetail>(`/api/recommendations/${encodeURIComponent(detailId)}`, undefined, "Detail unavailable"));
+      setDetail(await requestJson<RecommendationDetail>(`/api/recommendations/${encodeURIComponent(item.detail_id)}`, undefined, "Detail unavailable"));
     } catch (err) {
       console.error("recommendation_detail_load_failed", err);
       setError(err instanceof Error ? err.message : "Detail unavailable");
     } finally {
       setDetailLoading(false);
     }
+  }
+
+  function switchView(view: AppView) {
+    setActiveView(view);
+    if (view === "briefing" && selectedDate !== currentDate) {
+      void loadBriefing(currentDate);
+    }
+    if (view === "archive" && selectedDate === currentDate) {
+      void loadBriefing(addDays(currentDate, -1));
+    }
+    if (view === "watch-admin") {
+      void loadWatchItems();
+    }
+  }
+
+  function loadArchiveDate(dateText: string) {
+    setActiveView(dateText === currentDate ? "briefing" : "archive");
+    void loadBriefing(dateText);
   }
 
   useEffect(() => {
@@ -535,118 +795,74 @@ export default function App() {
   const briefingDate = useMemo(() => {
     return formatBriefingDate(briefing?.briefing_date ?? selectedDate);
   }, [briefing, selectedDate]);
-  const isToday = selectedDate === currentDate;
   const readOnly = Boolean(briefing?.read_only);
-
-  const itemCount = briefing
-    ? 1 + briefing.assistant_briefing.secondary_notes.length + briefing.assistant_briefing.watch_status.length
-    : null;
+  const hasPrimaryFocus = Boolean(briefing && briefing.assistant_briefing.mode === "focused" && briefing.assistant_briefing.primary_focus.detail_id);
+  const outputCount = briefing ? (hasPrimaryFocus ? 1 : 0) + briefing.assistant_briefing.secondary_notes.length : null;
 
   return (
     <main className="shell">
       <BriefingHeader
+        activeView={activeView}
         briefingDate={briefingDate}
-        attentionCount={itemCount}
-        onRefresh={() => void loadBriefing(selectedDate)}
+        attentionCount={outputCount}
+        onViewChange={switchView}
+        onRefresh={() => {
+          if (activeView === "watch-admin") {
+            void loadWatchItems();
+            return;
+          }
+          void loadBriefing(selectedDate);
+        }}
         onImport={importCsv}
-        onPreviousDay={() => void loadBriefing(addDays(selectedDate, -1))}
-        onToday={() => void loadBriefing(currentDate)}
-        onNextDay={() => void loadBriefing(addDays(selectedDate, 1))}
         loading={loading}
         importing={importing}
-        isToday={isToday}
         readOnly={readOnly}
       />
 
       {error && <div className="error">{error}</div>}
 
       <section className="briefingStack" aria-busy={loading || importing}>
-        {briefing && (
-          <AssistantBriefingView
-            briefing={briefing.assistant_briefing}
-            onDetail={openDetail}
-            watchManager={
-              <WatchManager
-                watches={watchItems}
-                activeCount={activeWatchCount}
-                draft={watchDraft}
-                editingId={editingWatchId}
-                busy={watchBusy}
-                readOnly={readOnly}
-                onDraftChange={setWatchDraft}
-                onSubmit={() => void submitWatch()}
-                onEdit={editWatch}
-                onCancelEdit={cancelWatchEdit}
-                onComplete={(watchId) => void mutateWatch(`/api/watch-items/${watchId}/complete`, "POST", "Watch complete failed")}
-                onArchive={(watchId) => void mutateWatch(`/api/watch-items/${watchId}/archive`, "POST", "Watch archive failed")}
-                onDelete={(watchId) => void mutateWatch(`/api/watch-items/${watchId}`, "DELETE", "Watch remove failed")}
-              />
-            }
+        {activeView === "briefing" && briefing && <AssistantBriefingView briefing={briefing.assistant_briefing} onAppendix={openAppendix} />}
+
+        {activeView === "archive" && (
+          <ArchiveView
+            briefing={briefing}
+            selectedDate={selectedDate}
+            currentDate={currentDate}
+            loading={loading}
+            onPreviousDay={() => loadArchiveDate(addDays(selectedDate, -1))}
+            onToday={() => loadArchiveDate(currentDate)}
+            onNextDay={() => {
+              const nextDate = addDays(selectedDate, 1);
+              if (nextDate <= currentDate) loadArchiveDate(nextDate);
+            }}
+            onAppendix={openAppendix}
           />
         )}
-        {!loading && !briefing && <div className="emptyState">Nothing clears the attention bar.</div>}
+
+        {activeView === "watch-admin" && (
+          <WatchAdminView
+            watches={watchItems}
+            activeCount={activeWatchCount}
+            draft={watchDraft}
+            editingId={editingWatchId}
+            busy={watchBusy}
+            onDraftChange={setWatchDraft}
+            onSubmit={() => void submitWatch()}
+            onEdit={editWatch}
+            onCancelEdit={cancelWatchEdit}
+            onComplete={(watchId) => void mutateWatch(`/api/watch-items/${watchId}/complete`, "POST", "Watch complete failed")}
+            onArchive={(watchId) => void mutateWatch(`/api/watch-items/${watchId}/archive`, "POST", "Watch archive failed")}
+            onDelete={(watchId) => void mutateWatch(`/api/watch-items/${watchId}`, "DELETE", "Watch remove failed")}
+            onUsePreset={usePreset}
+          />
+        )}
+
+        {activeView === "appendix" && <AppendixView item={appendixItem} detail={detail} detailLoading={detailLoading} watches={watchItems} />}
+
+        {!loading && !briefing && activeView !== "watch-admin" && <div className="emptyState">Nothing clears the attention bar.</div>}
         {loading && <div className="emptyState">Loading briefing</div>}
       </section>
-
-      {(detail || detailLoading) && (
-        <div className="modalBackdrop" role="presentation" onClick={() => setDetail(null)}>
-          <aside className="detailPanel" aria-live="polite" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
-            <div className="detailHeader">
-              <div>
-                <p className="eyebrow">Decision Appendix</p>
-                <h2>{detailLoading ? "Loading" : detail?.title}</h2>
-              </div>
-              <button className="textButton" type="button" onClick={() => setDetail(null)}>
-                Close
-              </button>
-            </div>
-
-            {detail && (
-              <div className="detailBody">
-                <DetailSection title="Why you received this">
-                  <p>{detail.summary}</p>
-                </DetailSection>
-
-                <DetailSection title="What triggered it">
-                  {supportingFacts(detail).length > 0 ? (
-                    <ul>
-                      {supportingFacts(detail).slice(0, 6).map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p>No additional supporting facts available.</p>
-                  )}
-                </DetailSection>
-
-                {detail.action && (
-                  <DetailSection title="Action implied">
-                    <p>{detail.action}</p>
-                  </DetailSection>
-                )}
-
-                <details className="detailDisclosure">
-                  <summary>Details</summary>
-                  <div className="detailDisclosureBody">
-                    <DetailSection title="Sources">
-                      <SourceList data={detail.source_data} />
-                    </DetailSection>
-
-                    <DetailSection title="Underlying data">
-                      <ReadableDataTable data={detail.raw_data} />
-                      <RawDataTable data={detail.raw_data} />
-                    </DetailSection>
-
-                    <AIProcessingPanel data={detail.ai_processing} />
-
-                    <SuppressedItemsPanel items={detail.suppressed_signals} />
-                  </div>
-                </details>
-              </div>
-            )}
-          </aside>
-        </div>
-      )}
     </main>
   );
 }

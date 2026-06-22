@@ -93,6 +93,34 @@ h3 {
   line-height: 1.4;
 }
 
+.viewNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.viewNav button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 10px;
+  color: #1e3a5f;
+  background: #fcfcfa;
+  border: 1px solid #d8dce2;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.viewNav button:hover:not(:disabled),
+.viewNav button.selected {
+  color: #111827;
+  background: #eef2f5;
+}
+
 .dateNav {
   display: flex;
   flex-wrap: wrap;
@@ -234,6 +262,19 @@ h3 {
   padding-bottom: 18px;
 }
 
+.quietSpotlight {
+  padding-bottom: 18px;
+  border-bottom: 1px solid #d8dce2;
+}
+
+.quietSpotlight p:last-child {
+  max-width: 620px;
+  margin: 0;
+  color: #4b5563;
+  font-size: 0.96rem;
+  line-height: 1.45;
+}
+
 .quietBriefing .primaryAssistantItem h3 {
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
   font-size: 1.28rem;
@@ -289,6 +330,77 @@ h3 {
   padding-top: 2px;
 }
 
+.watchAdmin,
+.archiveView,
+.appendixView {
+  display: grid;
+  gap: 22px;
+}
+
+.adminSummary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: #6b7280;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.adminSummary span {
+  padding-right: 9px;
+  border-right: 1px solid #d8dce2;
+}
+
+.adminSummary span:last-child {
+  border-right: 0;
+}
+
+.presetPanel,
+.watchComposerPanel,
+.archiveReview {
+  padding-bottom: 18px;
+  border-bottom: 1px solid #d8dce2;
+}
+
+.presetGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+  gap: 8px;
+}
+
+.presetGrid button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 10px;
+  color: #1e3a5f;
+  background: #fcfcfa;
+  border: 1px solid #d8dce2;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.83rem;
+  font-weight: 800;
+}
+
+.presetGrid button:hover:not(:disabled) {
+  background: #f1f3f5;
+}
+
+.archiveReview h2 {
+  margin-bottom: 6px;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 1rem;
+}
+
+.archiveReview p:last-child {
+  margin: 0;
+  color: #4b5563;
+  line-height: 1.45;
+}
+
 .watchOwnerPanel {
   display: grid;
   gap: 10px;
@@ -342,12 +454,20 @@ h3 {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 10px;
   align-items: start;
-  padding: 10px 0;
+  padding: 16px 0;
   border-bottom: 1px solid #eceff3;
 }
 
 .ownedWatchItem:last-child {
   border-bottom: 0;
+}
+
+.watchItemTitleRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 4px;
 }
 
 .ownedWatchItem h3 {
@@ -377,6 +497,36 @@ h3 {
   justify-content: flex-end;
   gap: 4px;
   width: 72px;
+}
+
+.watchConfigRows,
+.provenanceRows {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 0;
+}
+
+.watchConfigRows div,
+.provenanceRows div {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.34fr) minmax(0, 1fr);
+  gap: 10px;
+}
+
+.watchConfigRows dt,
+.provenanceRows dt {
+  color: #6b7280;
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.watchConfigRows dd,
+.provenanceRows dd {
+  margin: 0;
+  color: #111827;
+  font-size: 0.84rem;
+  line-height: 1.4;
 }
 
 .miniIconButton {
@@ -415,7 +565,7 @@ h3 {
   min-width: 0;
   background: #fcfcfa;
   border: 1px solid #e1e4e8;
-  border-radius: 12px;
+  border-radius: 8px;
   box-shadow: 0 8px 24px rgb(17 24 39 / 4%);
 }
 
@@ -627,12 +777,22 @@ h3 {
   overflow: hidden;
 }
 
+.inlineDetailPanel {
+  width: 100%;
+  max-height: none;
+}
+
 .detailBody {
   display: grid;
   gap: 1px;
   max-height: calc(min(86vh, 760px) - 66px);
   overflow: auto;
   background: #e5e7eb;
+}
+
+.inlineDetailPanel .detailBody {
+  max-height: none;
+  overflow: visible;
 }
 
 .detailBody section {
@@ -781,6 +941,21 @@ h3 {
 
   .actions {
     align-self: flex-start;
+  }
+
+  .watchConfigRows div,
+  .provenanceRows div {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+
+  .ownedWatchItem {
+    grid-template-columns: 1fr;
+  }
+
+  .watchItemActions {
+    justify-content: flex-start;
+    width: auto;
   }
 
 }

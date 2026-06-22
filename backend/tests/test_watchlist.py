@@ -70,6 +70,10 @@ def test_watch_evaluation_surfaces_planning_window_but_suppresses_far_future():
     assert attention[0]["detail_id"] == "watch:1"
     assert attention[0]["story_type"] == "focusos"
     assert attention[0]["domain"] == "Life"
+    assert attention[0]["source_watch_ids"] == ["watch:1"]
+    assert attention[0]["triggered_surface_rule"]
+    assert attention[0]["suppressed_by"] is None
+    assert attention[0]["why_today"]
 
 
 def test_expired_watch_items_are_archived_automatically():
@@ -128,6 +132,13 @@ def test_watch_item_api_creates_and_feeds_briefing(monkeypatch):
 
     assert created.status_code == 200
     assert created.json()["watch_item"]["watch_for"][:2] == ["weather", "parking"]
+    watch_config = created.json()["watch_item"]
+    assert watch_config["conditions"][:2] == ["weather", "parking"]
+    assert "weather" in watch_config["source_inputs"]
+    assert watch_config["cadence"] == "daily"
+    assert watch_config["surface_rules"]
+    assert "generic reminders" in watch_config["suppression_rules"]
+    assert watch_config["preferred_output"] == "watch"
     assert watches.status_code == 200
     assert watches.json()["watch_items"][0]["latest_evaluation"]["should_surface"]
     assert briefing.status_code == 200

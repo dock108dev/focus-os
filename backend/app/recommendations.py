@@ -423,6 +423,12 @@ def watch_detail(db: Session, detail_id: str) -> dict:
             "surface_when": watch.surface_when or [],
             "status": watch.status,
         },
+        "provenance": {
+            "source_watch_ids": [f"watch:{watch.id}"],
+            "triggered_surface_rule": row.trigger_reason,
+            "suppressed_by": None,
+            "why_today": row.summary,
+        },
         "evaluation": {
             "as_of": row.as_of.isoformat(),
             "category": row.category,
