@@ -10,13 +10,14 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from app import main
+from app import main, morning_jobs, portfolio_snapshots, schema_maintenance
 from app.database import Base
 from app.models import (
     CryptoPrice,
     Holding,
     JobRun,
     MarketPrice,
+    PortfolioSnapshot,
     SourceStatus,
     Topic,
     TopicBriefing,
@@ -233,7 +234,7 @@ def test_yahoo_fetch_and_market_refresh_status_paths(monkeypatch):
             ]
         }
     }
-    monkeypatch.setattr("app.structured_sources.load_json", lambda _url, headers=None: yahoo_payload)
+    monkeypatch.setattr("app.structured_finance.load_json", lambda _url, headers=None: yahoo_payload)
     row = fetch_yahoo_symbol("msft")
     assert row.symbol == "MSFT"
     assert row.five_day_high == Decimal("105")
@@ -244,8 +245,8 @@ def test_yahoo_fetch_and_market_refresh_status_paths(monkeypatch):
         return row
 
     with testing_session() as db:
-        monkeypatch.setattr("app.structured_sources.tracked_market_symbols", lambda _db: ["MSFT", "BAD"])
-        monkeypatch.setattr("app.structured_sources.fetch_yahoo_symbol", fake_fetch)
+        monkeypatch.setattr("app.structured_finance.tracked_market_symbols", lambda _db: ["MSFT", "BAD"])
+        monkeypatch.setattr("app.structured_finance.fetch_yahoo_symbol", fake_fetch)
         rows = refresh_market_prices(db)
         status = db.scalar(select(SourceStatus).where(SourceStatus.name == "Yahoo Finance"))
 
@@ -254,7 +255,7 @@ def test_yahoo_fetch_and_market_refresh_status_paths(monkeypatch):
     assert "BAD" in status.details["errors"][0]
 
     with testing_session() as db:
-        monkeypatch.setattr("app.structured_sources.tracked_market_symbols", lambda _db: [])
+        monkeypatch.setattr("app.structured_finance.tracked_market_symbols", lambda _db: [])
         assert refresh_market_prices(db) == []
         skipped = db.scalar(select(SourceStatus).where(SourceStatus.name == "Yahoo Finance"))
     assert skipped.status == "skipped"
@@ -264,7 +265,7 @@ def test_crypto_and_weather_refresh_success_and_error_paths(monkeypatch):
     testing_session = in_memory_sessionmaker()
     with testing_session() as db:
         monkeypatch.setattr(
-            "app.structured_sources.load_json",
+            "app.structured_crypto.load_json",
             lambda _url, headers=None: {
                 "bitcoin": {"usd": 62000, "usd_24h_change": -8.2, "last_updated_at": 1}
             },
@@ -275,7 +276,7 @@ def test_crypto_and_weather_refresh_success_and_error_paths(monkeypatch):
     assert status.status == "ok"
 
     with testing_session() as db:
-        monkeypatch.setattr("app.structured_sources.load_json", lambda _url, headers=None: {})
+        monkeypatch.setattr("app.structured_crypto.load_json", lambda _url, headers=None: {})
         assert refresh_crypto_prices(db) == []
         status = db.scalar(select(SourceStatus).where(SourceStatus.name == "CoinGecko"))
     assert status.status == "error"
@@ -293,14 +294,14 @@ def test_crypto_and_weather_refresh_success_and_error_paths(monkeypatch):
         }
     }
     with testing_session() as db:
-        monkeypatch.setattr("app.structured_sources.load_json", lambda _url, headers=None: weather_payload)
+        monkeypatch.setattr("app.structured_weather.load_json", lambda _url, headers=None: weather_payload)
         weather = refresh_weather_recommendations(db)
         status = db.scalar(select(SourceStatus).where(SourceStatus.name == "Open-Meteo"))
     assert weather[0].score > 0
     assert status.status == "ok"
 
     with testing_session() as db:
-        monkeypatch.setattr("app.structured_sources.load_json", lambda _url, headers=None: {})
+        monkeypatch.setattr("app.structured_weather.load_json", lambda _url, headers=None: {})
         assert refresh_weather_recommendations(db) == []
         status = db.scalar(select(SourceStatus).where(SourceStatus.name == "Open-Meteo"))
     assert status.status == "error"
@@ -315,7 +316,7 @@ def test_github_refresh_attention_and_api_auth(monkeypatch):
         return {"ok": url}
 
     monkeypatch.setenv("GITHUB_TOKEN", "secret-token")
-    monkeypatch.setattr("app.structured_sources.load_json", fake_load_json)
+    monkeypatch.setattr("app.structured_github.load_json", fake_load_json)
     assert github_api("/rate_limit")["ok"].endswith("/rate_limit")
     assert seen_headers["Authorization"] == "Bearer secret-token"
 
@@ -356,7 +357,7 @@ def test_github_refresh_attention_and_api_auth(monkeypatch):
         raise AssertionError(path)
 
     with testing_session() as db:
-        monkeypatch.setattr("app.structured_sources.github_api", fake_github)
+        monkeypatch.setattr("app.structured_github.github_api", fake_github)
         result = refresh_github_repo_health(db)
         attention = github_attention_items(db)
 
@@ -369,7 +370,7 @@ def test_github_refresh_attention_and_api_auth(monkeypatch):
     }
 
     with testing_session() as db:
-        monkeypatch.setattr("app.structured_sources.github_api", lambda _path: (_ for _ in ()).throw(ValueError("down")))
+        monkeypatch.setattr("app.structured_github.github_api", lambda _path: (_ for _ in ()).throw(ValueError("down")))
         error = refresh_github_repo_health(db)
     assert error["status"] == "error"
 
@@ -467,18 +468,18 @@ def test_main_endpoint_error_and_internal_routes(monkeypatch):
 def test_job_helpers_snapshot_changes_and_background_paths(monkeypatch, caplog):
     testing_session = in_memory_sessionmaker()
     with testing_session() as db:
-        job = main.create_job_run(db, "morning-briefing")
-        main.update_job_run(db, job.id, "running", "Running")
-        with pytest.raises(main.JobRunMissingError):
-            main.update_job_run(db, 999, "missing", "Missing")
+        job = morning_jobs.create_job_run(db, "morning-briefing")
+        morning_jobs.update_job_run(db, job.id, "running", "Running")
+        with pytest.raises(morning_jobs.JobRunMissingError):
+            morning_jobs.update_job_run(db, 999, "missing", "Missing")
         db.add_all(
             [
-                main.PortfolioSnapshot(as_of=date.today() - timedelta(days=35), total_value=90, cash_available=10),
-                main.PortfolioSnapshot(as_of=date.today() - timedelta(days=1), total_value=100, cash_available=12),
+                PortfolioSnapshot(as_of=date.today() - timedelta(days=35), total_value=90, cash_available=10),
+                PortfolioSnapshot(as_of=date.today() - timedelta(days=1), total_value=100, cash_available=12),
             ]
         )
         db.commit()
-        summary = main.apply_snapshot_changes(db, {"current_value": 120, "cash_available": 20})
+        summary = portfolio_snapshots.apply_snapshot_changes(db, {"current_value": 120, "cash_available": 20})
 
     assert summary["daily_change"] == 20
     assert summary["monthly_change"] == 30
@@ -487,24 +488,24 @@ def test_job_helpers_snapshot_changes_and_background_paths(monkeypatch, caplog):
         def __call__(self):
             return testing_session()
 
-    monkeypatch.setattr(main, "SessionLocal", SessionFactory())
-    monkeypatch.setattr(main, "refresh_structured_sources", lambda _db: {"market_prices": 1})
-    monkeypatch.setattr(main, "run_morning_briefing", lambda _db: [object(), object()])
-    monkeypatch.setattr(main, "evaluate_active_watch_items", lambda _db: [object()])
+    monkeypatch.setattr(morning_jobs, "SessionLocal", SessionFactory())
+    monkeypatch.setattr(morning_jobs, "refresh_structured_sources", lambda _db: {"market_prices": 1})
+    monkeypatch.setattr(morning_jobs, "run_morning_briefing", lambda _db: [object(), object()])
+    monkeypatch.setattr(morning_jobs, "evaluate_active_watch_items", lambda _db: [object()])
     with testing_session() as db:
-        job = main.create_job_run(db, "morning-briefing")
-    main.run_morning_job_background(job.id)
+        job = morning_jobs.create_job_run(db, "morning-briefing")
+    morning_jobs.run_morning_job_background(job.id)
     with testing_session() as db:
         assert db.get(JobRun, job.id).status == "succeeded"
 
-    monkeypatch.setattr(main, "refresh_structured_sources", lambda _db: (_ for _ in ()).throw(RuntimeError("boom")))
+    monkeypatch.setattr(morning_jobs, "refresh_structured_sources", lambda _db: (_ for _ in ()).throw(RuntimeError("boom")))
     with testing_session() as db:
-        job = main.create_job_run(db, "morning-briefing")
-    main.run_morning_job_background(job.id)
+        job = morning_jobs.create_job_run(db, "morning-briefing")
+    morning_jobs.run_morning_job_background(job.id)
     with testing_session() as db:
         assert db.get(JobRun, job.id).status == "failed"
 
-    main.run_morning_job_background(999)
+    morning_jobs.run_morning_job_background(999)
     assert "morning_briefing_job_status_missing" in caplog.text
 
 
@@ -533,9 +534,9 @@ def test_schema_migration_adds_missing_watch_columns(monkeypatch):
             "CREATE TABLE watch_items (id INTEGER PRIMARY KEY, title VARCHAR(240))"
         )
 
-    monkeypatch.setattr(main, "engine", legacy_engine)
+    monkeypatch.setattr(schema_maintenance, "engine", legacy_engine)
 
-    main.ensure_watch_item_schema()
+    schema_maintenance.ensure_watch_item_schema()
 
     with legacy_engine.connect() as connection:
         columns = {row[1] for row in connection.exec_driver_sql("PRAGMA table_info(watch_items)")}
@@ -614,7 +615,7 @@ def test_seeding_updates_existing_watches_and_creates_snapshots():
         legacy = db.scalar(select(WatchItem).where(WatchItem.title == "Yankees"))
         bitcoin = db.scalar(select(WatchItem).where(WatchItem.title == "Bitcoin accumulation posture"))
         custom = db.scalar(select(WatchItem).where(WatchItem.title == "Custom weather watch"))
-        snapshots = list(db.scalars(select(main.PortfolioSnapshot)).all())
+        snapshots = list(db.scalars(select(PortfolioSnapshot)).all())
 
     assert legacy.status == "archived"
     assert legacy.enabled is False

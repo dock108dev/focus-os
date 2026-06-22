@@ -1,13 +1,11 @@
 from contextlib import asynccontextmanager
-from datetime import date, datetime, timedelta, timezone
-from decimal import Decimal
-import logging
+from datetime import date, datetime, timezone
 from threading import Thread
 
 from fastapi import Depends, FastAPI, File, HTTPException, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from sqlalchemy import delete, inspect, select, text
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from .api_schemas import MockArchiveGenerate, WatchItemCreate, WatchItemUpdate
@@ -26,11 +24,13 @@ from .briefing_archive import (
     seed_mock_archive_if_empty,
     upsert_archived_briefing,
 )
-from .database import Base, SessionLocal, engine, get_db
+from .database import SessionLocal, get_db
 from .daily_review import build_daily_review
 from .importer import CSVImportError, parse_holdings_csv
-from .models import Holding, JobRun, PortfolioSnapshot, SourceStatus, Topic, WatchItem
+from .models import Holding, JobRun, SourceStatus, Topic, WatchItem
+from .morning_jobs import create_job_run, run_morning_job_background
 from .novelty import apply_novelty, record_displayed_stories
+from .portfolio_snapshots import apply_snapshot_changes, upsert_snapshot
 from .recommendations import recommendation_detail
 from .registries import (
     GLOBAL_GUARDRAILS,
@@ -46,6 +46,7 @@ from .security import (
     require_internal_api_key,
     validate_csv_upload,
 )
+from .schema_maintenance import create_tables
 from .seeding import seed_if_empty
 from .source_status import serialize_source_status
 from .structured_sources import (
@@ -56,12 +57,10 @@ from .structured_sources import (
     latest_market_prices,
     latest_weather_recommendations,
     market_attention_items,
-    refresh_structured_sources,
     weather_attention_items,
 )
 from .topic_engine import (
     latest_topic_briefings,
-    run_morning_briefing,
     serialize_briefing,
     serialize_topic,
     topic_attention_items,
@@ -82,12 +81,7 @@ from .watchlist import (
 )
 
 
-logger = logging.getLogger(__name__)
 ALLOWED_ORIGINS = configured_cors_origins()
-
-
-class JobRunMissingError(RuntimeError):
-    """Raised when a background job can no longer persist status."""
 
 
 @asynccontextmanager
@@ -124,223 +118,6 @@ async def security_middleware(request: Request, call_next):
     apply_security_headers(response)
     return response
 
-
-def create_tables() -> None:
-    Base.metadata.create_all(bind=engine)
-    ensure_watch_item_schema()
-
-
-def ensure_watch_item_schema() -> None:
-    dialect = engine.dialect.name
-    if dialect not in {"sqlite", "postgresql"}:
-        return
-
-    with engine.begin() as connection:
-        if dialect == "sqlite":
-            columns = {
-                row[1]
-                for row in connection.exec_driver_sql("PRAGMA table_info(watch_items)")
-            }
-        else:
-            inspector = inspect(connection)
-            if "watch_items" not in inspector.get_table_names():
-                return
-            columns = {
-                column["name"] for column in inspector.get_columns("watch_items")
-            }
-        if "watch_kind" not in columns:
-            connection.execute(
-                text(
-                    "ALTER TABLE watch_items "
-                    "ADD COLUMN watch_kind VARCHAR(40) DEFAULT 'personal_tracker'"
-                )
-            )
-        if "priority" not in columns:
-            connection.execute(
-                text("ALTER TABLE watch_items ADD COLUMN priority VARCHAR(40) DEFAULT 'watch_only'")
-            )
-        if "enabled" not in columns:
-            enabled_default = "BOOLEAN DEFAULT TRUE" if dialect == "postgresql" else "BOOLEAN DEFAULT 1"
-            connection.execute(text(f"ALTER TABLE watch_items ADD COLUMN enabled {enabled_default}"))
-        if "personal_state" not in columns:
-            json_default = "JSON DEFAULT '{}'::json" if dialect == "postgresql" else "JSON"
-            connection.execute(
-                text(f"ALTER TABLE watch_items ADD COLUMN personal_state {json_default}")
-            )
-            connection.execute(
-                text(
-                    "UPDATE watch_items SET personal_state = '{}' "
-                    "WHERE personal_state IS NULL"
-                )
-            )
-        if "external_state" not in columns:
-            json_default = "JSON DEFAULT '{}'::json" if dialect == "postgresql" else "JSON"
-            connection.execute(
-                text(f"ALTER TABLE watch_items ADD COLUMN external_state {json_default}")
-            )
-            connection.execute(
-                text(
-                    "UPDATE watch_items SET external_state = '{}' "
-                    "WHERE external_state IS NULL"
-                )
-            )
-        for column_name in (
-            "personal_context",
-            "source_config",
-            "evaluation_rules",
-            "prompt_config",
-        ):
-            if column_name not in columns:
-                json_default = "JSON DEFAULT '{}'::json" if dialect == "postgresql" else "JSON"
-                connection.execute(
-                    text(f"ALTER TABLE watch_items ADD COLUMN {column_name} {json_default}")
-                )
-                reset_statements = {
-                    "personal_context": (
-                        "UPDATE watch_items SET personal_context = '{}' "
-                        "WHERE personal_context IS NULL"
-                    ),
-                    "source_config": (
-                        "UPDATE watch_items SET source_config = '{}' "
-                        "WHERE source_config IS NULL"
-                    ),
-                    "evaluation_rules": (
-                        "UPDATE watch_items SET evaluation_rules = '{}' "
-                        "WHERE evaluation_rules IS NULL"
-                    ),
-                    "prompt_config": (
-                        "UPDATE watch_items SET prompt_config = '{}' "
-                        "WHERE prompt_config IS NULL"
-                    ),
-                }
-                connection.execute(text(reset_statements[column_name]))
-
-
-def upsert_snapshot(db: Session, summary: dict) -> None:
-    today = date.today()
-    db.execute(delete(PortfolioSnapshot).where(PortfolioSnapshot.as_of == today))
-    db.add(
-        PortfolioSnapshot(
-            as_of=today,
-            total_value=Decimal(str(summary["current_value"])),
-            cash_available=Decimal(str(summary["cash_available"])),
-        )
-    )
-    db.commit()
-
-
-def apply_snapshot_changes(db: Session, summary: dict) -> dict:
-    today = date.today()
-    snapshots = list(
-        db.scalars(select(PortfolioSnapshot).order_by(PortfolioSnapshot.as_of)).all()
-    )
-    if not snapshots:
-        return summary
-
-    current_value = Decimal(str(summary["current_value"]))
-    yesterday = max(
-        (row for row in snapshots if row.as_of < today),
-        key=lambda row: row.as_of,
-        default=None,
-    )
-    month_anchor = max(
-        (row for row in snapshots if row.as_of <= today - timedelta(days=30)),
-        key=lambda row: row.as_of,
-        default=None,
-    )
-
-    if yesterday and yesterday.total_value:
-        daily_change = current_value - Decimal(yesterday.total_value)
-        summary["daily_change"] = float(daily_change)
-        summary["daily_change_pct"] = float(
-            daily_change / Decimal(yesterday.total_value) * 100
-        )
-
-    if month_anchor and month_anchor.total_value:
-        monthly_change = current_value - Decimal(month_anchor.total_value)
-        summary["monthly_change"] = float(monthly_change)
-        summary["monthly_change_pct"] = float(
-            monthly_change / Decimal(month_anchor.total_value) * 100
-        )
-
-    return summary
-
-
-def create_job_run(db: Session, name: str) -> JobRun:
-    job = JobRun(name=name, status="queued", message="Queued.")
-    db.add(job)
-    db.commit()
-    db.refresh(job)
-    return job
-
-
-def update_job_run(
-    db: Session,
-    job_id: int,
-    status: str,
-    message: str,
-    details: dict | None = None,
-    completed: bool = False,
-) -> None:
-    job = db.get(JobRun, job_id)
-    if not job:
-        raise JobRunMissingError(f"Job run {job_id} is missing.")
-    job.status = status
-    job.message = message
-    if details is not None:
-        job.details = details
-    if status == "running" and job.started_at is None:
-        job.started_at = datetime.now(timezone.utc)
-    if completed:
-        job.completed_at = datetime.now(timezone.utc)
-    db.commit()
-
-
-def run_morning_job_background(job_id: int) -> None:
-    with SessionLocal() as db:
-        try:
-            update_job_run(
-                db,
-                job_id,
-                "running",
-                "Refreshing structured sources and topic briefings.",
-            )
-            structured = refresh_structured_sources(db)
-            briefings = run_morning_briefing(db)
-            watch_evaluations = evaluate_active_watch_items(db)
-            update_job_run(
-                db,
-                job_id,
-                "succeeded",
-                "Morning briefing generated.",
-                {
-                    "structured": structured,
-                    "topic_briefings": len(briefings),
-                    "watch_evaluations": len(watch_evaluations),
-                },
-                completed=True,
-            )
-        except Exception as exc:
-            logger.exception("morning_briefing_job_failed", extra={"job_id": job_id})
-            try:
-                update_job_run(
-                    db,
-                    job_id,
-                    "failed",
-                    "Morning briefing failed.",
-                    {"error_type": type(exc).__name__},
-                    completed=True,
-                )
-            except JobRunMissingError:
-                logger.error(
-                    "morning_briefing_job_status_missing",
-                    extra={"job_id": job_id, "original_error_type": type(exc).__name__},
-                )
-            except Exception:
-                logger.exception(
-                    "morning_briefing_job_failure_status_update_failed",
-                    extra={"job_id": job_id, "original_error_type": type(exc).__name__},
-                )
 
 
 @app.get("/api/health")

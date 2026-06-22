@@ -1,0 +1,73 @@
+@media (min-width: 820px) {
+  .shell {
+    width: min(100% - 48px, 820px);
+    padding-top: 22px;
+  }
+
+  h1 {
+    font-size: 4.1rem;
+  }
+
+  .attentionItem {
+    padding: 16px 0;
+  }
+
+  .modalBackdrop {
+    align-items: center;
+  }
+
+  .detailBody {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1160px) {
+  .shell {
+    width: 820px;
+  }
+}
+
+@media (max-width: 680px) {
+  h1 {
+    font-size: 2.65rem;
+  }
+
+  .masthead {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .actions {
+    align-self: flex-start;
+  }
+
+  .watchConfigRows div,
+  .provenanceRows div {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+
+  .ownedWatchItem {
+    grid-template-columns: 1fr;
+  }
+
+  .guidedGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .watchItemTitleRow {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .watchBadges {
+    justify-content: flex-start;
+    min-width: 0;
+  }
+
+  .watchItemActions {
+    justify-content: flex-start;
+    width: auto;
+  }
+
+}

@@ -1,22 +1,26 @@
 from __future__ import annotations
 
-import json
 import logging
 import os
-import subprocess  # nosec B404
-import tempfile
 from dataclasses import dataclass
 from datetime import date
-from pathlib import Path
 from typing import Iterable
 
-from openai import OpenAI, OpenAIError
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from .attention import enrich_attention_item
 from .models import Topic, TopicBriefing
 from .source_status import record_source_status
+from .topic_defaults import DEFAULT_TOPICS
+from .topic_fallbacks import fallback_payload
+from .topic_providers import (
+    AI_PROVIDER_EXCEPTIONS,
+    AIProviderConfigurationError as AIProviderConfigurationError,
+    generate_ai_payload as generate_ai_payload,
+    parse_ai_payload as parse_ai_payload,
+    provider_error_message,
+)
 from .voice import clean_action_text, clean_editorial_text
 
 
@@ -31,21 +35,6 @@ SPORTS_CATCH_UP_TOPICS = {
 }
 
 
-class AIProviderConfigurationError(RuntimeError):
-    """Raised when AI briefing generation is explicitly configured incorrectly."""
-
-
-AI_PROVIDER_EXCEPTIONS = (
-    AIProviderConfigurationError,
-    OpenAIError,
-    subprocess.SubprocessError,
-    OSError,
-    TimeoutError,
-    ValueError,
-    TypeError,
-    json.JSONDecodeError,
-)
-
 
 @dataclass(frozen=True)
 class TopicGenerationError:
@@ -55,57 +44,6 @@ class TopicGenerationError:
     message: str
 
 
-DEFAULT_TOPICS = [
-    {
-        "name": "Yankees",
-        "priority": 8,
-        "source_type": "unstructured",
-        "category": "Sports",
-        "refresh_frequency": "daily",
-        "prompt": "Summarize Yankees results from the previous day. Include next scheduled game and any significant injuries or storylines.",
-    },
-    {
-        "name": "Bitcoin",
-        "priority": 9,
-        "source_type": "structured",
-        "category": "Crypto",
-        "refresh_frequency": "daily",
-        "prompt": "Summarize Bitcoin movement over the previous 24 hours and identify any major catalysts.",
-    },
-    {
-        "name": "Iran",
-        "priority": 7,
-        "source_type": "unstructured",
-        "category": "Geopolitics",
-        "refresh_frequency": "daily",
-        "prompt": "Summarize meaningful developments involving Iran from the last 24 hours. Ignore low-impact stories. Focus on military, geopolitical, economic, or global implications.",
-    },
-    {
-        "name": "Major World Sports",
-        "priority": 6,
-        "source_type": "unstructured",
-        "category": "Sports",
-        "refresh_frequency": "daily",
-        "prompt": "Identify globally significant sporting events beginning within the next 7 days. Include championships, majors, international tournaments, and marquee matchups.",
-    },
-    {
-        "name": "AI",
-        "priority": 6,
-        "source_type": "unstructured",
-        "category": "Technology",
-        "refresh_frequency": "daily",
-        "prompt": "Summarize meaningful AI developments from the last 24 hours. Ignore routine product announcements unless they change what Mike should pay attention to.",
-    },
-    {
-        "name": "Golf",
-        "priority": 5,
-        "source_type": "structured",
-        "category": "Weather",
-        "refresh_frequency": "daily",
-        "prompt": "Identify the best golf day this week using weather and schedule constraints. Prefer clear, low-wind days.",
-    },
-]
-
 
 def seed_topics_if_empty(db: Session) -> None:
     has_topic = db.scalar(select(Topic.id).limit(1))
@@ -114,211 +52,6 @@ def seed_topics_if_empty(db: Session) -> None:
     db.add_all([Topic(**row) for row in DEFAULT_TOPICS])
     db.commit()
 
-
-def fallback_payload(topic: Topic) -> dict:
-    fallback_by_name = {
-        "Yankees": {
-            "title": "Waiting for sports source setup",
-            "summary": "Yankees is configured, but no sports source has produced a briefing yet.",
-            "bullets": [
-                "Results, next game, injuries, and storylines will appear here once connected."
-            ],
-            "action": "",
-        },
-        "Bitcoin": {
-            "title": "Waiting for market source setup",
-            "summary": "Bitcoin is configured, but no market source has produced a briefing yet.",
-            "bullets": [
-                "24-hour movement and major catalysts will appear here once connected."
-            ],
-            "action": "",
-        },
-        "Iran": {
-            "title": "Waiting for AI briefing setup",
-            "summary": "Iran is configured, but no AI briefing has been generated yet.",
-            "bullets": [
-                "Military, geopolitical, economic, and global implications will appear here once connected."
-            ],
-            "action": "",
-        },
-        "Major World Sports": {
-            "title": "Waiting for sports calendar setup",
-            "summary": "Major World Sports is configured, but no sports calendar has produced a briefing yet.",
-            "bullets": [
-                "Championships, majors, international tournaments, and marquee matchups will appear here once connected."
-            ],
-            "action": "",
-        },
-        "AI": {
-            "title": "Waiting for AI briefing setup",
-            "summary": "AI is configured, but no industry briefing has been generated yet.",
-            "bullets": [
-                "Major model releases, infrastructure shifts, and company moves will appear here once connected."
-            ],
-            "action": "",
-        },
-        "Golf": {
-            "title": "Waiting for weather source setup",
-            "summary": "Golf is configured, but no weather source has produced a recommendation yet.",
-            "bullets": [
-                "Best day, wind, rain, and tee-time windows will appear here once connected."
-            ],
-            "action": "",
-        },
-    }
-    default = fallback_by_name.get(
-        topic.name,
-        {
-            "title": f"{topic.name} is configured",
-            "summary": "This topic has a prompt but no live source has generated a briefing yet.",
-            "bullets": [topic.prompt],
-            "action": "",
-        },
-    )
-    return {
-        **default,
-        "priority": topic.priority,
-        "generated_by": "fallback",
-    }
-
-
-def parse_ai_payload(raw_text: str, topic: Topic) -> dict:
-    start = raw_text.find("{")
-    end = raw_text.rfind("}")
-    if start == -1 or end == -1 or end <= start:
-        return {
-            "title": f"{topic.name}: attention check",
-            "summary": clean_editorial_text(raw_text.strip())[:1200],
-            "bullets": [],
-            "action": "",
-            "priority": topic.priority,
-            "generated_by": "openai-web-search",
-        }
-
-    try:
-        parsed = json.loads(raw_text[start : end + 1])
-    except json.JSONDecodeError:
-        parsed = {}
-
-    return {
-        "title": clean_editorial_text(
-            str(parsed.get("title") or f"{topic.name}: attention check")
-        )[:240],
-        "summary": clean_editorial_text(str(parsed.get("summary") or raw_text.strip()))[
-            :2000
-        ],
-        "bullets": [
-            clean_editorial_text(str(item))[:280] for item in parsed.get("bullets", [])
-        ][:4],
-        "action": clean_action_text(str(parsed.get("action") or ""))[:240],
-        "priority": int(parsed.get("priority") or topic.priority),
-        "generated_by": "openai-web-search",
-    }
-
-
-def briefing_prompt(topic: Topic) -> str:
-    return (
-        "You are generating Mike's FocusOS morning attention briefing. "
-        "Use web search when available for current facts. "
-        "Do not edit files. Do not run local commands unless needed to answer. "
-        "Do not produce financial advice, trading decisions, order instructions, or autonomous actions. "
-        "Return strict JSON with keys: title, summary, bullets, action, priority. "
-        "Write like an editor, not an assistant. Never use phrases like 'Mike should care', 'why this matters', "
-        "'review whether', 'consider whether', or 'decide whether'. "
-        "The title must answer why the item is being shown before what happened. "
-        "The summary should add concrete context only when useful. "
-        "Some summaries can be one short sentence. Bullets must contain at most four short supporting facts. "
-        "Set action to an empty string unless immediate action is genuinely warranted. "
-        "Never expose source setup, API availability, or implementation details to Mike.\n\n"
-        f"Today is {date.today().isoformat()}.\n"
-        f"Topic: {topic.name}\n"
-        f"Category: {topic.category}\n"
-        f"Source type: {topic.source_type}\n"
-        f"Priority baseline: {topic.priority}\n"
-        f"Prompt: {topic.prompt}"
-    )
-
-
-def generate_openai_payload(topic: Topic) -> dict | None:
-    if not os.getenv("OPENAI_API_KEY"):
-        raise AIProviderConfigurationError(
-            "OPENAI_API_KEY is required when AI_PROVIDER=openai."
-        )
-
-    timeout_seconds = float(os.getenv("OPENAI_REQUEST_TIMEOUT", "20"))
-    client = OpenAI(timeout=timeout_seconds, max_retries=0)
-    model = os.getenv("OPENAI_MODEL", "gpt-5.5")
-    response = client.responses.create(
-        model=model,
-        tools=[{"type": "web_search", "search_context_size": "low"}],
-        input=briefing_prompt(topic),
-    )
-    payload = parse_ai_payload(response.output_text, topic)
-    return {**payload, "generated_by": "openai-web-search"}
-
-
-def generate_codex_cli_payload(topic: Topic) -> dict | None:
-    codex_path = os.getenv("CODEX_CLI_PATH", "codex")
-    timeout_seconds = float(os.getenv("CODEX_CLI_TIMEOUT", "90"))
-    workspace = os.getenv("CODEX_CLI_WORKDIR", str(Path(__file__).resolve().parents[2]))
-
-    with tempfile.NamedTemporaryFile("w+", suffix=".txt", delete=True) as output:
-        command = [
-            codex_path,
-            "--search",
-            "exec",
-            "--skip-git-repo-check",
-            "--ephemeral",
-            "--sandbox",
-            "read-only",
-            "-C",
-            workspace,
-            "-o",
-            output.name,
-            briefing_prompt(topic),
-        ]
-        subprocess.run(  # nosec B603
-            command,
-            cwd=workspace,
-            text=True,
-            capture_output=True,
-            timeout=timeout_seconds,
-            check=True,
-        )
-        output.seek(0)
-        raw_text = output.read()
-
-    payload = parse_ai_payload(raw_text, topic)
-    return {**payload, "generated_by": "codex-cli"}
-
-
-def generate_ai_payload(topic: Topic) -> dict | None:
-    provider = os.getenv(
-        "AI_PROVIDER", "openai" if os.getenv("OPENAI_API_KEY") else "fallback"
-    ).lower()
-
-    if provider == "codex_cli":
-        return generate_codex_cli_payload(topic)
-    if provider == "openai":
-        return generate_openai_payload(topic)
-    if provider == "fallback":
-        return None
-    raise AIProviderConfigurationError(f"Unsupported AI_PROVIDER {provider!r}.")
-
-
-def provider_error_message(exc: Exception) -> str:
-    if isinstance(exc, subprocess.CalledProcessError):
-        output = (exc.stderr or exc.stdout or "").strip()
-        message = f"Provider command exited with status {exc.returncode}."
-        if output:
-            message = f"{message} {output[-500:]}"
-        return message
-    if isinstance(exc, subprocess.TimeoutExpired):
-        return f"Provider command timed out after {exc.timeout} seconds."
-    if isinstance(exc, FileNotFoundError):
-        executable = exc.filename or "configured executable"
-        return f"Provider executable not found: {executable}."
-    return str(exc)
 
 
 def generate_topic_briefing(
